@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model career_skills {
+  career_skill_id Int                       @id @default(autoincrement())
+  career_id       Int
+  skill_id        Int
+  skill_level     career_skills_skill_level
+  roadmap_stage   Int
+  sequence_order  Int
+  careers         careers                   @relation(fields: [career_id], references: [career_id], onUpdate: Restrict, map: "career_skills_ibfk_1")
+  skills          skills                    @relation(fields: [skill_id], references: [skill_id], onUpdate: Restrict, map: "career_skills_ibfk_2")
+
+  @@unique([career_id, skill_id], map: "career_id")
+  @@index([skill_id], map: "skill_id")
+}
+
+model careers {
+  career_id     Int             @id @default(autoincrement())
+  career_name   String          @unique(map: "career_name") @db.VarChar(100)
+  description   String?         @db.Text
+  category      String?         @db.VarChar(50)
+  career_skills career_skills[]
+}
+
+model course_skills {
+  course_skill_id Int          @id @default(autoincrement())
+  course_id       Int
+  skill_id        Int
+  skills          skills       @relation(fields: [skill_id], references: [skill_id], onUpdate: Restrict, map: "course_skills_ibfk_2")
+  user_courses    user_courses @relation(fields: [course_id], references: [course_id], onDelete: Cascade, onUpdate: Restrict, map: "fk_course_skills_course")
+
+  @@unique([course_id, skill_id], map: "course_id")
+  @@index([skill_id], map: "skill_id")
+}
+
+model education_skills {
+  education_skill_id Int            @id @default(autoincrement())
+  education_id       Int
+  skill_id           Int
+  skills             skills         @relation(fields: [skill_id], references: [skill_id], onUpdate: Restrict, map: "education_skills_ibfk_2")
+  user_education     user_education @relation(fields: [education_id], references: [education_id], onDelete: Cascade, onUpdate: Restrict, map: "fk_education_skills_education")
+
+  @@unique([education_id, skill_id], map: "education_id")
+  @@index([skill_id], map: "skill_id")
+}
+
+model experience_skills {
+  experience_skill_id Int             @id @default(autoincrement())
+  experience_id       Int
+  skill_id            Int
+  skills              skills          @relation(fields: [skill_id], references: [skill_id], onUpdate: Restrict, map: "experience_skills_ibfk_2")
+  user_experience     user_experience @relation(fields: [experience_id], references: [experience_id], onDelete: Cascade, onUpdate: Restrict, map: "fk_experience_skills_experience")
+
+  @@unique([experience_id, skill_id], map: "experience_id")
+  @@index([skill_id], map: "skill_id")
+}
+
+model project_skills {
+  project_skill_id Int           @id @default(autoincrement())
+  project_id       Int
+  skill_id         Int
+  user_projects    user_projects @relation(fields: [project_id], references: [project_id], onDelete: Cascade, onUpdate: Restrict, map: "fk_project_skills_project")
+  skills           skills        @relation(fields: [skill_id], references: [skill_id], onUpdate: Restrict, map: "project_skills_ibfk_2")
+
+  @@unique([project_id, skill_id], map: "project_id")
+  @@index([skill_id], map: "skill_id")
+}
+
+model skill_dependencies {
+  dependency_id                                           Int    @id @default(autoincrement())
+  skill_id                                                Int
+  prerequisite_skill_id                                   Int
+  skills_skill_dependencies_skill_idToskills              skills @relation("skill_dependencies_skill_idToskills", fields: [skill_id], references: [skill_id], onUpdate: Restrict, map: "skill_dependencies_ibfk_1")
+  skills_skill_dependencies_prerequisite_skill_idToskills skills @relation("skill_dependencies_prerequisite_skill_idToskills", fields: [prerequisite_skill_id], references: [skill_id], onUpdate: Restrict, map: "skill_dependencies_ibfk_2")
+
+  @@unique([skill_id, prerequisite_skill_id], map: "skill_id")
+  @@index([prerequisite_skill_id], map: "prerequisite_skill_id")
+}
+
+model skills {
+  skill_id                                                            Int                  @id @default(autoincrement())
+  skill_name                                                          String               @unique(map: "skill_name") @db.VarChar(100)
+  category                                                            String?              @db.VarChar(50)
+  description                                                         String?              @db.Text
+  career_skills                                                       career_skills[]
+  course_skills                                                       course_skills[]
+  education_skills                                                    education_skills[]
+  experience_skills                                                   experience_skills[]
+  project_skills                                                      project_skills[]
+  skill_dependencies_skill_dependencies_skill_idToskills              skill_dependencies[] @relation("skill_dependencies_skill_idToskills")
+  skill_dependencies_skill_dependencies_prerequisite_skill_idToskills skill_dependencies[] @relation("skill_dependencies_prerequisite_skill_idToskills")
+  user_skills                                                         user_skills[]
+}
+
+model user_courses {
+  course_id       Int             @id @default(autoincrement())
+  user_id         Int
+  course_name     String          @db.VarChar(150)
+  provider        String?         @db.VarChar(150)
+  description     String?         @db.Text
+  completion_date DateTime?       @db.Date
+  certificate_url String?         @db.VarChar(500)
+  course_skills   course_skills[]
+  users           users           @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "user_courses_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model user_education {
+  education_id     Int                @id @default(autoincrement())
+  user_id          Int
+  degree           String             @db.VarChar(100)
+  field_of_study   String?            @db.VarChar(150)
+  institution      String?            @db.VarChar(150)
+  start_year       Int?               @db.Year
+  end_year         Int?               @db.Year
+  education_skills education_skills[]
+  users            users              @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "user_education_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model user_experience {
+  experience_id     Int                             @id @default(autoincrement())
+  user_id           Int
+  experience_type   user_experience_experience_type
+  job_title         String                          @db.VarChar(150)
+  company_name      String?                         @db.VarChar(150)
+  description       String?                         @db.Text
+  start_date        DateTime?                       @db.Date
+  end_date          DateTime?                       @db.Date
+  experience_skills experience_skills[]
+  users             users                           @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "user_experience_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model user_projects {
+  project_id        Int              @id @default(autoincrement())
+  user_id           Int
+  project_name      String           @db.VarChar(150)
+  description       String?          @db.Text
+  technologies_used String?          @db.Text
+  start_date        DateTime?        @db.Date
+  end_date          DateTime?        @db.Date
+  project_skills    project_skills[]
+  users             users            @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "user_projects_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model user_skills {
+  user_skill_id Int    @id @default(autoincrement())
+  user_id       Int
+  skill_id      Int
+  users         users  @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "user_skills_ibfk_1")
+  skills        skills @relation(fields: [skill_id], references: [skill_id], onUpdate: Restrict, map: "user_skills_ibfk_2")
+
+  @@unique([user_id, skill_id], map: "user_id")
+  @@index([skill_id], map: "skill_id")
+}
+
+model users {
+  user_id              Int               @id @default(autoincrement())
+  full_name            String            @db.VarChar(100)
+  email                String            @unique(map: "email") @db.VarChar(150)
+  password_hash        String            @db.VarChar(255)
+  github_profile_url   String?           @db.VarChar(255)
+  linkedin_profile_url String?           @db.VarChar(255)
+  created_at           DateTime          @default(now()) @db.Timestamp(0)
+  user_courses         user_courses[]
+  user_education       user_education[]
+  user_experience      user_experience[]
+  user_projects        user_projects[]
+  user_skills          user_skills[]
+}
+
+enum user_experience_experience_type {
+  Job
+  Internship
+}
+
+enum career_skills_skill_level {
+  Beginner
+  Intermediate
+  Advanced
+}

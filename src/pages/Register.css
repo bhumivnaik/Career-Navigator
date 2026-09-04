@@ -1,0 +1,310 @@
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  background: #f5f7fb;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* =========================
+   LEFT BRAND SECTION
+   ========================= */
+
+.register-brand {
+  width: 48%;
+  min-height: 100vh;
+  background: linear-gradient(145deg, #111827, #1e293b);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  box-sizing: border-box;
+}
+
+.brand-content {
+  max-width: 540px;
+  width: 100%;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 21px;
+  font-weight: 700;
+  margin-bottom: 110px;
+}
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.brand-message {
+  margin-bottom: 48px;
+}
+
+.brand-small-title {
+  color: #a5b4fc;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 18px;
+}
+
+.brand-message h1 {
+  font-size: clamp(38px, 4vw, 58px);
+  line-height: 1.08;
+  letter-spacing: -2px;
+  margin: 0 0 24px;
+  font-weight: 750;
+}
+
+.brand-description {
+  max-width: 500px;
+  color: #cbd5e1;
+  font-size: 16px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.brand-features {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+.feature-icon {
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: rgba(129, 140, 248, 0.18);
+  color: #a5b4fc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* =========================
+   RIGHT SECTION
+   ========================= */
+
+.register-section {
+  width: 52%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 460px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 42px;
+  box-sizing: border-box;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+}
+
+
+/* =========================
+   HEADER
+   ========================= */
+
+.register-header {
+  margin-bottom: 30px;
+}
+
+.register-header h2 {
+  margin: 0 0 9px;
+  color: #111827;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.7px;
+}
+
+.register-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+
+/* =========================
+   FORM
+   ========================= */
+
+.form-group {
+  margin-bottom: 19px;
+}
+
+.form-group label {
+  display: block;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 14px;
+  color: #111827;
+  background: #ffffff;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.form-group input::placeholder {
+  color: #9ca3af;
+}
+
+.form-group input:hover {
+  border-color: #a5b4fc;
+}
+
+.form-group input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+
+/* =========================
+   BUTTON
+   ========================= */
+
+.register-button {
+  width: 100%;
+  height: 50px;
+  margin-top: 7px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6366f1, #7c3aed);
+  color: white;
+  font-size: 15px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 7px 18px rgba(99, 102, 241, 0.22);
+}
+
+.register-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(99, 102, 241, 0.3);
+}
+
+.register-button:active {
+  transform: translateY(0);
+}
+
+
+/* =========================
+   MESSAGES
+   ========================= */
+
+.message {
+  border-radius: 9px;
+  padding: 11px 13px;
+  margin-bottom: 15px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.success-message {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}
+
+
+/* =========================
+   LOGIN LINK
+   ========================= */
+
+.login-link {
+  text-align: center;
+  margin-top: 25px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.login-link a {
+  margin-left: 5px;
+  color: #4f46e5;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 900px) {
+  .register-brand {
+    display: none;
+  }
+
+  .register-section {
+    width: 100%;
+    padding: 25px;
+  }
+
+  .register-card {
+    max-width: 500px;
+  }
+}
+
+@media (max-width: 500px) {
+  .register-section {
+    padding: 16px;
+  }
+
+  .register-card {
+    padding: 28px 22px;
+    border-radius: 16px;
+  }
+
+  .register-header h2 {
+    font-size: 26px;
+  }
+}
