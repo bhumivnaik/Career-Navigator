@@ -72,4 +72,40 @@ const delCourse = (req, res) => {
     });
 }
 
-module.exports = { addCourse, getCourse, delCourse };
+//Update
+const putCourse = (req, res) => {
+    const userId = req.user.user_id;
+    const courseId = req.params.id;
+
+    const { course_name, provider, description, completion_date, certificate_url, skill_ids } = req.body;
+
+    const putsql = `update user_courses set course_name= ?, provider= ?, description= ?, completion_date= ?, certificate_url= ? where course_id = ? and user_id = ?`;
+
+    db.query(putsql, [course_name, provider, description, completion_date, certificate_url, courseId, userId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Failed to update course" });
+        }
+
+        const putSkillsSql = `DELETE FROM course_skills WHERE course_id = ?`;
+        db.query(putSkillsSql, [courseId], (err, result) => {
+            if (err) {
+                return res.status(500).json({ message: "Failed to update experience" });
+            }
+
+            if (skill_ids && skill_ids.length > 0) {
+                const values = skill_ids.map(skillId => [courseId, skillId]);
+                const addSkillsql = `Insert into course_skills (course_id, skill_id) values ?`;
+                db.query(addSkillsql, [values], (err, result) => {
+                    if (err) {
+                        return res.status(500).json({ message: "Failed to update course skills" });
+                    }
+                    res.json({ message: "course updated successfully" });
+                });
+            } else {
+                res.json({ message: "update course successfully" });
+            }
+        })
+    });
+};
+
+module.exports = { addCourse, getCourse, delCourse, putCourse };

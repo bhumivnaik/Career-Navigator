@@ -67,7 +67,7 @@ const login = async (req, res) => {
 const me = async (req, res) => {
     const userId = req.user.user_id;
 
-    const getsql = `select user_id, full_name, email, github_profile_url from users where user_id= ?`;
+    const getsql = `select u.user_id, u.full_name, u.email, u.about, u.github_profile_url,u.linkedin_profile_url,u.profile_completed,u.career_goal_id,c.career_name as career_goal_name  from users u left join careers c on u.career_goal_id = c.career_id where user_id= ?`;
 
     db.query(getsql, [userId], (err, result) => {
         if (err) {

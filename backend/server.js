@@ -6,7 +6,7 @@ const db = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 const skillRoutes = require("./routes/skillsRoute");
-
+const careerRoutes = require("./routes/careerRoutes");
 
 const app = express();
 
@@ -16,6 +16,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/skills", skillRoutes);
+app.use("/api/careers", careerRoutes);
 
 app.get("/", (req, res) => {
     res.json({
@@ -38,3 +39,4 @@ app.get("/api/test", authMiddleware, (req, res) => {
     });
 
 });
+

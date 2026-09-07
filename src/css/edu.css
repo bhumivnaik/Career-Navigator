@@ -1,0 +1,502 @@
+.education-page {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+
+    background-color: var(--primary-light);
+
+    padding: 40px 20px;
+}
+
+
+.education-card {
+    width: 700px;
+    max-width: 100%;
+
+    background-color: var(--surface);
+
+    padding: 45px;
+
+    border-radius: 20px;
+
+    box-shadow: 0 10px 30px var(--shadow);
+}
+
+
+/* Header */
+
+.education-header {
+    margin-bottom: 30px;
+}
+
+.education-header h1 {
+    font-size: 32px;
+
+    margin-bottom: 8px;
+}
+
+.education-header p {
+    color: var(--text-secondary);
+
+    font-size: 14px;
+}
+
+
+/* Form */
+
+.education-form {
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.form-group label,
+.education-skills>label {
+    font-size: 14px;
+
+    font-weight: 500;
+}
+
+
+.form-group label span {
+    color: var(--text-secondary);
+
+    font-weight: 400;
+}
+
+
+.education-form input,
+.education-form textarea,
+.education-form select {
+
+    width: 100%;
+
+    padding: 0 15px;
+
+    font-family: 'Poppins', sans-serif;
+
+    font-size: 14px;
+
+    color: var(--text-primary);
+
+    background-color: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    outline: none;
+
+    transition: 0.2s ease;
+}
+
+
+.education-form input,
+.education-form select {
+    height: 50px;
+}
+
+
+.education-form textarea {
+    padding: 14px 15px;
+
+    resize: vertical;
+
+    min-height: 100px;
+}
+
+
+.education-form input:hover,
+.education-form textarea:hover,
+.education-form select:hover {
+    border-color: #b8b0d0;
+}
+
+
+.education-form input:focus,
+.education-form textarea:focus,
+.education-form select:focus {
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 4px var(--primary-light);
+}
+
+
+/* Dates */
+
+.date-row {
+    display: flex;
+
+    gap: 15px;
+}
+
+
+.date-row .form-group {
+    flex: 1;
+}
+
+
+/* Education skills */
+
+.education-skills {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.education-selected-skills {
+
+    min-height: 50px;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    padding-top: 5px;
+}
+
+
+.education-skill-tag {
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 8px 10px 8px 14px;
+
+    background-color: var(--primary-light);
+
+    color: var(--primary-dark);
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    font-weight: 500;
+}
+
+
+.education-skill-tag button {
+
+    width: 20px;
+    height: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: var(--primary-dark);
+
+    font-size: 17px;
+
+    cursor: pointer;
+}
+
+
+.education-skill-tag button:hover {
+
+    background-color: var(--primary);
+
+    color: white;
+}
+
+
+/* Add button */
+
+.add-education-button {
+
+    height: 50px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background-color: var(--primary);
+
+    color: white;
+
+    font-family: 'Poppins', sans-serif;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.add-education-button:hover {
+
+    background-color: var(--primary-dark);
+}
+
+
+.add-education-button:disabled {
+
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+/* Saved education */
+
+.saved-education {
+
+    margin-top: 40px;
+}
+
+
+.saved-education h2 {
+
+    font-size: 20px;
+
+    margin-bottom: 15px;
+}
+
+
+.education-item {
+
+    padding: 20px;
+
+    margin-bottom: 15px;
+
+    background-color: #faf9fd;
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+}
+
+
+.education-item-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 15px;
+}
+
+
+.education-item h3 {
+
+    font-size: 17px;
+
+    margin-bottom: 4px;
+}
+
+
+.education-item-header p {
+
+    color: var(--text-secondary);
+
+    font-size: 14px;
+}
+
+
+.delete-education {
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--error);
+
+    font-family: 'Poppins', sans-serif;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+
+.delete-education:hover {
+
+    text-decoration: underline;
+}
+
+
+.education-field {
+
+    margin-top: 12px;
+
+    font-size: 13px;
+
+    color: var(--text-secondary);
+}
+
+
+.education-date {
+
+    margin-top: 6px;
+
+    font-size: 12px;
+
+    color: var(--text-secondary);
+}
+
+
+.education-description {
+
+    margin-top: 12px;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+.saved-skills {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 15px;
+}
+
+
+.saved-skill-tag {
+
+    padding: 6px 11px;
+
+    background-color: var(--primary-light);
+
+    color: var(--primary-dark);
+
+    border-radius: 15px;
+
+    font-size: 12px;
+
+    font-weight: 500;
+}
+
+
+/* Navigation */
+
+.education-navigation {
+
+    display: flex;
+
+    gap: 15px;
+
+    margin-top: 35px;
+}
+
+
+.education-navigation button {
+
+    flex: 1;
+
+    height: 50px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    font-family: 'Poppins', sans-serif;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.education-back {
+
+    background-color: #eeeaf7;
+
+    color: var(--primary-dark);
+}
+
+
+.education-back:hover {
+
+    background-color: #e2dcef;
+}
+
+
+.education-continue {
+
+    background-color: var(--primary);
+
+    color: white;
+}
+
+
+.education-continue:hover {
+
+    background-color: var(--primary-dark);
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .education-card {
+
+        padding: 25px;
+    }
+
+
+    .date-row {
+
+        flex-direction: column;
+
+    }
+
+
+    .education-item-header {
+
+        flex-direction: column;
+
+    }
+
+
+    .education-navigation {
+
+        flex-direction: column;
+
+    }
+
+}

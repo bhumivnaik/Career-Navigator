@@ -7,6 +7,11 @@ interface User {
     email: string;
     github_profile_url?: string | null;
     linkedin_profile_url?: string | null;
+    profile_completed: boolean;
+    about?: string;
+    career_goal_id?: number | null;
+    career_goal_name?: string | null;
+
 }
 
 interface AuthContextType {

@@ -72,4 +72,41 @@ const delEdu = (req, res) => {
     });
 }
 
-module.exports = { addEdu, getEdu, delEdu };
+//Update
+const putEdu = (req, res) => {
+    const userId = req.user.user_id;
+    const eduId = req.params.id;
+    const { degree, field_of_study, institution, start_year, end_year, skill_ids } = req.body;
+
+    const putsql = `update user_education set degree= ?, field_of_study= ?, institution= ?, start_year= ?, end_year= ? where education_id = ? and user_id = ?`;
+
+    db.query(putsql, [degree, field_of_study, institution, start_year, end_year, eduId, userId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Failed to update education" });
+        }
+
+        const deleteSkillsSql = `DELETE FROM education_skills WHERE education_id = ?`;
+        db.query(deleteSkillsSql, [eduId], (err, result) => {
+            if (err) {
+                return res.status(500).json({ message: "Failed to update education" });
+            }
+
+            if (skill_ids && skill_ids.length > 0) {
+                const values = skill_ids.map(skillId => [eduId, skillId]);
+                const addSkillsql = `Insert into education_skills (education_id, skill_id) values ?`;
+                db.query(addSkillsql, [values], (err, result) => {
+                    if (err) {
+                        return res.status(500).json({ message: "Failed to update education skills" });
+                    }
+                    res.json({ message: "Education updated successfully" });
+                });
+            } else {
+                res.json({ message: "Education updated successfully" });
+            }
+        })
+    });
+};
+
+
+
+module.exports = { addEdu, getEdu, delEdu, putEdu };

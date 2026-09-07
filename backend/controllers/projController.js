@@ -72,5 +72,41 @@ const delProj = (req, res) => {
     });
 }
 
-module.exports = { addProj, getProj, delProj };
+//Update
+const putProj = (req, res) => {
+    const userId = req.user.user_id;
+    const projId = req.params.id;
+
+    const { project_name, description, start_date, end_date, skill_ids } = req.body;
+
+    const putsql = `update user_projects set project_name = ?, description= ?, start_date= ?, end_date= ? where project_id = ? and user_id = ?`;
+
+    db.query(putsql, [project_name, description, start_date, end_date, projId, userId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Failed to update project" });
+        }
+
+        const putSkillsSql = `DELETE FROM project_skills WHERE project_id = ?`;
+        db.query(putSkillsSql, [projId], (err, result) => {
+            if (err) {
+                return res.status(500).json({ message: "Failed to update project" });
+            }
+
+            if (skill_ids && skill_ids.length > 0) {
+                const values = skill_ids.map(skillId => [projId, skillId]);
+                const addSkillsql = `Insert into project_skills (project_id, skill_id) values ?`;
+                db.query(addSkillsql, [values], (err, result) => {
+                    if (err) {
+                        return res.status(500).json({ message: "Failed to update project skills" });
+                    }
+                    res.json({ message: "project updated successfully" });
+                });
+            } else {
+                res.json({ message: "update project successfully" });
+            }
+        })
+    });
+};
+
+module.exports = { addProj, getProj, delProj, putProj };
 

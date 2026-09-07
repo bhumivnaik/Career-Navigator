@@ -1,13 +1,16 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, type FormEvent, type ChangeEvent } from "react";
 import Button from "./ui/Button";
 import { useAuth } from "../context/authContext";
+import "../css/auth.css"
+import { Eye, EyeOff } from "lucide-react";
 
 function Login() {
     const navigate = useNavigate();
     const { login } = useAuth();
 
+    const [showPassword, setShowPassword] = useState(false);
     const [form, setForm] = useState({
         email: "",
         password: ""
@@ -37,7 +40,11 @@ function Login() {
             login(userResponse.data);
 
             alert(response.data.message);
-            navigate("/");
+            if (userResponse.data.profile_completed) {
+                navigate("/dashboard");
+            } else {
+                navigate("/profile");
+            }
         } catch (error: any) {
             alert(error.response?.data?.message || "Login Failed");
         }
@@ -49,25 +56,43 @@ function Login() {
 
     return (
         <>
-            <h1>Login</h1>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="email" id="email" name="email"
-                    value={form.email}
-                    onChange={handleUserInput}
-                    autoComplete="off" placeholder="Email"
-                    required
-                />
-                <input
-                    type="password" id="password" name="password"
-                    value={form.password}
-                    onChange={handleUserInput}
-                    autoComplete="off" placeholder="Password"
-                    required
-                />
+            <div className="container">
+                <div className="logobox">
 
-                <Button type="submit">Login</Button>
-            </form>
+                </div>
+                <div className="login">
+                    <form onSubmit={handleSubmit}>
+                        <h1>Sign In</h1>
+                        <input
+                            type="email" id="email" name="email"
+                            value={form.email}
+                            onChange={handleUserInput}
+                            autoComplete="off" placeholder="Email"
+                            required
+                        />
+
+                        <div className="password-box">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                id="password" name="password"
+                                value={form.password} onChange={handleUserInput}
+                                autoComplete="off"
+                                placeholder="Password"
+                                required
+                            />
+                            <button type="button" className="eye-button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                                {showPassword ? (<EyeOff size={20} />) : (<Eye size={20} />)}
+                            </button>
+                        </div>
+
+                        <button type="submit" className="button">Login</button>
+                        <p>Don't have an account? <Link to="/register"> Register</Link></p>
+                    </form>
+                </div>
+            </div>
         </>
     )
 }

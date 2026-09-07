@@ -1,0 +1,269 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Primary Purple */
+    /* --primary: #7C3AED; 8642ca*/
+    --primary2: #9f68d6;
+    --primary: #8557b3e2;
+    /* --primary-dark: #6723d5; */
+    --primary-dark: #7644a8;
+    --primary-light: #eeeaff;
+    --primary-light2: #d4cef3;
+
+    /* Backgrounds */
+    --background: #e2dbfe;
+    --surface: #FFFFFF;
+
+    /* Text */
+    --text-primary: #18181B;
+    --text-secondary: #71717A;
+    --text-white: #FFFFFF;
+
+    /* Borders */
+    --border: #e4e4e5;
+
+    /* Status */
+    --success: #16A34A;
+    --success2: #20de66;
+    --warning: #F59E0B;
+    --error: #DC2626;
+    --success-light: #74e79e42;
+    /* Other */
+    --shadow: rgba(0, 0, 0, 0.08);
+    --radius: 10px;
+
+
+    --shadow:
+        rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+    --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+    --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+    --mono: ui-monospace, Consolas, monospace;
+
+    font: 18px/145% var(--sans);
+    letter-spacing: 0.18px;
+    color-scheme: light dark;
+    color: var(--text);
+    background: var(--bg);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    @media (max-width: 1024px) {
+        font-size: 16px;
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins";
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--background);
+    color: var(--text-primary);
+}
+
+.container {
+    width: 900px;
+    height: 580px;
+    background-color: white;
+    margin: auto;
+    margin-top: 110px;
+    border-radius: 20px;
+    display: flex;
+    box-shadow: 10px 5px 55px rgba(182, 148, 251, 0.847);
+}
+
+.logobox {
+    background-color: var(--primary);
+    box-shadow: 10px 5px 55px rgba(182, 148, 251, 0.847);
+    background-image: url("../assets/ChatGPT Image Sep 3, 2026, 09_10_09 PM.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 20px;
+    padding: 50px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-white);
+    text-align: center;
+}
+
+.login,
+.register {
+    border-radius: 20px;
+    padding: 30px;
+    margin: 10px auto;
+    flex: 1.2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login h1,
+.register h1 {
+    margin-bottom: 15px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+}
+
+form {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 18px;
+    padding: 40px;
+}
+
+input {
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-primary);
+
+    background-color: #ffffff;
+    border: 1px solid var(--border);
+    margin: 8px 0;
+    padding: 10px 15px;
+    color: var(--text-primary);
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s ease;
+    border-radius: 10px;
+    width: 100%;
+}
+
+input::placeholder {
+    color: #9a96a8;
+}
+
+input:hover {
+    border-color: #b8b0d0;
+}
+
+input:focus {
+    background-color: #eae8ff;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.button {
+    width: 60%;
+    padding: 14px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 30px;
+    background-color: var(--primary);
+    color: var(--text-white);
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    letter-spacing: -0.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.button:hover {
+    background-color: var(--primary-dark);
+    box-shadow: 0 0 0 5px var(--primary-light);
+}
+
+@media (max-width: 600px) {
+    .container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+    }
+
+    .logobox {
+        width: 100%;
+        min-height: 35vh;
+        padding: 30px;
+    }
+
+    .login {
+        width: 100%;
+        min-height: 65vh;
+    }
+
+    .login form {
+        padding: 30px;
+    }
+}
+
+
+/*extra*/
+.password-box {
+    position: relative;
+    width: 100%;
+}
+
+.password-box input {
+    padding-right: 50px;
+}
+
+.eye-button {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    margin: 0;
+
+    border: none;
+    background: transparent;
+
+    color: var(--text-secondary);
+
+    cursor: pointer;
+}
+
+.eye-button:hover {
+    color: var(--primary);
+}
+
+.eye-button:focus {
+    outline: none;
+}
+
+.profile {
+    width: 600px;
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    flex: 1.2;
+    margin: auto;
+    margin-top: 110px;
+    border-radius: 20px;
+    display: flex;
+    box-shadow: 10px 5px 55px rgba(182, 148, 251, 0.847);
+}

@@ -72,4 +72,40 @@ const delExp = (req, res) => {
     });
 }
 
-module.exports = { addExp, getExp, delExp };
+//Update
+const putExp = (req, res) => {
+    const userId = req.user.user_id;
+    const expId = req.params.id;
+    const { experience_type, job_title, company_name, description, start_date, end_date, skill_ids } = req.body;
+
+    const putsql = `update user_experience set experience_type= ?, job_title= ?, company_name= ?, description= ?, start_date= ? , end_date= ? where experience_id = ? and user_id = ?`;
+
+    db.query(putsql, [experience_type, job_title, company_name, description, start_date, end_date, expId, userId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Failed to update experience" });
+        }
+
+        const putSkillsSql = `DELETE FROM experience_skills WHERE experience_id = ?`;
+        db.query(putSkillsSql, [expId], (err, result) => {
+            if (err) {
+                return res.status(500).json({ message: "Failed to update experience" });
+            }
+
+            if (skill_ids && skill_ids.length > 0) {
+                const values = skill_ids.map(skillId => [expId, skillId]);
+                const addSkillsql = `Insert into experience_skills (experience_id, skill_id) values ?`;
+                db.query(addSkillsql, [values], (err, result) => {
+                    if (err) {
+                        return res.status(500).json({ message: "Failed to update experience skills" });
+                    }
+                    res.json({ message: "experience updated successfully" });
+                });
+            } else {
+                res.json({ message: "experience updated successfully" });
+            }
+        })
+    });
+};
+
+
+module.exports = { addExp, getExp, delExp, putExp };

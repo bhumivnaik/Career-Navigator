@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import Button from "./ui/Button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import "../css/auth.css"
+
 
 function Register() {
     const navigate = useNavigate();
@@ -58,38 +59,47 @@ function Register() {
 
     return (
         <>
-            <h1>Register</h1>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text" id="fullname" name="fullname"
-                    value={form.fullname}
-                    onChange={handleUserInput}
-                    autoComplete="off" placeholder="Full Name"
-                    required
-                />
-                <input
-                    type="email" id="email" name="email"
-                    value={form.email}
-                    onChange={handleUserInput}
-                    autoComplete="off" placeholder="Email"
-                    required
-                />
-                <input
-                    type="password" id="password" name="password"
-                    value={form.password}
-                    onChange={handleUserInput}
-                    autoComplete="off" placeholder="Password"
-                    required
-                />
-                <input
-                    type="password" id="confirmpass" name="confirmpass"
-                    value={form.confirmpass}
-                    onChange={handleUserInput}
-                    autoComplete="off" placeholder="Confirm Password"
-                    required
-                />
-                <Button type="submit">Register</Button>
-            </form>
+            <div className="container">
+                <div className="register">
+                    <form onSubmit={handleSubmit}>
+                        <h1>Sign Up</h1>
+                        <input
+                            type="text" id="fullname" name="fullname"
+                            value={form.fullname}
+                            onChange={handleUserInput}
+                            autoComplete="off" placeholder="Full Name"
+                            required
+                        />
+                        <input
+                            type="email" id="email" name="email"
+                            value={form.email}
+                            onChange={handleUserInput}
+                            autoComplete="off" placeholder="Email"
+                            required
+                        />
+                        <input
+                            type="password" id="password" name="password"
+                            value={form.password}
+                            onChange={handleUserInput}
+                            autoComplete="off" placeholder="Password"
+                            required
+                        />
+                        <input
+                            type="password" id="confirmpass" name="confirmpass"
+                            value={form.confirmpass}
+                            onChange={handleUserInput}
+                            autoComplete="off" placeholder="Confirm Password"
+                            required
+                        />
+                        <button type="submit" className="button">Register</button>
+                        <p>Already Registered? <Link to="/login"> Login</Link></p>
+
+                    </form>
+                </div>
+                <div className="logobox">
+
+                </div>
+            </div>
         </>
     )
 }

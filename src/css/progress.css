@@ -1,0 +1,541 @@
+/* ================================
+   PROGRESS PAGE
+================================ */
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 25px;
+}
+
+.progress-header h1 {
+    margin: 6px 0;
+    color: #25213a;
+    font-size: 32px;
+}
+
+.progress-subtitle {
+    margin: 0;
+    color: #888;
+    font-size: 14px;
+}
+
+.roadmap-button {
+    padding: 11px 18px;
+    border: none;
+    border-radius: 9px;
+    background: var(--primary-dark);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.roadmap-button:hover {
+    background: var(--primary2);
+}
+
+
+/* ================================
+   OVERALL PROGRESS
+================================ */
+
+.overall-progress-card {
+    padding: 25px;
+    background: white;
+    border: 1px solid #e8e5f0;
+    border-radius: 16px;
+    margin-bottom: 20px;
+}
+
+.overall-progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.progress-card-label {
+    color: #8b849d;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+}
+
+.overall-progress-info h2 {
+    margin: 8px 0 2px;
+    color: var(--primary-dark);
+    font-size: 38px;
+}
+
+.overall-progress-info p {
+    margin: 0;
+    color: #888;
+    font-size: 13px;
+}
+
+/* Large progress bar */
+
+.large-progress-bar {
+    width: 100%;
+    height: 9px;
+    margin-top: 20px;
+
+    background: #eeeaf7;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.large-progress-fill {
+    height: 100%;
+    background: var(--primary-dark);
+    border-radius: 10px;
+
+    transition: width 0.4s ease;
+}
+
+/* ================================
+   CURRENT POSITION
+================================ */
+
+.current-position-card {
+    padding: 25px;
+
+    background: white;
+    border: 1px solid #e8e5f0;
+    border-radius: 16px;
+
+    margin-bottom: 25px;
+}
+
+.section-heading {
+    margin-bottom: 20px;
+}
+
+.section-heading .dashboard-label {
+    margin-bottom: 5px;
+}
+
+.section-heading h2 {
+    margin: 0;
+    color: #25213a;
+    font-size: 22px;
+}
+
+
+/* Position */
+
+.position-content {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.position-item {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 17px;
+
+    border-radius: 12px;
+}
+
+.completed-position {
+    background: #f5fbf7;
+    border: 1px solid #dcefe2;
+}
+
+.next-position {
+    background: #faf8ff;
+    border: 1px solid #e7e1f8;
+}
+
+.position-number {
+    min-width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-weight: 700;
+}
+
+.completed-position .position-number {
+    background: #e3f4e9;
+    color: #369258;
+}
+
+.next-position .position-number {
+    background: #eee9ff;
+    color: #6c5ce7;
+}
+
+.position-item h3 {
+    margin: 0 0 5px;
+    color: #302b43;
+    font-size: 15px;
+}
+
+.position-item p {
+    margin: 0;
+    color: #888;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.position-line {
+    width: 35px;
+    height: 2px;
+    background: #ddd8e9;
+}
+
+
+/* ================================
+   ROADMAP PROGRESS
+================================ */
+
+.roadmap-progress-section {
+    margin-bottom: 25px;
+}
+
+.progress-roadmap {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+
+/* Stage */
+
+.progress-stage {
+    padding: 22px;
+
+    background: white;
+    border: 1px solid #e8e5f0;
+    border-radius: 16px;
+}
+
+.stage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stage-number {
+    color: #6c5ce7;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.stage-header h3 {
+    margin: 5px 0 0;
+    color: #25213a;
+    font-size: 17px;
+}
+
+.stage-percentage {
+    color: #6c5ce7;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+/* Stage progress */
+
+.stage-progress-bar {
+    width: 100%;
+    height: 6px;
+    margin: 15px 0 18px;
+
+    background: #eeeaf7;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.stage-progress-fill {
+    height: 100%;
+    background: #6c5ce7;
+    border-radius: 10px;
+
+    transition: width 0.4s ease;
+}
+
+
+/* Skills */
+
+.stage-skills {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.progress-skill {
+    display: flex;
+    align-items: center;
+
+    padding: 12px 14px;
+
+    border-radius: 10px;
+    border: 1px solid #eeeaf4;
+}
+
+.skill-completed {
+    background: #f8fcf9;
+}
+
+.skill-remaining {
+    background: #fcfbfe;
+}
+
+.skill-check {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-right: 12px;
+
+    border-radius: 50%;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.skill-completed .skill-check {
+    background: #e4f4e9;
+    color: #39945a;
+}
+
+.skill-remaining .skill-check {
+    background: #eeeaf6;
+    color: #999;
+}
+
+.skill-info {
+    flex: 1;
+}
+
+.skill-info h4 {
+    margin: 0 0 3px;
+    color: #302b43;
+    font-size: 14px;
+}
+
+.skill-info span {
+    color: #999;
+    font-size: 11px;
+}
+
+.skill-status {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.skill-completed .skill-status {
+    color: #3a9659;
+}
+
+.skill-remaining .skill-status {
+    color: #999;
+}
+
+
+/* ================================
+   NEXT STEP
+================================ */
+
+.next-step-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 24px;
+
+    background: #f8f6ff;
+    border: 1px solid #e3ddf7;
+    border-radius: 16px;
+
+    margin-bottom: 30px;
+}
+
+.next-step-card h2 {
+    margin: 7px 0;
+    color: #25213a;
+    font-size: 21px;
+}
+
+.next-step-card p {
+    max-width: 600px;
+    margin: 0;
+
+    color: #888;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.next-step-card button {
+    flex-shrink: 0;
+
+    margin-left: 25px;
+    padding: 11px 17px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: #6c5ce7;
+    color: white;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.next-step-card button:hover {
+    background: #5948d5;
+}
+
+
+/* ================================
+   EMPTY / LOADING
+================================ */
+
+.progress-empty {
+    min-height: 500px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+.progress-empty-icon {
+    width: 55px;
+    height: 55px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 15px;
+
+    border-radius: 50%;
+
+    background: #f0edff;
+    color: #6c5ce7;
+
+    font-size: 22px;
+}
+
+.progress-empty h1 {
+    margin: 0 0 8px;
+    color: #25213a;
+    font-size: 25px;
+}
+
+.progress-empty p {
+    margin: 0 0 20px;
+    color: #888;
+    font-size: 14px;
+}
+
+.progress-empty button {
+    padding: 11px 18px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: #6c5ce7;
+    color: white;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.progress-empty button:hover {
+    background: #5948d5;
+}
+
+.progress-loading {
+    padding: 80px;
+
+    text-align: center;
+
+    color: #888;
+    font-size: 14px;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1100px) {
+
+    .progress-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 800px) {
+
+    .progress-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .position-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .position-line {
+        width: 2px;
+        height: 20px;
+        margin: 0 auto;
+    }
+
+    .next-step-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+    }
+
+    .next-step-card button {
+        margin-left: 0;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .progress-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .overall-progress-info {
+        align-items: flex-start;
+    }
+
+    .progress-circle {
+        width: 65px;
+        height: 65px;
+    }
+
+}

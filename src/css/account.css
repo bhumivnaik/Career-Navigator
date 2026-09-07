@@ -1,0 +1,537 @@
+.account-page {
+    margin-left: 260px;
+    min-height: 100vh;
+    padding: 35px 15px;
+    width: 1100px;
+}
+
+/* HEADER */
+.account-header {
+    margin-bottom: 30px;
+}
+
+.account-header h1 {
+    margin: 0;
+    font-size: 30px;
+    color: #25213a;
+}
+
+.account-header p {
+    margin: 8px 0 0;
+    color: #777;
+    font-size: 15px;
+}
+
+/* SECTION */
+.account-section {
+    background: var(--primary);
+    border: 1px solid #e8e5f0;
+    border-radius: 16px;
+    padding: 15px;
+    margin-bottom: 25px;
+}
+
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 16px;
+    color: #ffffff;
+}
+
+
+.section-header p {
+    margin: 0;
+    color: #f0eeee;
+    font-size: 12px;
+}
+
+/* BUTTONS */
+
+.primary-button,
+.add-button,
+.edit-button {
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+
+.primary-button {
+    padding: 11px 18px;
+    background: var(--primary);
+    color: white;
+}
+
+
+.primary-button:hover {
+    background: var(--primary);
+}
+
+
+.add-button {
+    padding: 9px 15px;
+    background: #f0edff;
+    color: var(--primary);
+}
+
+
+.add-button:hover {
+    background: var(--primary-dark);
+    border: 2px solid var(--primary-light);
+    color: white;
+}
+
+
+.edit-button {
+    padding: 9px 15px;
+    background: #f3f2f7;
+    color: #555;
+}
+
+
+.edit-button:hover {
+    background: #e9e7ef;
+}
+
+
+/* LIST */
+.account-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.account-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 18px;
+    border: 1px solid #eceaf1;
+    border-radius: 11px;
+}
+
+
+.item-content {
+    min-width: 0;
+}
+
+
+.item-content h3 {
+    margin: 0 0 5px;
+    color: #29253d;
+    font-size: 17px;
+}
+
+
+.item-content p {
+    margin: 0 0 5px;
+    color: #666;
+    font-size: 14px;
+}
+
+
+.item-content span {
+    color: #999;
+    font-size: 12px;
+}
+
+
+.item-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+
+.item-actions button {
+    border: none;
+    background: #f3f1f8;
+    color: #5c5670;
+    padding: 8px 12px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+.item-actions button:hover {
+    background: #e9e6f0;
+}
+
+
+.item-actions .delete-button {
+    color: #d9534f;
+    background: #fff1f0;
+}
+
+
+.item-actions .delete-button:hover {
+    background: #ffe4e2;
+}
+
+
+/* EMPTY */
+
+.empty-section {
+    padding: 25px;
+    text-align: center;
+    color: #999;
+    background: #faf9fd;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+
+    .account-page {
+        margin-left: 0;
+        padding: 25px;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .career-goal-card,
+    .empty-goal,
+    .account-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .item-actions {
+        width: 100%;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+/* =========================================
+   PROFILE CARD
+========================================= */
+
+.profile-card {
+    position: relative;
+    background: linear-gradient(135deg,
+            var(--primary-light2) 0%,
+            var(--primary2) 100%);
+    border: 2px solid #e9e6f2;
+    border-radius: 700px;
+    padding: 35px 18px;
+    margin-bottom: 28px;
+    box-shadow:
+        0 8px 30px rgba(56, 42, 112, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.profile-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+
+/* AVATAR */
+
+.profile-avatar {
+    width: 182px;
+    height: 182px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg,
+            var(--primary-dark),
+            var(--primary-light2));
+    color: var(--primary-light);
+    font-size: 55px;
+    font-weight: 700;
+    box-shadow: 0 8px 18px rgba(158, 87, 229, 0.56);
+}
+
+.profile-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.profile-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.profile-name-row h1 {
+    margin: 0;
+    color: #25213a;
+    font-size: 27px;
+    font-weight: 700;
+}
+
+.profile-subtitle {
+    margin: 5px 0 0;
+    color: #2a2a2b;
+    font-size: 14px;
+}
+
+
+/* EDIT */
+.profile-edit-button {
+    border: 1px solid #e3def5;
+    background: #ffffff;
+    color: var(--primary-dark);
+    padding: 9px 15px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+
+.profile-edit-button:hover {
+    background: var(--primary2);
+    color: var(--primary-light);
+    border-color: #d8d0f5;
+}
+
+/* ABOUT */
+.profile-about {
+    margin: 16px 0 0;
+    max-width: 750px;
+    color: #666174;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* DIVIDER */
+.profile-divider {
+    height: 1px;
+    background: #d3cedc;
+    margin: 25px 0;
+}
+
+
+/* INFO ROW */
+.profile-info-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 15px;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+/* ICON */
+.profile-info-icon {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0edff;
+    color: var(--primary-dark);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.profile-info span {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--primary-dark);
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.profile-info strong {
+    display: block;
+    color: #403b50;
+    font-size: 13px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.profile-info a {
+    color: #403b50;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.profile-info a:hover {
+    /* text-decoration: underline; */
+    cursor: pointer;
+}
+
+.not-added {
+    color: #e3dcdc !important;
+}
+
+/* =========================================
+   CAREER DESTINATION
+========================================= */
+.career-goal-section {
+    margin-top: 40px;
+    margin-bottom: 28px;
+    background: linear-gradient(110deg,
+            #f8f6ff,
+            #ffffff);
+    border-radius: 20px;
+    border: 2px solid #bab8b8;
+}
+
+.career-goal-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: linear-gradient(135deg,
+            var(--primary-light2) 0%,
+            var(--primary2) 100%);
+    border-radius: 20px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.career-goal-heading h2 {
+    margin: 0;
+    color: #25213a;
+    font-size: 20px;
+}
+
+.career-goal-heading p {
+    margin: 5px 0 0;
+    color: #888;
+    font-size: 13px;
+}
+
+.goal-active {
+    padding: 6px 11px;
+    border-radius: 20px;
+    background: #edf8ef;
+    color: #3c984d;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.career-destination-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 24px;
+    border-radius: 17px;
+    /* border: 1px solid #e2ddf5; */
+    background: linear-gradient(110deg,
+            #f8f6ff,
+            #ffffff);
+}
+
+.career-destination-info {
+    flex: 1;
+}
+
+.career-destination-info>span {
+    display: block;
+    margin-bottom: 5px;
+    color: #8b84a0;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+}
+
+.career-destination-info h3 {
+    margin: 0;
+    color: #29243d;
+    font-size: 20px;
+}
+
+.career-destination-info p {
+    margin: 5px 0 0;
+    color: #777184;
+    font-size: 13px;
+}
+
+/* BUTTON */
+.career-view-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 17px;
+    border: none;
+    border-radius: 9px;
+    background: var(--primary-dark);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.career-view-button:hover {
+    background: var(--primary2);
+    transform: translateX(2px);
+}
+
+
+.career-view-button span {
+    font-size: 17px;
+}
+
+
+/* NO GOAL */
+
+.career-destination-card.no-goal {
+    background: #faf9fd;
+
+    border-style: dashed;
+
+    border-color: #dcd7e8;
+}
+
+
+.career-destination-card.no-goal .career-destination-icon {
+    background: #f0edff;
+}
