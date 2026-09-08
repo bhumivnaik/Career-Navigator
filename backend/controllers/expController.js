@@ -3,18 +3,54 @@ const db = require("../config/db");
 //Add
 const addExp = (req, res) => {
     const userId = req.user.user_id;
-    const { experience_type, job_title, company_name, description, start_date, end_date, skill_ids } = req.body;
 
-    const addsql = `insert into user_experience (user_id, degree, field_of_study, institution, start_year, end_year)
-    values (?,?,?,?,?,?,?)`;
+    const {
+        experience_type,
+        job_title,
+        company_name,
+        description,
+        start_date,
+        end_date,
+        skill_ids
+    } = req.body;
 
-    db.query(addsql, [userId, experience_type, job_title, company_name, description, start_date, end_date],
-        async (err, result) => {
+    const addsql = `
+        INSERT INTO user_experience
+        (
+            user_id,
+            experience_type,
+            job_title,
+            company_name,
+            description,
+            start_date,
+            end_date
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+        addsql,
+        [
+            userId,
+            experience_type,
+            job_title,
+            company_name,
+            description,
+            start_date,
+            end_date || null
+        ],
+        (err, result) => {
+
             if (err) {
-                return res.status(500).json({ message: "Failed to add education" });
-            }
+    console.error("ADD EXPERIENCE ERROR:", err);
+    return res.status(500).json({
+        message: "Failed to add experience",
+        error: err.message
+    });
+}
 
             const expId = result.insertId;
+
             if (!skill_ids || skill_ids.length === 0) {
                 return res.status(201).json({
                     message: "Experience added successfully",
@@ -22,26 +58,44 @@ const addExp = (req, res) => {
                 });
             }
 
-            const expskillsql = `insert into experience_skills (education_id, skill_id) values ?`;
-            const skillValues = skill_ids.map(skillId =>
-                [expId, skillId]
-            );
+            const expskillsql = `
+                INSERT INTO experience_skills
+                (experience_id, skill_id)
+                VALUES ?
+            `;
 
-            db.query(expskillsql, [skillValues], (err) => {
-                if (err) {
-                    return res.status(500).json({ message: "Experience added but skills could not be added" });
+            const skillValues = skill_ids.map(skillId => [
+                expId,
+                skillId
+            ]);
+
+            db.query(
+                expskillsql,
+                [skillValues],
+                (err) => {
+
+                    if (err) {
+                        console.error(
+                            "ADD EXPERIENCE SKILLS ERROR:",
+                            err
+                        );
+
+                        return res.status(500).json({
+                            message:
+                                "Experience added but skills could not be added"
+                        });
+                    }
+
+                    res.status(201).json({
+                        message:
+                            "Experience and skills added successfully",
+                        experience_id: expId
+                    });
                 }
-
-                res.status(201).json({
-                    message: "Experience and skills added successfully",
-                    experience_id: expId
-                });
-            }
             );
         }
-    )
-}
-
+    );
+};
 //Get
 const getExp = (req, res) => {
     const userId = req.user.user_id;

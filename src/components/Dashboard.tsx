@@ -355,29 +355,29 @@ function Dashboard() {
                     </div>
 
 
-                    <div className="quick-actions">
+                   <div className="quick-actions">
 
-                        <button>
-                            <span>+</span>
-                            Education
-                        </button>
+    <button onClick={() => navigate("/account?open=education")}>
+        <span>+</span>
+        Education
+    </button>
 
-                        <button>
-                            <span>+</span>
-                            Projects
-                        </button>
+    <button onClick={() => navigate("/account?open=projects")}>
+        <span>+</span>
+        Projects
+    </button>
 
-                        <button>
-                            <span>+</span>
-                            Experience
-                        </button>
+    <button onClick={() => navigate("/account?open=experience")}>
+        <span>+</span>
+        Experience
+    </button>
 
-                        <button>
-                            <span>+</span>
-                            Courses
-                        </button>
+    <button onClick={() => navigate("/account?open=courses")}>
+        <span>+</span>
+        Courses
+    </button>
 
-                    </div>
+</div>
 
                 </section>
 
