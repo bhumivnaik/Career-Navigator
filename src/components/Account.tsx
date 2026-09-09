@@ -59,6 +59,14 @@ function Account() {
     const [projects, setProjects] = useState<Project[]>([]);
 
     const [loading, setLoading] = useState(true);
+    const [showProfileForm, setShowProfileForm] = useState(false);
+
+const [profileForm, setProfileForm] = useState({
+    full_name: "",
+    github_profile_url: "",
+    linkedin_profile_url: "",
+    about: "",
+});
     const [showEducationForm, setShowEducationForm] = useState(false);
 const [editingEducation, setEditingEducation] = useState<Education | null>(null);
 
@@ -528,6 +536,42 @@ useEffect(() => {
         navigate("/account", { replace: true });
     }
 }, [location.search]);
+
+const handleEditProfile = () => {
+    setProfileForm({
+        full_name: user?.full_name || "",
+        github_profile_url: user?.github_profile_url || "",
+        linkedin_profile_url: user?.linkedin_profile_url || "",
+        about: user?.about || "",
+    });
+
+    setShowProfileForm(true);
+};
+const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+        await axios.put(
+            "http://localhost:5000/api/profile/",
+            {
+                full_name: profileForm.full_name,
+                github_profile_url: profileForm.github_profile_url,
+                linkedin_profile_url: profileForm.linkedin_profile_url,
+                about: profileForm.about,
+            },
+            { headers }
+        );
+
+        setShowProfileForm(false);
+
+        // Refresh so the updated profile information is displayed
+        window.location.reload();
+
+    } catch (error: any) {
+        console.error("PROFILE UPDATE ERROR:", error);
+        console.error("SERVER RESPONSE:", error.response?.data);
+    }
+};
     return (
         <>
             <Navbar />
@@ -561,9 +605,13 @@ useEffect(() => {
                                                 : "Build your career profile"}
                                         </p>
                                     </div>
-                                    <button className="profile-edit-button">
-                                        ✎ Edit Profile
-                                    </button>
+                                    <button
+    type="button"
+    className="profile-edit-button"
+    onClick={handleEditProfile}
+>
+    ✎ Edit Profile
+</button>
                                 </div>
                                 <p className="profile-about">
                                     {user?.about || "Add a short description about yourself to tell others about your interests, skills and career goals."}
@@ -971,6 +1019,100 @@ useEffect(() => {
                 </div>
             </div>
         ))}
+    </div>
+)}
+{showProfileForm && (
+    <div className="modal-overlay">
+        <div className="modal">
+
+            <div className="modal-header">
+                <h2>Edit Profile</h2>
+
+                <button
+                    type="button"
+                    className="modal-close"
+                    onClick={() => setShowProfileForm(false)}
+                >
+                    ×
+                </button>
+            </div>
+
+            <form onSubmit={handleSaveProfile}>
+
+                <label>Full Name</label>
+
+                <input
+                    type="text"
+                    value={profileForm.full_name}
+                    onChange={(e) =>
+                        setProfileForm({
+                            ...profileForm,
+                            full_name: e.target.value,
+                        })
+                    }
+                    required
+                />
+
+                <label>GitHub Profile URL</label>
+
+                <input
+                    type="url"
+                    value={profileForm.github_profile_url}
+                    onChange={(e) =>
+                        setProfileForm({
+                            ...profileForm,
+                            github_profile_url: e.target.value,
+                        })
+                    }
+                    placeholder="https://github.com/username"
+                />
+
+                <label>LinkedIn Profile URL</label>
+
+                <input
+                    type="url"
+                    value={profileForm.linkedin_profile_url}
+                    onChange={(e) =>
+                        setProfileForm({
+                            ...profileForm,
+                            linkedin_profile_url: e.target.value,
+                        })
+                    }
+                    placeholder="https://linkedin.com/in/username"
+                />
+
+                <label>About</label>
+
+                <textarea
+                    value={profileForm.about}
+                    onChange={(e) =>
+                        setProfileForm({
+                            ...profileForm,
+                            about: e.target.value,
+                        })
+                    }
+                    rows={4}
+                    placeholder="Tell us about yourself..."
+                />
+
+                <div className="modal-actions">
+
+                    <button
+                        type="button"
+                        onClick={() => setShowProfileForm(false)}
+                    >
+                        Cancel
+                    </button>
+
+                    <button type="submit">
+                        Save Profile
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
     </div>
 )}
                     

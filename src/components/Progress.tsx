@@ -12,7 +12,15 @@ type RoadmapSkill = {
     skill_level: "Beginner" | "Intermediate" | "Advanced";
     roadmap_stage: number;
     sequence_order: number;
-    status: "completed" | "not-started";
+    status: "completed" | "started" | "not-started";
+    progress_percentage?: number;
+};
+type SkillProgress = {
+    skill_id: number;
+    skill_name: string;
+    category: string;
+    progress_percentage: number;
+    skill_level: "Beginner" | "Developing" | "Proficient";
 };
 
 type Career = {
@@ -34,8 +42,8 @@ function Progress() {
 
     const [career, setCareer] = useState<Career | null>(null);
     const [roadmap, setRoadmap] = useState<RoadmapSkill[]>([]);
+    const [skillProgress, setSkillProgress] = useState<SkillProgress[]>([]);
     const [loading, setLoading] = useState(true);
-
     useEffect(() => {
 
         async function loadProgress() {
@@ -52,6 +60,12 @@ function Progress() {
                 const headers = {
                     Authorization: `Bearer ${token}`
                 };
+                const skillProgressResponse = await axios.get(
+    "http://localhost:5000/api/skills/progress",
+    { headers }
+);
+
+setSkillProgress(skillProgressResponse.data);
 
                 // Get career details
                 const careerResponse = await axios.get(
@@ -168,37 +182,170 @@ function Progress() {
             </div>
         );
     }
+    const getEffectiveRoadmap = () => {
 
+    return roadmap.map(skill => {
 
-    const completedSkills = roadmap.filter(
-        skill => skill.status === "completed"
-    );
+        // Skills already matched with the career
+        // are considered 100% completed
+        const isMatched = career.matched_skills.includes(
+            skill.skill_name
+        );
 
-    const remainingSkills = roadmap.filter(
-        skill => skill.status === "not-started"
-    );
+        if (isMatched) {
 
-    const totalSkills = roadmap.length;
+            return {
+                ...skill,
+                progress_percentage: 100,
+                status: "completed" as const
+            };
 
-    const completedCount = completedSkills.length;
+        }
 
-    const remainingCount = remainingSkills.length;
+        // Get tracked progress for missing skill
+        const trackedSkill = skillProgress.find(
+            progress =>
+                progress.skill_id === skill.skill_id
+        );
 
-    const progressPercentage =
-        totalSkills > 0
-            ? Math.round(
-                (completedCount / totalSkills) * 100
-            )
+        const percentage = trackedSkill
+            ? Number(trackedSkill.progress_percentage)
             : 0;
+
+        let status: "completed" | "started" | "not-started";
+
+        if (percentage >= 100) {
+
+            status = "completed";
+
+        } else if (percentage > 0) {
+
+            status = "started";
+
+        } else {
+
+            status = "not-started";
+
+        }
+
+        return {
+            ...skill,
+            progress_percentage: percentage,
+            status
+        };
+    });
+};
+
+const effectiveRoadmap = getEffectiveRoadmap();
+
+
+   const completedSkills = effectiveRoadmap.filter(
+    skill => skill.status === "completed"
+);
+
+const remainingSkills = effectiveRoadmap.filter(
+    skill => skill.status !== "completed"
+);
+
+const totalSkills = effectiveRoadmap.length;
+
+const completedCount = completedSkills.length;
+
+const remainingCount = remainingSkills.length;
+
+
+// Overall learning progress
+// Every matched skill = 100%
+// Missing skills = their actual tracked percentage
+const progressPercentage =
+    totalSkills > 0
+        ? Math.round(
+            effectiveRoadmap.reduce(
+                (total, skill) =>
+                    total + (skill.progress_percentage ?? 0),
+                0
+            ) / totalSkills
+        )
+        : 0;
+
+           const skillProgressPercentage =
+    career.total_skills > 0
+        ? Math.round(
+            (
+                (Number(career.matched_count) * 100) +
+                skillProgress.reduce(
+                    (total, skill) =>
+                        total + Number(skill.progress_percentage),
+                    0
+                )
+            ) / Number(career.total_skills)
+        )
+        : 0;
 
 
     // Group roadmap by stage
     const stages = Array.from(
-        new Set(
-            roadmap.map(skill => skill.roadmap_stage)
+    new Set(
+        effectiveRoadmap.map(
+            skill => skill.roadmap_stage
         )
-    ).sort((a, b) => a - b);
+    )
+).sort((a, b) => a - b);
 
+    const handleUpdateSkillProgress = async (
+    skillId: number,
+    percentage: number
+) => {
+    try {
+        const token = localStorage.getItem("token");
+
+        await axios.put(
+            "http://localhost:5000/api/skills/progress",
+            {
+                skill_id: skillId,
+                progress_percentage: percentage
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+       if (percentage === 100) {
+
+    window.location.reload();
+
+} else {
+
+    setSkillProgress(prev =>
+        prev.map(skill =>
+            skill.skill_id === skillId
+                ? {
+                    ...skill,
+                    progress_percentage: percentage,
+                    skill_level:
+                        percentage >= 70
+                            ? "Proficient"
+                            : percentage >= 40
+                                ? "Developing"
+                                : "Beginner"
+                }
+                : skill
+        )
+    );
+
+}
+
+    } catch (error) {
+        console.error(
+            "UPDATE SKILL PROGRESS ERROR:",
+            error
+        );
+
+        alert("Failed to update skill progress");
+    }
+};
 
     return (
 
@@ -286,6 +433,151 @@ function Progress() {
 
 
                 {/* STAT CARDS */}
+
+                {/* SKILL PROGRESS TRACKER */}
+
+<section className="skill-progress-tracker">
+
+    <div className="section-heading">
+
+        <div>
+
+            <p className="dashboard-label">
+                SKILL PROGRESS TRACKER
+            </p>
+
+            <h2>
+                Track Your Skills
+            </h2>
+
+            <p className="progress-section-description">
+                Track the skills you need to develop for your selected career.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div className="career-readiness-card">
+
+        <div>
+
+            <span className="progress-card-label">
+                OVERALL CAREER READINESS
+            </span>
+
+            <h2>
+                {skillProgressPercentage}%
+            </h2>
+
+        </div>
+
+        <div className="readiness-bar">
+
+            <div
+                className="readiness-fill"
+                style={{
+                    width: `${skillProgressPercentage}%`
+                }}
+            />
+
+        </div>
+
+    </div>
+
+
+    <div className="individual-skills">
+
+        {skillProgress.length === 0 ? (
+
+            <p className="no-skills-message">
+    You have completed all the skills required for this career.
+</p>
+        ) : (
+
+            skillProgress.map(skill => (
+
+                <div
+                    className="tracked-skill"
+                    key={skill.skill_id}
+                >
+
+                    <div className="tracked-skill-header">
+
+                        <div>
+
+                            <h3>
+                                {skill.skill_name}
+                            </h3>
+
+                            <span>
+                                {skill.category}
+                            </span>
+
+                        </div>
+
+                        <div className="tracked-skill-level">
+
+                            {skill.skill_level}
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="skill-progress-bar">
+
+                        <div
+                            className="skill-progress-fill"
+                            style={{
+                                width:
+                                    `${skill.progress_percentage}%`
+                            }}
+                        />
+
+                    </div>
+
+
+                    <div className="tracked-skill-footer">
+
+    <span>
+        {skill.progress_percentage}% complete
+    </span>
+
+    <select
+        value={skill.progress_percentage}
+        onChange={(e) =>
+            handleUpdateSkillProgress(
+                skill.skill_id,
+                Number(e.target.value)
+            )
+        }
+    >
+        <option value="0">0%</option>
+        <option value="10">10%</option>
+        <option value="20">20%</option>
+        <option value="30">30%</option>
+        <option value="40">40%</option>
+        <option value="50">50%</option>
+        <option value="60">60%</option>
+        <option value="70">70%</option>
+        <option value="80">80%</option>
+        <option value="90">90%</option>
+        <option value="100">100%</option>
+    </select>
+
+</div>
+
+                </div>
+
+            ))
+
+        )}
+
+    </div>
+
+</section>
 
 
 
@@ -389,26 +681,20 @@ function Progress() {
 
                         {stages.map(stage => {
 
-                            const stageSkills =
-                                roadmap.filter(
-                                    skill =>
-                                        skill.roadmap_stage === stage
-                                );
+                            const stageSkills = effectiveRoadmap.filter(
+    skill => skill.roadmap_stage === stage
+);
 
-                            const stageCompleted =
-                                stageSkills.filter(
-                                    skill =>
-                                        skill.status === "completed"
-                                ).length;
-
-                            const stagePercentage =
-                                stageSkills.length > 0
-                                    ? Math.round(
-                                        (stageCompleted /
-                                            stageSkills.length) *
-                                        100
-                                    )
-                                    : 0;
+const stagePercentage =
+    stageSkills.length > 0
+        ? Math.round(
+            stageSkills.reduce(
+                (total, skill) =>
+                    total + (skill.progress_percentage ?? 0),
+                0
+            ) / stageSkills.length
+        )
+        : 0;
 
                             return (
 
@@ -496,10 +782,12 @@ function Progress() {
 
                                                     <div className="skill-status">
 
-                                                        {skill.status ===
-                                                            "completed"
-                                                            ? "Completed"
-                                                            : "Not Started"}
+                                                        {skill.status === "completed"
+    ? "Completed"
+    : skill.status === "started"
+        ? "Started"
+        : "Not Started"
+}
 
                                                     </div>
 

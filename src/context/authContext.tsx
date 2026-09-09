@@ -11,7 +11,6 @@ interface User {
     about?: string;
     career_goal_id?: number | null;
     career_goal_name?: string | null;
-
 }
 
 interface AuthContextType {
@@ -21,16 +20,21 @@ interface AuthContextType {
     logout: () => void;
 }
 
-//created authcontext
 const AuthContext = createContext<AuthContextType | null>(null);
 
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
+
         const token = localStorage.getItem("token");
-        if (!token) { return; }
+
+        if (!token) {
+            return;
+        }
+
+        let cancelled = false;
 
         axios.get("http://localhost:5000/api/auth/me", {
             headers: {
@@ -38,12 +42,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
         })
             .then((response) => {
-                setUser(response.data);
+
+                // Do not restore the user if logout happened
+                // while the request was running.
+                const currentToken = localStorage.getItem("token");
+
+                if (!cancelled && currentToken === token) {
+                    setUser(response.data);
+                }
+
             })
             .catch(() => {
-                localStorage.removeItem("token");
-                setUser(null);
+
+                const currentToken = localStorage.getItem("token");
+
+                if (!cancelled && currentToken === token) {
+                    localStorage.removeItem("token");
+                    setUser(null);
+                }
+
             });
+
+        return () => {
+            cancelled = true;
+        };
+
     }, []);
 
     const login = (user: User) => {
@@ -51,19 +74,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const logout = () => {
+
+        // Remove authentication first
         localStorage.removeItem("token");
+
+        // Immediately clear user
         setUser(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, isLoggedIn: user !== null, login, logout }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                isLoggedIn: user !== null,
+                login,
+                logout
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
 }
 
-//custom hook for auth
 export const useAuth = () => {
+
     const context = useContext(AuthContext);
 
     if (!context) {

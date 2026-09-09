@@ -137,10 +137,365 @@ const saveUserSkills = (req, res) => {
     });
 
 };
+// Get skill progress for current user
+// Get missing skill progress for the user's selected career
+const getSkillProgress = (req, res) => {
 
+    const userId = req.user.user_id;
+
+    const sql = `
+        SELECT
+            s.skill_id,
+            s.skill_name,
+            s.category,
+            COALESCE(sp.progress_percentage, 0) AS progress_percentage,
+            COALESCE(sp.skill_level, 'Beginner') AS skill_level
+        FROM users u
+
+        JOIN career_skills cs
+            ON u.career_goal_id = cs.career_id
+
+        JOIN skills s
+            ON cs.skill_id = s.skill_id
+
+        LEFT JOIN user_skills us
+            ON us.user_id = u.user_id
+            AND us.skill_id = s.skill_id
+
+        LEFT JOIN skill_progress sp
+            ON sp.user_id = u.user_id
+            AND sp.skill_id = s.skill_id
+
+        WHERE u.user_id = ?
+        AND us.skill_id IS NULL
+
+        ORDER BY s.category, s.skill_name
+    `;
+
+    db.query(sql, [userId], (err, result) => {
+
+        if (err) {
+            console.error("GET SKILL PROGRESS ERROR:", err);
+
+            return res.status(500).json({
+                message: "Failed to get skill progress"
+            });
+        }
+
+        res.json(result);
+    });
+};
+// Update skill progress
+// Update progress for a missing career skill
+// Update progress for a career skill
+const updateSkillProgress = (req, res) => {
+
+    const userId = req.user.user_id;
+
+    const {
+        skill_id,
+        progress_percentage
+    } = req.body;
+
+    if (!skill_id || progress_percentage === undefined) {
+
+        return res.status(400).json({
+            message: "Skill ID and progress percentage are required"
+        });
+
+    }
+
+    if (
+        progress_percentage < 0 ||
+        progress_percentage > 100
+    ) {
+
+        return res.status(400).json({
+            message: "Progress must be between 0 and 100"
+        });
+
+    }
+
+
+    // Check that this skill belongs to
+    // the user's selected career
+    const checkSql = `
+        SELECT cs.skill_id
+        FROM users u
+        JOIN career_skills cs
+            ON u.career_goal_id = cs.career_id
+        WHERE u.user_id = ?
+        AND cs.skill_id = ?
+    `;
+
+    db.query(
+        checkSql,
+        [userId, skill_id],
+        (err, result) => {
+
+            if (err) {
+
+                console.error(
+                    "CHECK SKILL ERROR:",
+                    err
+                );
+
+                return res.status(500).json({
+                    message: "Failed to verify skill"
+                });
+
+            }
+
+
+            if (result.length === 0) {
+
+                return res.status(400).json({
+                    message:
+                        "This skill is not required for your career"
+                });
+
+            }
+
+
+            let skillLevel = "Beginner";
+
+            if (progress_percentage >= 70) {
+
+                skillLevel = "Proficient";
+
+            } else if (progress_percentage >= 40) {
+
+                skillLevel = "Developing";
+
+            }
+
+
+            // Save progress
+            const progressSql = `
+                INSERT INTO skill_progress
+                (
+                    user_id,
+                    skill_id,
+                    progress_percentage,
+                    skill_level
+                )
+                VALUES (?, ?, ?, ?)
+
+                ON DUPLICATE KEY UPDATE
+                    progress_percentage = VALUES(progress_percentage),
+                    skill_level = VALUES(skill_level)
+            `;
+
+
+            db.query(
+                progressSql,
+                [
+                    userId,
+                    skill_id,
+                    progress_percentage,
+                    skillLevel
+                ],
+                (err) => {
+
+                    if (err) {
+
+                        console.error(
+                            "UPDATE SKILL PROGRESS ERROR:",
+                            err
+                        );
+
+                        return res.status(500).json({
+                            message:
+                                "Failed to update skill progress"
+                        });
+
+                    }
+
+
+                    // If skill reaches 100%,
+                    // add it to user's completed skill set
+                    if (progress_percentage >= 100) {
+
+                        const insertSkillSql = `
+                            INSERT IGNORE INTO user_skills
+                            (
+                                user_id,
+                                skill_id
+                            )
+                            VALUES (?, ?)
+                        `;
+
+                        db.query(
+                            insertSkillSql,
+                            [userId, skill_id],
+                            (err) => {
+
+                                if (err) {
+
+                                    console.error(
+                                        "ADD COMPLETED SKILL ERROR:",
+                                        err
+                                    );
+
+                                    return res.status(500).json({
+                                        message:
+                                            "Progress saved, but failed to mark skill as completed"
+                                    });
+
+                                }
+
+                                res.json({
+                                    message:
+                                        "Skill completed successfully",
+                                    progress_percentage: 100,
+                                    skill_level: "Proficient"
+                                });
+
+                            }
+                        );
+
+                    } else {
+
+                        // If progress is below 100,
+                        // remove it from completed user skills
+                        const removeSkillSql = `
+                            DELETE FROM user_skills
+                            WHERE user_id = ?
+                            AND skill_id = ?
+                        `;
+
+                        db.query(
+                            removeSkillSql,
+                            [userId, skill_id],
+                            (err) => {
+
+                                if (err) {
+
+                                    console.error(
+                                        "REMOVE COMPLETED SKILL ERROR:",
+                                        err
+                                    );
+
+                                    return res.status(500).json({
+                                        message:
+                                            "Progress saved, but failed to update completed skill"
+                                    });
+
+                                }
+
+                                res.json({
+                                    message:
+                                        "Skill progress updated successfully",
+                                    progress_percentage,
+                                    skill_level: skillLevel
+                                });
+
+                            }
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+    );
+};
+// Get quiz questions for a selected skill
+const getQuizQuestions = (req, res) => {
+
+    const userId = req.user.user_id;
+    const skillId = req.params.skillId;
+
+    const checkSkillSql = `
+        SELECT skill_id
+        FROM user_skills
+        WHERE user_id = ?
+        AND skill_id = ?
+    `;
+
+    db.query(
+        checkSkillSql,
+        [userId, skillId],
+        (err, result) => {
+
+            if (err) {
+
+                console.error(
+                    "CHECK QUIZ SKILL ERROR:",
+                    err
+                );
+
+                return res.status(500).json({
+                    message: "Failed to verify skill"
+                });
+
+            }
+
+            if (result.length === 0) {
+
+                return res.status(403).json({
+                    message:
+                        "You can only take quizzes for your selected skills"
+                });
+
+            }
+
+            const quizSql = `
+                SELECT
+                    question_id,
+                    question_text,
+                    option_a,
+                    option_b,
+                    option_c,
+                    option_d
+                FROM quiz_questions
+                WHERE skill_id = ?
+                ORDER BY RAND()
+            `;
+
+            db.query(
+                quizSql,
+                [skillId],
+                (err, questions) => {
+
+                    if (err) {
+
+                        console.error(
+                            "GET QUIZ QUESTIONS ERROR:",
+                            err
+                        );
+
+                        return res.status(500).json({
+                            message:
+                                "Failed to get quiz questions"
+                        });
+
+                    }
+
+                    if (questions.length === 0) {
+
+                        return res.status(404).json({
+                            message:
+                                "No quiz questions available for this skill"
+                        });
+
+                    }
+
+                    res.json(questions);
+
+                }
+            );
+
+        }
+    );
+};
 
 module.exports = {
     getSkills,
     getUserSkills,
-    saveUserSkills
+    saveUserSkills,
+    getSkillProgress,
+    updateSkillProgress,
+    getQuizQuestions
 };

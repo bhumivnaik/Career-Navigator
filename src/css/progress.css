@@ -539,3 +539,145 @@
     }
 
 }
+
+/* ================================
+   SKILL PROGRESS TRACKER
+================================ */
+
+.skill-progress-tracker {
+    margin-bottom: 25px;
+}
+
+.progress-section-description {
+    margin: 6px 0 0;
+    color: #888;
+    font-size: 13px;
+}
+
+
+/* Career readiness */
+
+.career-readiness-card {
+    padding: 22px 25px;
+    background: white;
+    border: 1px solid #e8e5f0;
+    border-radius: 16px;
+    margin-bottom: 15px;
+}
+
+.career-readiness-card h2 {
+    margin: 7px 0 15px;
+    color: var(--primary-dark);
+    font-size: 32px;
+}
+
+.readiness-bar {
+    width: 100%;
+    height: 8px;
+    background: #eeeaf7;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.readiness-fill {
+    height: 100%;
+    background: var(--primary-dark);
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+
+/* Individual skills */
+
+.individual-skills {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tracked-skill {
+    padding: 18px 20px;
+    background: white;
+    border: 1px solid #e8e5f0;
+    border-radius: 14px;
+}
+
+.tracked-skill-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.tracked-skill-header h3 {
+    margin: 0 0 4px;
+    color: #302b43;
+    font-size: 15px;
+}
+
+.tracked-skill-header span {
+    color: #999;
+    font-size: 11px;
+}
+
+.tracked-skill-level {
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #f1edff;
+    color: #6c5ce7;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.skill-progress-bar {
+    width: 100%;
+    height: 7px;
+    background: #eeeaf7;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.skill-progress-fill {
+    height: 100%;
+    background: #6c5ce7;
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+.tracked-skill-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 7px;
+}
+
+.tracked-skill-footer span {
+    color: #888;
+    font-size: 11px;
+}
+
+.no-skills-message {
+    padding: 25px;
+    background: white;
+    border: 1px solid #e8e5f0;
+    border-radius: 14px;
+    color: #888;
+    font-size: 13px;
+    text-align: center;
+}
+.tracked-skill-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.tracked-skill-footer select {
+    padding: 6px 10px;
+    border: 1px solid #ddd6ee;
+    border-radius: 8px;
+    background: white;
+    color: #6c5ce7;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+}

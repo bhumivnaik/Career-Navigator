@@ -34,7 +34,13 @@ function Dashboard() {
     const [goalMatch, setGoalMatch] = useState(0);
 
     useEffect(() => {
-        async function loadDashboard() {
+
+    // Do not load dashboard when there is no logged-in user
+    if (!user) {
+        return;
+    }
+
+    async function loadDashboard() {
             try {
                 const token = localStorage.getItem("token");
 
@@ -72,7 +78,7 @@ function Dashboard() {
                             career.career_id === user?.career_goal_id
                     );
 
-                    setGoalMatch(goalCareer?.match_percentage);
+                    setGoalMatch(goalCareer?.match_percentage ?? 0);
                 } catch (error) {
                     console.error("CAREERS API ERROR:", error);
                     throw error;

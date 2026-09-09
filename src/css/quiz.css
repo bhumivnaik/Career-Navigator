@@ -1,0 +1,335 @@
+.quiz-header {
+    margin-bottom: 30px;
+}
+
+.quiz-header h1 {
+    margin: 8px 0;
+}
+
+.quiz-header p:not(.dashboard-label) {
+    color: #666;
+}
+
+.quiz-selection-card,
+.quiz-question-card,
+.quiz-result-card,
+.quiz-empty-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.quiz-selection-card {
+    max-width: 800px;
+}
+
+.quiz-selection-card h2 {
+    margin-bottom: 8px;
+}
+
+.quiz-selection-card > p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.quiz-skill-list {
+    display: grid;
+    gap: 12px;
+}
+
+.quiz-skill {
+    width: 100%;
+    padding: 18px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.quiz-skill:hover {
+    border-color: #888;
+}
+
+.quiz-skill.selected {
+    border: 2px solid #222;
+}
+
+.quiz-skill div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.quiz-skill span {
+    font-size: 14px;
+    color: #777;
+}
+
+.quiz-start-button,
+.quiz-primary-button,
+.quiz-secondary-button,
+.quiz-empty-card button {
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.quiz-start-button,
+.quiz-primary-button,
+.quiz-empty-card button {
+    background: #111;
+    color: white;
+    border: none;
+}
+
+.quiz-start-button {
+    margin-top: 25px;
+}
+
+.quiz-start-button:disabled,
+.quiz-primary-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quiz-secondary-button {
+    background: white;
+    color: #111;
+    border: 1px solid #ccc;
+}
+
+.quiz-question-card {
+    max-width: 850px;
+}
+
+.quiz-question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quiz-question-header h1 {
+    margin: 8px 0;
+}
+
+.quiz-progress-text {
+    font-weight: 600;
+}
+
+.quiz-question-progress {
+    height: 7px;
+    background: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px 0 35px;
+}
+
+.quiz-question-progress div {
+    height: 100%;
+    background: #111;
+}
+
+.quiz-question-content h2 {
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+.quiz-options {
+    display: grid;
+    gap: 12px;
+}
+
+.quiz-option {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    padding: 16px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 15px;
+}
+
+.quiz-option:hover {
+    border-color: #888;
+}
+
+.quiz-option.selected {
+    border: 2px solid #111;
+    background: #f5f5f5;
+}
+
+.quiz-option-letter {
+    font-weight: bold;
+}
+
+.quiz-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.quiz-result-card {
+    max-width: 700px;
+    text-align: center;
+}
+
+.quiz-result-card h1 {
+    font-size: 60px;
+    margin: 15px 0 5px;
+}
+
+.quiz-result-card h2 {
+    margin-bottom: 10px;
+}
+
+.quiz-score {
+    color: #666;
+}
+
+.quiz-recommendation {
+    margin: 25px 0;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+
+.quiz-result-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.quiz-empty-card {
+    max-width: 600px;
+}
+
+.quiz-empty-card p {
+    color: #666;
+}
+
+.quiz-loading {
+    padding: 40px;
+    text-align: center;
+}
+/* Fix quiz text visibility */
+
+.quiz-skill-button {
+    color: #111111 !important;
+}
+
+.quiz-skill-button * {
+    color: #111111 !important;
+}
+
+.quiz-option {
+    color: #111111 !important;
+}
+
+.quiz-option * {
+    color: #111111 !important;
+}
+
+.quiz-question {
+    color: #111111 !important;
+}
+
+.quiz-question-label,
+.quiz-percentage {
+    color: #111111 !important;
+}
+
+.quiz-card h2,
+.quiz-card p {
+    color: #111111;
+}
+/* =========================
+   QUIZ TEXT VISIBILITY FIX
+========================= */
+
+.quiz-skill {
+    color: #222222 !important;
+}
+
+.quiz-skill strong {
+    color: #222222 !important;
+}
+
+.quiz-skill span {
+    color: #666666 !important;
+}
+
+.quiz-option {
+    color: #222222 !important;
+}
+
+.quiz-option span {
+    color: #222222 !important;
+}
+
+.quiz-question-content h2 {
+    color: #111111 !important;
+}
+
+.quiz-question-header h1 {
+    color: #111111 !important;
+}
+
+.quiz-progress-text {
+    color: #111111 !important;
+}
+/* =========================
+   QUIZ WIDTH FIX
+========================= */
+
+.quiz-selection-card,
+.quiz-question-card,
+.quiz-result-card,
+.quiz-empty-card {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+}
+/* =========================
+   QUIZ RESULT SPACING FIX
+========================= */
+
+.quiz-result-card {
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+.quiz-result-card h1 {
+    font-size: 60px;
+    line-height: 1;
+    margin: 10px 0 0;
+}
+
+.quiz-result-card h2 {
+    font-size: 32px;
+    line-height: 1.2;
+    margin: 0 0 12px;
+}
+
+.quiz-score {
+    margin: 0;
+}
+
+.quiz-recommendation {
+    margin: 30px 0;
+    padding: 24px;
+}
+
+.quiz-recommendation h2 {
+    margin-bottom: 8px;
+}
+
+.quiz-result-actions {
+    margin-top: 10px;
+}
