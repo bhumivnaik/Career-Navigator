@@ -8,6 +8,7 @@ const profileRoutes = require("./routes/profileRoutes");
 const skillRoutes = require("./routes/skillsRoute");
 const careerRoutes = require("./routes/careerRoutes");
 const quizRoutes = require("./routes/quizRoute");
+const githubRoutes = require("./routes/githubRoutes");
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/careers", careerRoutes);
 app.use("/api/quiz", quizRoutes);
+app.use("/api/github", githubRoutes);
 
 app.get("/", (req, res) => {
     res.json({
