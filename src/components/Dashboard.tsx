@@ -32,6 +32,7 @@ function Dashboard() {
     const [careers, setCareers] = useState<Career[]>([]);
     const [loading, setLoading] = useState(true);
     const [goalMatch, setGoalMatch] = useState(0);
+    const [learningProgress, setLearningProgress] = useState(0);
 
     useEffect(() => {
 
@@ -41,61 +42,94 @@ function Dashboard() {
     }
 
     async function loadDashboard() {
+        try {
+            const token = localStorage.getItem("token");
+
+            const headers = {
+                Authorization: `Bearer ${token}`
+            };
+
+            // ================= USER SKILLS =================
+try {
+    const skillsResponse = await axios.get(
+        "http://localhost:5000/api/skills/user",
+        { headers }
+    );
+
+    console.log("USER SKILLS:", skillsResponse.data);
+
+    setSkills(skillsResponse.data);
+
+    // Learning Progress = learned skills out of 50
+    const totalSkills = 50;
+    const learnedSkills = skillsResponse.data.length;
+
+    const overallProgress = Math.round(
+        (learnedSkills / totalSkills) * 100
+    );
+
+    console.log(
+        "LEARNED SKILLS:",
+        learnedSkills,
+        "OUT OF:",
+        totalSkills,
+        "LEARNING PROGRESS:",
+        overallProgress
+    );
+
+    setLearningProgress(overallProgress);
+
+} catch (error) {
+    console.error("USER SKILLS API ERROR:", error);
+    throw error;
+}
+
+
+            // ================= RECOMMENDED CAREERS =================
             try {
-                const token = localStorage.getItem("token");
+                const careersResponse = await axios.get(
+                    "http://localhost:5000/api/careers/recommended",
+                    { headers }
+                );
 
-                const headers = {
-                    Authorization: `Bearer ${token}`
-                };
+                console.log(
+                    "RECOMMENDED CAREERS:",
+                    careersResponse.data
+                );
 
-                // Get user's skills
-                try {
-                    const skillsResponse = await axios.get(
-                        "http://localhost:5000/api/skills/user",
-                        { headers }
-                    );
+                setCareers(careersResponse.data);
 
-                    console.log("USER SKILLS:", skillsResponse.data);
-                    setSkills(skillsResponse.data);
+                const goalCareer = careersResponse.data.find(
+                    (career: Career) =>
+                        career.career_id === user.career_goal_id
+                );
 
-                } catch (error) {
-                    console.error("USER SKILLS API ERROR:", error);
-                    throw error;
-                }
-
-
-                // Get recommended careers
-                try {
-                    const careersResponse = await axios.get(
-                        "http://localhost:5000/api/careers/recommended",
-                        { headers }
-                    );
-
-                    console.log("RECOMMENDED CAREERS:", careersResponse.data);
-                    setCareers(careersResponse.data);
-                    const goalCareer = careersResponse.data.find(
-                        (career: Career) =>
-                            career.career_id === user?.career_goal_id
-                    );
-
-                    setGoalMatch(goalCareer?.match_percentage ?? 0);
-                } catch (error) {
-                    console.error("CAREERS API ERROR:", error);
-                    throw error;
-                }
+                setGoalMatch(
+                    goalCareer?.match_percentage ?? 0
+                );
 
             } catch (error) {
-                console.error("DASHBOARD ERROR:", error);
-                alert("Failed to load dashboard");
-
-            } finally {
-                setLoading(false);
+                console.error("CAREERS API ERROR:", error);
+                throw error;
             }
+
+
+        } catch (error) {
+            console.error(
+                "DASHBOARD ERROR:",
+                error
+            );
+
+            alert("Failed to load dashboard");
+
+        } finally {
+            setLoading(false);
         }
+    }
 
-        loadDashboard();
+    loadDashboard();
 
-    }, [user]);
+}, [user]);
 
     function handleLogout() {
         logout();
@@ -228,8 +262,8 @@ function Dashboard() {
                                 Learning Progress
                             </span>
                             <strong>
-                                0%
-                            </strong>
+    {learningProgress}%
+</strong>
 
                             <p>
                                 Overall progress

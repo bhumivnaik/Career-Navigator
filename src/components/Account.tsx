@@ -20,7 +20,7 @@ type Education = {
     institution: string;
     start_year: number;
     end_year: number;
-    skills?: string[];
+    skill_ids?: number[];
 };
 
 type Course = {
@@ -30,7 +30,7 @@ type Course = {
     description: string;
     completion_date: string;
     certificate_url?: string;
-    skills?: string[];
+    skill_ids?: number[];
 };
 
 type Experience = {
@@ -41,7 +41,7 @@ type Experience = {
     description: string;
     start_date: string;
     end_date?: string;
-    skills?: string[];
+    skill_ids?: number[];
 };
 
 type Project = {
@@ -50,7 +50,12 @@ type Project = {
     description: string;
     start_date: string;
     end_date?: string;
-    skills?: string[];
+    skill_ids?: number[];
+};
+type Skill = {
+    skill_id: number;
+    skill_name: string;
+    category: string;
 };
 
 function Account() {
@@ -67,6 +72,7 @@ function Account() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [experience, setExperience] = useState<Experience[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
+    const [skills, setSkills] = useState<Skill[]>([]);
 
     const [loading, setLoading] = useState(true);
     const [showProfileForm, setShowProfileForm] = useState(false);
@@ -81,43 +87,47 @@ function Account() {
     const [editingEducation, setEditingEducation] = useState<Education | null>(null);
 
     const [educationForm, setEducationForm] = useState({
-        degree: "",
-        field_of_study: "",
-        institution: "",
-        start_year: "",
-        end_year: "",
-    });
+    degree: "",
+    field_of_study: "",
+    institution: "",
+    start_year: "",
+    end_year: "",
+    skill_ids: [] as number[],
+});
 
     const [showCourseForm, setShowCourseForm] = useState(false);
     const [editingCourse, setEditingCourse] = useState<Course | null>(null);
 
     const [courseForm, setCourseForm] = useState({
-        course_name: "",
-        provider: "",
-        description: "",
-        completion_date: "",
-        certificate_url: "",
-    });
+    course_name: "",
+    provider: "",
+    description: "",
+    completion_date: "",
+    certificate_url: "",
+    skill_ids: [] as number[],
+});
     const [showExperienceForm, setShowExperienceForm] = useState(false);
     const [editingExperience, setEditingExperience] = useState<Experience | null>(null);
 
     const [experienceForm, setExperienceForm] = useState({
-        experience_type: "",
-        job_title: "",
-        company_name: "",
-        description: "",
-        start_date: "",
-        end_date: "",
-    });
+    experience_type: "",
+    job_title: "",
+    company_name: "",
+    description: "",
+    start_date: "",
+    end_date: "",
+    skill_ids: [] as number[],
+});
     const [showProjectForm, setShowProjectForm] = useState(false);
     const [editingProject, setEditingProject] = useState<Project | null>(null);
 
     const [projectForm, setProjectForm] = useState({
-        project_name: "",
-        description: "",
-        start_date: "",
-        end_date: "",
-    });
+    project_name: "",
+    description: "",
+    start_date: "",
+    end_date: "",
+    skill_ids: [] as number[],
+});
 
     const token = localStorage.getItem("token");
 
@@ -195,11 +205,12 @@ function Account() {
         try {
 
             const [
-                educationResponse,
-                coursesResponse,
-                experienceResponse,
-                projectsResponse
-            ] = await Promise.all([
+    educationResponse,
+    coursesResponse,
+    experienceResponse,
+    projectsResponse,
+    skillsResponse
+] = await Promise.all([
 
                 axios.get(
                     "http://localhost:5000/api/profile/education",
@@ -219,7 +230,12 @@ function Account() {
                 axios.get(
                     "http://localhost:5000/api/profile/project",
                     { headers }
-                )
+                ),
+
+                axios.get(
+    "http://localhost:5000/api/skills",
+    { headers }
+)
 
             ]);
 
@@ -227,6 +243,7 @@ function Account() {
             setCourses(coursesResponse.data);
             setExperience(experienceResponse.data);
             setProjects(projectsResponse.data);
+            setSkills(skillsResponse.data);
 
             const githubResponse = await axios.get(
                 "http://localhost:5000/api/github/sync",
@@ -252,12 +269,13 @@ function Account() {
         setEditingEducation(null);
 
         setEducationForm({
-            degree: "",
-            field_of_study: "",
-            institution: "",
-            start_year: "",
-            end_year: "",
-        });
+    degree: "",
+    field_of_study: "",
+    institution: "",
+    start_year: "",
+    end_year: "",
+    skill_ids: [],
+});
 
         setShowEducationForm(true);
     };
@@ -271,6 +289,7 @@ function Account() {
             institution: item.institution,
             start_year: item.start_year.toString(),
             end_year: item.end_year.toString(),
+            skill_ids: item.skill_ids || [],
         });
 
         setShowEducationForm(true);
@@ -286,7 +305,7 @@ function Account() {
                 institution: educationForm.institution,
                 start_year: Number(educationForm.start_year),
                 end_year: Number(educationForm.end_year),
-                skill_ids: [],
+                skill_ids: educationForm.skill_ids,
             };
 
             if (editingEducation) {
@@ -335,13 +354,14 @@ function Account() {
     const handleAddCourse = () => {
         setEditingCourse(null);
 
-        setCourseForm({
-            course_name: "",
-            provider: "",
-            description: "",
-            completion_date: "",
-            certificate_url: "",
-        });
+       setCourseForm({
+    course_name: "",
+    provider: "",
+    description: "",
+    completion_date: "",
+    certificate_url: "",
+    skill_ids: [],
+});
 
         setShowCourseForm(true);
     };
@@ -354,6 +374,7 @@ function Account() {
             description: item.description,
             completion_date: item.completion_date,
             certificate_url: item.certificate_url || "",
+            skill_ids: item.skill_ids || [],
         });
 
         setShowCourseForm(true);
@@ -368,7 +389,7 @@ function Account() {
                 description: courseForm.description,
                 completion_date: courseForm.completion_date,
                 certificate_url: courseForm.certificate_url,
-                skill_ids: [],
+                skill_ids: courseForm.skill_ids,
             };
 
             if (editingCourse) {
@@ -417,14 +438,15 @@ function Account() {
     const handleAddExperience = () => {
         setEditingExperience(null);
 
-        setExperienceForm({
-            experience_type: "",
-            job_title: "",
-            company_name: "",
-            description: "",
-            start_date: "",
-            end_date: "",
-        });
+       setExperienceForm({
+    experience_type: "",
+    job_title: "",
+    company_name: "",
+    description: "",
+    start_date: "",
+    end_date: "",
+    skill_ids: [],
+});
 
         setShowExperienceForm(true);
     };
@@ -438,6 +460,7 @@ function Account() {
             description: item.description,
             start_date: item.start_date,
             end_date: item.end_date || "",
+            skill_ids: item.skill_ids || [],
         });
 
         setShowExperienceForm(true);
@@ -453,7 +476,7 @@ function Account() {
                 description: experienceForm.description,
                 start_date: experienceForm.start_date,
                 end_date: experienceForm.end_date || null,
-                skill_ids: [],
+                skill_ids: experienceForm.skill_ids,
             };
 
             console.log("SAVE EXPERIENCE CLICKED");
@@ -512,11 +535,12 @@ function Account() {
         setEditingProject(null);
 
         setProjectForm({
-            project_name: "",
-            description: "",
-            start_date: "",
-            end_date: "",
-        });
+    project_name: "",
+    description: "",
+    start_date: "",
+    end_date: "",
+    skill_ids: [],
+});
 
         setShowProjectForm(true);
     };
@@ -529,6 +553,7 @@ function Account() {
             description: item.description,
             start_date: item.start_date,
             end_date: item.end_date || "",
+            skill_ids: item.skill_ids || [],
         });
 
         setShowProjectForm(true);
@@ -543,7 +568,7 @@ function Account() {
                 description: projectForm.description,
                 start_date: projectForm.start_date,
                 end_date: projectForm.end_date || null,
-                skill_ids: [],
+                skill_ids: projectForm.skill_ids,
             };
 
             if (editingProject) {
@@ -651,6 +676,67 @@ function Account() {
             console.error("SERVER RESPONSE:", error.response?.data);
         }
     };
+    const toggleSkill = (
+    skillId: number,
+    selectedSkills: number[],
+    setSelectedSkills: (skills: number[]) => void
+) => {
+    if (selectedSkills.includes(skillId)) {
+        setSelectedSkills(
+            selectedSkills.filter(id => id !== skillId)
+        );
+    } else {
+        setSelectedSkills([
+            ...selectedSkills,
+            skillId
+        ]);
+    }
+};
+const renderSkillSelector = (
+    selectedSkills: number[],
+    setSelectedSkills: (skills: number[]) => void,
+    title: string,
+    description: string
+) => (
+    <div className="skill-selector">
+
+        <label>{title}</label>
+
+        <p className="skill-selector-description">
+            {description}
+        </p>
+
+        <div className="skill-checkbox-list">
+
+            {skills.map((skill) => (
+
+                <label
+                    key={skill.skill_id}
+                    className="skill-checkbox"
+                >
+
+                    <input
+                        type="checkbox"
+                        checked={selectedSkills.includes(skill.skill_id)}
+                        onChange={() =>
+                            toggleSkill(
+                                skill.skill_id,
+                                selectedSkills,
+                                setSelectedSkills
+                            )
+                        }
+                    />
+
+                    <span>{skill.skill_name}</span>
+
+                </label>
+
+            ))}
+
+        </div>
+
+    </div>
+);
     return (
         <>
             <Navbar />
@@ -1448,6 +1534,16 @@ function Account() {
                                     }
                                     required
                                 />
+                                {renderSkillSelector(
+    educationForm.skill_ids,
+    (selectedSkills) =>
+        setEducationForm({
+            ...educationForm,
+            skill_ids: selectedSkills,
+        }),
+    "Skills Learned",
+    "Select the skills you learned during this education."
+)}
 
                                 <div className="modal-actions">
 
@@ -1567,6 +1663,16 @@ function Account() {
                                     }
                                     placeholder="https://..."
                                 />
+                                {renderSkillSelector(
+    courseForm.skill_ids,
+    (selectedSkills) =>
+        setCourseForm({
+            ...courseForm,
+            skill_ids: selectedSkills,
+        }),
+    "Skills Learned",
+    "Select the skills you learned from this course."
+)}
 
 
                                 <div className="modal-actions">
@@ -1706,6 +1812,16 @@ function Account() {
                                         })
                                     }
                                 />
+                                {renderSkillSelector(
+    experienceForm.skill_ids,
+    (selectedSkills) =>
+        setExperienceForm({
+            ...experienceForm,
+            skill_ids: selectedSkills,
+        }),
+    "Skills Gained",
+    "Select the skills you gained or used during this experience."
+)}
 
 
                                 <div className="modal-actions">
@@ -1808,6 +1924,16 @@ function Account() {
                                         })
                                     }
                                 />
+                                {renderSkillSelector(
+    projectForm.skill_ids,
+    (selectedSkills) =>
+        setProjectForm({
+            ...projectForm,
+            skill_ids: selectedSkills,
+        }),
+    "Skills Used / Demonstrated",
+    "Select the skills you used or demonstrated while working on this project."
+)}
 
                                 <div className="modal-actions">
 
