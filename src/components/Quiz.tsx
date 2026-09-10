@@ -64,7 +64,38 @@ function Quiz() {
                     { headers }
                 );
 
-                setSkills(response.data);
+                const userSkills: Skill[] = response.data;
+
+                // Check which skills have quiz questions
+                const quizSkills: Skill[] = [];
+
+                for (const skill of userSkills) {
+
+                    try {
+
+                        const quizResponse = await axios.get(
+                            `http://localhost:5000/api/skills/quiz/${skill.skill_id}`,
+                            { headers }
+                        );
+
+                        if (
+                            quizResponse.data &&
+                            quizResponse.data.length > 0
+                        ) {
+                            quizSkills.push(skill);
+                        }
+
+                    } catch (error) {
+
+                        console.error(
+                            `QUIZ CHECK ERROR FOR ${skill.skill_name}:`,
+                            error
+                        );
+
+                    }
+                }
+
+                setSkills(quizSkills);
 
             } catch (error) {
 
@@ -101,6 +132,11 @@ function Quiz() {
                 `http://localhost:5000/api/skills/quiz/${selectedSkill}`,
                 { headers }
             );
+
+            if (!response.data || response.data.length === 0) {
+                alert("No quiz is available for this skill yet.");
+                return;
+            }
 
             setQuestions(response.data);
             setCurrentQuestion(0);
@@ -491,7 +527,7 @@ function Quiz() {
                             {Math.round(
                                 ((currentQuestion + 1) /
                                     questions.length) *
-                                    100
+                                100
                             )}%
                         </span>
 
@@ -502,11 +538,10 @@ function Quiz() {
 
                         <div
                             style={{
-                                width: `${
-                                    ((currentQuestion + 1) /
-                                        questions.length) *
+                                width: `${((currentQuestion + 1) /
+                                    questions.length) *
                                     100
-                                }%`
+                                    }%`
                             }}
                         />
 
