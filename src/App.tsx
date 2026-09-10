@@ -9,6 +9,7 @@ import Progress from './components/Progress';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Account from "./components/Account";
 import Quiz from "./components/Quiz";
+import CareerCompare from "./components/CareerCompare";
 
 function App() {
   return (
@@ -20,8 +21,9 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/skills-setup" element={<SkillsSetup />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/careers" element={<Career />} />
-        <Route path="/careers/:careerId" element={<CareerDetails />} />
+       <Route path="/careers" element={<Career />} />
+       <Route path="/careers/compare" element={<CareerCompare />} />
+       <Route path="/careers/:careerId" element={<CareerDetails />} />
         <Route path="/progress" element={<Progress />} />
         <Route path="/account" element={<Account />} />
         <Route path="/quiz" element={<Quiz />} />

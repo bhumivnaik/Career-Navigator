@@ -172,4 +172,126 @@ const setCareerGoal = (req, res) => {
     });
 };
 
-module.exports = { getCareers, getCareerbyId, getCareerRoadmap, setCareerGoal };
+const getCareerComparison = (req, res) => {
+    const userId = req.user.user_id;
+
+    const ids = req.query.ids
+        ? req.query.ids.split(",").map(Number).filter(Boolean)
+        : [];
+
+    if (ids.length < 2 || ids.length > 3) {
+        return res.status(400).json({
+            message: "Please select 2 or 3 careers to compare"
+        });
+    }
+
+    const placeholders = ids.map(() => "?").join(",");
+
+    const sql = `
+        SELECT
+            c.career_id,
+            c.career_name,
+            c.description,
+            c.category,
+            cs.skill_id,
+            s.skill_name,
+            cs.skill_level,
+            cs.roadmap_stage,
+            cs.sequence_order,
+            CASE
+                WHEN us.skill_id IS NOT NULL THEN 1
+                ELSE 0
+            END AS has_skill
+        FROM careers c
+        JOIN career_skills cs
+            ON c.career_id = cs.career_id
+        JOIN skills s
+            ON cs.skill_id = s.skill_id
+        LEFT JOIN user_skills us
+            ON cs.skill_id = us.skill_id
+            AND us.user_id = ?
+        WHERE c.career_id IN (${placeholders})
+        ORDER BY
+            c.career_id,
+            cs.roadmap_stage,
+            cs.sequence_order
+    `;
+
+    db.query(sql, [userId, ...ids], (err, results) => {
+
+        if (err) {
+            console.error("CAREER COMPARISON ERROR:", err);
+
+            return res.status(500).json({
+                message: "Failed to compare careers"
+            });
+        }
+
+        const comparison = ids.map((careerId) => {
+
+            const careerRows = results.filter(
+                row => row.career_id === careerId
+            );
+
+            if (careerRows.length === 0) {
+                return null;
+            }
+
+            const first = careerRows[0];
+
+            const matchedSkills = careerRows
+                .filter(row => row.has_skill === 1)
+                .map(row => row.skill_name);
+
+            const missingSkills = careerRows
+                .filter(row => row.has_skill === 0)
+                .map(row => row.skill_name);
+
+            const totalSkills = careerRows.length;
+
+            const matchPercentage = totalSkills > 0
+                ? Math.round(
+                    (matchedSkills.length / totalSkills) * 100
+                )
+                : 0;
+
+            return {
+                career_id: first.career_id,
+                career_name: first.career_name,
+                description: first.description,
+                category: first.category,
+
+                match_percentage: matchPercentage,
+
+                matched_count: matchedSkills.length,
+                total_skills: totalSkills,
+
+                matched_skills: matchedSkills,
+                missing_skills: missingSkills,
+
+                learning_requirements: missingSkills,
+
+                roadmap: careerRows.map(row => ({
+                    skill_id: row.skill_id,
+                    skill_name: row.skill_name,
+                    skill_level: row.skill_level,
+                    roadmap_stage: row.roadmap_stage,
+                    sequence_order: row.sequence_order,
+                    status: row.has_skill === 1
+                        ? "completed"
+                        : "required"
+                }))
+            };
+        }).filter(Boolean);
+
+        res.json(comparison);
+    });
+};
+
+module.exports = {
+    getCareers,
+    getCareerbyId,
+    getCareerRoadmap,
+    setCareerGoal,
+    getCareerComparison
+};

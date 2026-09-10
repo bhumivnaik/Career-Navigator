@@ -606,3 +606,89 @@
 .goal-confirm-button:hover {
     background: #5948d5;
 }
+.career-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.compare-button {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    color: var(--primary);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.compare-button:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.compare-button.selected {
+    background: var(--primary);
+    color: white;
+}
+
+.compare-bar {
+    position: sticky;
+    bottom: 20px;
+    z-index: 100;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 30px;
+    padding: 18px 22px;
+
+    background: var(--primary);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+.compare-bar div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.compare-bar strong {
+    color: white;
+    font-size: 15px;
+}
+
+.compare-bar span {
+    color: var(--primary-light);
+    font-size: 12px;
+}
+
+.compare-bar button {
+    padding: 11px 20px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: white;
+    color: var(--primary);
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.compare-bar button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
