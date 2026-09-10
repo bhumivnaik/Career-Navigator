@@ -3,15 +3,33 @@ import axios from "axios";
 import { useAuth } from "../context/authContext";
 import Navbar from "../components/ui/Navbar";
 import "../css/account.css";
+import {
+    GraduationCap, Briefcase, FolderGit2, BookOpen,
+    Pencil,
+    Trash2
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import EducationForm from "../components/forms/EducationForm";
+import CourseForm from "../components/forms/CourseForm";
+import ExperienceForm from "../components/forms/ExperienceForm";
+import ProjectForm from "../components/forms/ProjectForm";
 
-type Education = {
+type GithubData = {
+    github_username: string;
+    repository_count: number;
+    detected_languages: string[];
+    detected_technologies: string[];
+    synced_at: string;
+};
+
+export type Education = {
     education_id: number;
     degree: string;
     field_of_study: string;
     institution: string;
     start_year: number;
     end_year: number;
-    skills?: string[];
+    skills?: [];
 };
 
 type Course = {
@@ -21,10 +39,10 @@ type Course = {
     description: string;
     completion_date: string;
     certificate_url?: string;
-    skills?: string[];
+    skills?: number[];
 };
 
-type Experience = {
+export type Experience = {
     experience_id: number;
     experience_type: string;
     job_title: string;
@@ -39,13 +57,14 @@ type Project = {
     project_id: number;
     project_name: string;
     description: string;
+    technologies_used: string;
     start_date: string;
-    end_date?: string;
-    skills?: string[];
+    end_date: string;
+    skills?: number[];
 };
 
 function Account() {
-
+    const navigate = useNavigate();
     const { user, login } = useAuth();
 
     const [education, setEducation] = useState<Education[]>([]);
@@ -54,68 +73,150 @@ function Account() {
     const [projects, setProjects] = useState<Project[]>([]);
 
     const [loading, setLoading] = useState(true);
+    const [githubData, setGithubData] =
+        useState<GithubData | null>(null);
+    const [githubSyncing, setGithubSyncing] =
+        useState(false);
+
+    //for form add
+    const [showEducationForm, setShowEducationForm] = useState(false);
+    const [showCourseForm, setShowCourseForm] = useState(false);
+    const [showExperienceForm, setShowExperienceForm] = useState(false);
+    const [showProjectForm, setShowProjectForm] = useState(false);
+
+    //for form edit
+    const [selectedEducation, setSelectedEducation] = useState<Education | null>(null);
+    const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+    const [selectedExperience, setSelectedExperience] = useState<Experience | null>(null);
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+    //for form delete
+    const [deleteEducationItem, setDeleteEducationItem] =
+        useState<Education | null>(null);
+    const [deleteExperience, setDeleteExperience] =
+        useState<Experience | null>(null);
+    const [deleteProject, setDeleteProject] = useState<Project | null>(null);
+    const [deleteCourse, setDeleteCourse] =
+        useState<Course | null>(null);
 
     const token = localStorage.getItem("token");
-
     const headers = {
         Authorization: `Bearer ${token}`
     };
 
     useEffect(() => {
-
         loadAccountData();
-
     }, []);
 
-    const loadAccountData = async () => {
+    const handleGithubSync = async () => {
 
         try {
 
+            setGithubSyncing(true);
+
+            const token =
+                localStorage.getItem("token");
+
+
+            const response = await axios.post(
+                "http://localhost:5000/api/github/sync",
+                {},
+                {
+                    headers: {
+                        Authorization:
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+            console.log("GITHUB SYNC RESPONSE:", response.data);
+            setGithubData({
+                github_username:
+                    response.data.github_username,
+
+                repository_count:
+                    response.data.repositories,
+
+                detected_languages:
+                    response.data.detected_languages,
+
+                detected_technologies:
+                    response.data.detected_technologies,
+
+                synced_at:
+                    new Date().toISOString()
+            });
+
+
+            await loadAccountData();
+
+        } catch (error: any) {
+
+            console.error(
+                "GitHub sync error:",
+                error
+            );
+
+            alert(
+                error.response?.data?.message ||
+                "Failed to synchronize GitHub"
+            );
+
+        } finally {
+
+            setGithubSyncing(false);
+        }
+    };
+
+    const loadAccountData = async () => {
+        try {
             const [
                 educationResponse,
                 coursesResponse,
                 experienceResponse,
                 projectsResponse
             ] = await Promise.all([
-
                 axios.get(
-                    "http://localhost:5000/api/education",
+                    "http://localhost:5000/api/profile/education",
                     { headers }
                 ),
 
                 axios.get(
-                    "http://localhost:5000/api/courses",
+                    "http://localhost:5000/api/profile/course",
                     { headers }
                 ),
 
                 axios.get(
-                    "http://localhost:5000/api/experience",
+                    "http://localhost:5000/api/profile/experience",
                     { headers }
                 ),
 
                 axios.get(
-                    "http://localhost:5000/api/projects",
+                    "http://localhost:5000/api/profile/project",
                     { headers }
                 )
-
             ]);
-
             setEducation(educationResponse.data);
             setCourses(coursesResponse.data);
             setExperience(experienceResponse.data);
             setProjects(projectsResponse.data);
 
+            const githubResponse = await axios.get(
+                "http://localhost:5000/api/github/sync",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            setGithubData(githubResponse.data);
         } catch (error) {
-
             console.error("ACCOUNT DATA ERROR:", error);
-
         } finally {
-
             setLoading(false);
-
         }
     };
-
 
     return (
         <>
@@ -131,7 +232,6 @@ function Account() {
 
 
                 {/* PROFILE */}
-
                 <section className="profile-card">
                     <div className="profile-avatar">
                         {user?.full_name?.split(" ").map((name) => name[0])
@@ -150,7 +250,7 @@ function Account() {
                                                 : "Build your career profile"}
                                         </p>
                                     </div>
-                                    <button className="profile-edit-button">
+                                    <button className="profile-edit-button" onClick={() => { navigate("/profile") }}>
                                         ✎ Edit Profile
                                     </button>
                                 </div>
@@ -176,19 +276,23 @@ function Account() {
                                 <div className="profile-info-icon">
                                     ◉
                                 </div>
+
                                 <div>
                                     <span>GitHub</span>
+
                                     {user?.github_profile_url ? (
-                                        <a
-                                            href={user.github_profile_url}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                        >
-                                            View Profile ↗
-                                        </a>
+                                        <>
+                                            <a
+                                                href={user.github_profile_url}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                            >
+                                                View Profile ↗
+                                            </a>
+                                        </>
                                     ) : (
                                         <strong className="not-added">
-                                            Not added
+                                            Add GitHub profile first
                                         </strong>
                                     )}
                                 </div>
@@ -258,6 +362,179 @@ function Account() {
                     )}
                 </section>
 
+
+                <section className="github-section">
+                    {!githubData ? (
+
+                        <div className="github-empty">
+
+                            <div className="github-empty-icon">
+                                ◉
+                            </div>
+
+                            <div>
+                                <h3>Connect your GitHub activity</h3>
+
+                                <p>
+                                    Sync your repositories to automatically
+                                    detect the technologies you use.
+                                </p>
+                            </div>
+
+                            {user?.github_profile_url && (
+                                <button
+                                    className="github-sync-main-button"
+                                    onClick={handleGithubSync}
+                                    disabled={githubSyncing}
+                                >
+                                    {githubSyncing
+                                        ? "Syncing..."
+                                        : "Sync GitHub"}
+                                </button>
+                            )}
+
+                        </div>
+
+                    ) : (
+
+                        <div className="github-analysis">
+
+
+                            {/* GitHub overview */}
+
+                            <div className="github-overview">
+
+                                <div className="github-profile">
+
+                                    <div className="github-avatar">
+                                        ◉
+                                    </div>
+
+                                    <div>
+                                        <span>GITHUB PROFILE</span>
+
+                                        <h3>
+                                            @{githubData.github_username}
+                                        </h3>
+
+                                        <a
+                                            href={user?.github_profile_url || "#"}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                        >
+                                            View GitHub Profile ↗
+                                        </a>
+                                    </div>
+
+                                </div>
+
+
+                                <div className="github-stat">
+
+                                    <strong>
+                                        {githubData.repository_count}
+                                    </strong>
+
+                                    <span>
+                                        Repositories
+                                    </span>
+
+                                </div>
+
+
+                                <button
+                                    className="github-sync-main-button"
+                                    onClick={handleGithubSync}
+                                    disabled={githubSyncing}
+                                >
+                                    {githubSyncing
+                                        ? "Syncing..."
+                                        : "Sync GitHub"}
+                                </button>
+
+                            </div>
+
+
+                            {/* Extracted Skills */}
+
+                            <div className="github-result-block">
+
+                                <div className="github-result-title">
+
+                                    <div>
+                                        <h3>Extracted Skills</h3>
+                                    </div>
+                                    <span>
+                                        {
+                                            [
+                                                ...githubData.detected_languages,
+                                                ...githubData.detected_technologies
+                                            ].filter(
+                                                (skill, index, array) =>
+                                                    array.indexOf(skill) === index
+                                            ).length
+                                        }
+                                    </span>
+
+                                </div>
+                                {[
+                                    ...githubData.detected_languages,
+                                    ...githubData.detected_technologies
+                                ].filter(
+                                    (skill, index, array) =>
+                                        array.indexOf(skill) === index
+                                ).length > 0 ? (
+
+                                    <div className="github-tags">
+
+                                        {[
+                                            ...githubData.detected_languages,
+                                            ...githubData.detected_technologies
+                                        ]
+                                            .filter(
+                                                (skill, index, array) =>
+                                                    array.indexOf(skill) === index
+                                            )
+                                            .map((skill) => (
+
+                                                <span
+                                                    className="github-tag technology-tag"
+                                                    key={skill}
+                                                >
+                                                    {skill}
+                                                </span>
+
+                                            ))}
+
+                                    </div>
+
+                                ) : (
+
+                                    <p className="github-no-data">
+                                        No skills detected from GitHub.
+                                    </p>
+
+                                )}
+
+                            </div>
+
+
+                            <div className="github-last-sync">
+
+                                Last synchronized:{" "}
+
+                                {new Date(
+                                    githubData.synced_at
+                                ).toLocaleString()}
+
+                            </div>
+
+                        </div>
+
+                    )}
+
+                </section>
+
                 {/* EDUCATION */}
                 <section className="account-section">
                     <div className="section-header">
@@ -265,11 +542,10 @@ function Account() {
                             <h2>Education</h2>
                             <p>Your educational background</p>
                         </div>
-                        <button className="add-button">
+                        <button className="add-button" onClick={() => { setSelectedEducation(null); setShowEducationForm(true); }}>
                             + Add Education
                         </button>
                     </div>
-                    <div className="profile-divider"></div>
                     {education.length === 0 ? (
                         <div className="empty-section">
                             No education added yet.
@@ -281,46 +557,51 @@ function Account() {
                                     className="account-item"
                                     key={item.education_id}
                                 >
+                                    <div className="item-icon">
+                                        <GraduationCap size={20} />
+                                    </div>
                                     <div className="item-content">
                                         <h3>
                                             {item.degree}
                                         </h3>
-
                                         <p>
                                             {item.field_of_study}
                                         </p>
-
                                         <span>
                                             {item.institution}
-                                            {" • "}
+                                        </span>
+                                        {/* <span>
                                             {item.start_year}
                                             {" - "}
                                             {item.end_year}
-                                        </span>
-
+                                        </span> */}
                                     </div>
-
 
                                     <div className="item-actions">
-
-                                        <button>
-                                            Edit
+                                        <button title="Edit education" className="icon-button edit-icon" onClick={() => { setSelectedEducation(item); setDeleteEducationItem(null); setShowEducationForm(true); }}>
+                                            <Pencil size={14} />
                                         </button>
-
-                                        <button className="delete-button">
-                                            Delete
+                                        <button title="Delete education" className="icon-button delete-icon" onClick={() => { setDeleteEducationItem(item); setShowEducationForm(true); }}>
+                                            <Trash2 size={14} />
                                         </button>
-
                                     </div>
-
                                 </div>
-
                             ))}
-
                         </div>
-
                     )}
 
+                    {showEducationForm && (
+                        <EducationForm
+                            education={selectedEducation}
+                            deleteEducation={deleteEducationItem}
+                            onClose={() => {
+                                setShowEducationForm(false);
+                                setSelectedEducation(null);
+                                setDeleteEducationItem(null);
+                            }}
+                            onSuccess={loadAccountData}
+                        />
+                    )}
                 </section>
 
                 {/* COURSES */}
@@ -330,11 +611,17 @@ function Account() {
                             <h2>Courses & Certifications</h2>
                             <p>Courses and certifications you completed</p>
                         </div>
-                        <button className="add-button">
+                        <button
+                            className="add-button"
+                            onClick={() => {
+                                setSelectedCourse(null);
+                                setDeleteCourse(null);
+                                setShowCourseForm(true);
+                            }}
+                        >
                             + Add Course
                         </button>
-                    </div><hr />
-                    <br />
+                    </div>
 
                     {courses.length === 0 ? (
                         <div className="empty-section">
@@ -347,7 +634,9 @@ function Account() {
                                     className="account-item"
                                     key={item.course_id}
                                 >
-
+                                    <div className="item-icon">
+                                        <BookOpen size={20} />
+                                    </div>
                                     <div className="item-content">
 
                                         <h3>
@@ -368,15 +657,30 @@ function Account() {
 
 
                                     <div className="item-actions">
-
-                                        <button>
-                                            Edit
+                                        <button
+                                            title="Edit course"
+                                            className="icon-button edit-icon"
+                                            onClick={() => {
+                                                setSelectedCourse(item);
+                                                setDeleteCourse(null);
+                                                setShowCourseForm(true);
+                                            }}
+                                        >
+                                            <Pencil size={14} />
                                         </button>
 
-                                        <button className="delete-button">
-                                            Delete
-                                        </button>
 
+                                        <button
+                                            title="Delete course"
+                                            className="icon-button delete-icon"
+                                            onClick={() => {
+                                                setDeleteCourse(item);
+                                                setSelectedCourse(null);
+                                                setShowCourseForm(true);
+                                            }}
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
                                     </div>
 
                                 </div>
@@ -386,7 +690,22 @@ function Account() {
                         </div>
 
                     )}
+                    {showCourseForm && (
 
+                        <CourseForm
+                            course={selectedCourse}
+                            deleteCourse={deleteCourse}
+
+                            onClose={() => {
+                                setShowCourseForm(false);
+                                setSelectedCourse(null);
+                                setDeleteCourse(null);
+                            }}
+
+                            onSuccess={loadAccountData}
+                        />
+
+                    )}
                 </section>
 
                 {/* EXPERIENCE */}
@@ -399,13 +718,11 @@ function Account() {
                             <p>Your internships and work experience</p>
                         </div>
 
-                        <button className="add-button">
+                        <button className="add-button" onClick={() => { setSelectedExperience(null); setShowExperienceForm(true); }}>
                             + Add Experience
                         </button>
 
                     </div>
-                    <hr />
-                    <br />
 
                     {experience.length === 0 ? (
 
@@ -423,7 +740,9 @@ function Account() {
                                     className="account-item"
                                     key={item.experience_id}
                                 >
-
+                                    <div className="item-icon">
+                                        <Briefcase size={20} />
+                                    </div>
                                     <div className="item-content">
 
                                         <h3>
@@ -435,22 +754,40 @@ function Account() {
                                         </p>
 
                                         <span>
+                                            {item.experience_type}
+                                        </span>
+                                        {/* {" • "}
                                             {item.start_date}
                                             {" - "}
                                             {item.end_date || "Present"}
-                                        </span>
+                                        </span> */}
 
                                     </div>
 
 
                                     <div className="item-actions">
-
-                                        <button>
-                                            Edit
+                                        <button
+                                            title="Edit experience"
+                                            className="icon-button edit-icon"
+                                            onClick={() => {
+                                                setSelectedExperience(item);
+                                                setDeleteExperience(null);
+                                                setShowExperienceForm(true);
+                                            }}
+                                        >
+                                            <Pencil size={14} />
                                         </button>
 
-                                        <button className="delete-button">
-                                            Delete
+                                        <button
+                                            title="Delete experience"
+                                            className="icon-button delete-icon"
+                                            onClick={() => {
+                                                setDeleteExperience(item);
+                                                setSelectedExperience(null);
+                                                setShowExperienceForm(true);
+                                            }}
+                                        >
+                                            <Trash2 size={14} />
                                         </button>
 
                                     </div>
@@ -462,29 +799,35 @@ function Account() {
                         </div>
 
                     )}
-
+                    {showExperienceForm && (
+                        <ExperienceForm
+                            experience={selectedExperience}
+                            deleteExperience={deleteExperience}
+                            onClose={() => {
+                                setShowExperienceForm(false);
+                                setSelectedExperience(null);
+                                setDeleteExperience(null);
+                            }}
+                            onSuccess={loadAccountData}
+                        />
+                    )}
                 </section>
 
-
-
                 {/* PROJECTS */}
-
                 <section className="account-section">
-
                     <div className="section-header">
-
                         <div>
                             <h2>Projects</h2>
                             <p>Projects you have worked on</p>
                         </div>
-
-                        <button className="add-button">
+                        <button className="add-button" onClick={() => {
+                            setSelectedProject(null);
+                            setDeleteProject(null);
+                            setShowProjectForm(true);
+                        }}>
                             + Add Project
                         </button>
-
                     </div>
-                    <hr />
-                    <br />
 
                     {projects.length === 0 ? (
 
@@ -502,7 +845,9 @@ function Account() {
                                     className="account-item"
                                     key={item.project_id}
                                 >
-
+                                    <div className="item-icon">
+                                        <FolderGit2 size={20} />
+                                    </div>
                                     <div className="item-content">
 
                                         <h3>
@@ -523,15 +868,30 @@ function Account() {
 
 
                                     <div className="item-actions">
-
-                                        <button>
-                                            Edit
+                                        <button
+                                            title="Edit project"
+                                            className="icon-button edit-icon"
+                                            onClick={() => {
+                                                setSelectedProject(item);
+                                                setDeleteProject(null);
+                                                setShowProjectForm(true);
+                                            }}
+                                        >
+                                            <Pencil size={14} />
                                         </button>
 
-                                        <button className="delete-button">
-                                            Delete
-                                        </button>
 
+                                        <button
+                                            title="Delete project"
+                                            className="icon-button delete-icon"
+                                            onClick={() => {
+                                                setDeleteProject(item);
+                                                setSelectedProject(null);
+                                                setShowProjectForm(true);
+                                            }}
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
                                     </div>
 
                                 </div>
@@ -539,6 +899,21 @@ function Account() {
                             ))}
 
                         </div>
+
+                    )}
+                    {showProjectForm && (
+
+                        <ProjectForm
+                            project={selectedProject}
+                            deleteProject={deleteProject}
+                            onClose={() => {
+                                setShowProjectForm(false);
+                                setSelectedProject(null);
+                                setDeleteProject(null);
+                            }}
+
+                            onSuccess={loadAccountData}
+                        />
 
                     )}
 

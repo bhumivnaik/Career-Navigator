@@ -7,7 +7,7 @@ const authRoutes = require("./routes/authRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 const skillRoutes = require("./routes/skillsRoute");
 const careerRoutes = require("./routes/careerRoutes");
-
+const githubRoutes = require("./routes/githubRoutes");
 const app = express();
 
 app.use(cors());
@@ -17,6 +17,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/careers", careerRoutes);
+app.use("/api/github", githubRoutes);
 
 app.get("/", (req, res) => {
     res.json({
