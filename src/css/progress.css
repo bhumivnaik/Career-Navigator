@@ -681,3 +681,524 @@
     font-weight: 600;
     cursor: pointer;
 }
+
+/* =========================================
+   VISUAL CAREER MAP
+========================================= */
+
+.career-map-section {
+    margin-top: 35px;
+}
+
+.career-map-subtitle {
+    margin-top: 6px;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* TARGET CAREER */
+
+.career-map-target {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 25px;
+    padding: 18px 22px;
+    background: var(--primary);
+    border-radius: 16px;
+    color: white;
+}
+
+.career-map-target-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 21px;
+}
+
+.career-map-target span {
+    font-size: 10px;
+    letter-spacing: 1px;
+    opacity: 0.7;
+}
+
+.career-map-target h3 {
+    margin: 4px 0 0;
+    font-size: 19px;
+}
+
+
+/* FLOW */
+
+.career-map-flow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 25px;
+    overflow-x: auto;
+    padding: 8px 3px 15px;
+}
+
+.career-map-flow-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+
+/* STAGE CARD */
+
+.career-map-stage-card {
+    width: 235px;
+    min-height: 165px;
+    padding: 18px;
+    background: white;
+    border: 1px solid rgba(120, 90, 170, 0.15);
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(60, 40, 100, 0.05);
+}
+
+.career-map-stage-card.stage-complete {
+    border: 2px solid rgba(34, 197, 94, 0.35);
+}
+
+
+/* STAGE TOP */
+
+.career-map-stage-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.career-map-stage-circle {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.career-map-stage-top span {
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.career-map-stage-top h3 {
+    margin: 3px 0 0;
+    font-size: 14px;
+    color: var(--primary);
+}
+
+
+/* SKILL COUNT */
+
+.career-map-stage-count {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin-top: 18px;
+}
+
+.career-map-stage-count strong {
+    font-size: 25px;
+    color: var(--primary);
+}
+
+.career-map-stage-count span {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+
+/* STATUS */
+
+.career-map-status {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(120, 90, 170, 0.1);
+}
+
+.career-map-status div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.career-map-status b {
+    font-size: 14px;
+    color: var(--primary);
+}
+
+.career-map-status span {
+    font-size: 8px;
+    color: var(--text-muted);
+}
+
+
+/* ARROW */
+
+.career-map-arrow {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+
+/* FINAL CAREER */
+
+.career-map-final-card {
+    width: 215px;
+    min-height: 165px;
+    box-sizing: border-box;
+    padding: 18px;
+    border-radius: 16px;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.career-map-final-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    font-weight: 700;
+}
+
+.career-map-final-card span {
+    font-size: 9px;
+    letter-spacing: 1px;
+    opacity: 0.7;
+}
+
+.career-map-final-card h3 {
+    margin: 4px 0 0;
+    font-size: 14px;
+}
+
+.career-map-final-card p {
+    margin: 3px 0 0;
+    font-size: 10px;
+    opacity: 0.7;
+}
+
+
+/* SUMMARY */
+
+.career-map-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.career-map-summary > div {
+    padding: 15px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(120, 90, 170, 0.1);
+}
+
+.career-map-summary strong {
+    display: block;
+    font-size: 21px;
+    color: var(--primary);
+}
+
+.career-map-summary span {
+    display: block;
+    margin-top: 3px;
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+
+/* MOBILE */
+
+@media (max-width: 800px) {
+
+    .career-map-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+/* =========================================
+   SKILL PRIORITY
+========================================= */
+
+.skill-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+}
+
+.skill-meta > span:first-child {
+    color: var(--text-muted);
+}
+
+.skill-priority {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.priority-high {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.priority-medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.priority-low {
+    background: #dcfce7;
+    color: #166534;
+}
+/* =========================================
+   PERSONALIZED PATHWAY
+========================================= */
+
+.personalized-pathway-section {
+    margin-top: 35px;
+}
+
+.pathway-subtitle {
+    margin-top: 6px;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* LIST */
+
+.personalized-pathway-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+/* SKILL CARD */
+
+.pathway-skill-card {
+    background: white;
+    border: 1px solid rgba(120, 90, 170, 0.12);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(60, 40, 100, 0.04);
+}
+
+.pathway-skill-card.pathway-skill-expanded {
+    border-color: rgba(120, 90, 170, 0.25);
+}
+
+/* HEADER */
+
+.pathway-skill-header {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.pathway-skill-header:hover {
+    background: rgba(120, 90, 170, 0.025);
+}
+
+/* NUMBER */
+
+.pathway-skill-number {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* MAIN */
+
+.pathway-skill-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.pathway-skill-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pathway-skill-title h3 {
+    margin: 0;
+    color: var(--primary);
+    font-size: 16px;
+}
+
+.pathway-skill-main > p {
+    margin: 5px 0 0;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+/* PRIORITY */
+
+.pathway-skill-title .skill-priority {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+/* EXPAND ICON */
+
+.pathway-expand-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(120, 90, 170, 0.08);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    font-weight: 500;
+}
+
+/* CONTENT */
+
+.pathway-skill-content {
+    padding: 0 20px 20px 73px;
+    border-top: 1px solid rgba(120, 90, 170, 0.08);
+}
+
+/* DETAILS */
+
+.pathway-detail {
+    padding-top: 17px;
+}
+
+.pathway-detail h4 {
+    margin: 0 0 6px;
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.pathway-detail p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+/* LOADING */
+
+.pathway-loading {
+    margin-top: 20px;
+    padding: 25px;
+    background: white;
+    border-radius: 14px;
+    border: 1px solid rgba(120, 90, 170, 0.1);
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+/* EMPTY */
+
+.pathway-empty {
+    margin-top: 20px;
+    padding: 35px 25px;
+    background: white;
+    border-radius: 14px;
+    border: 1px solid rgba(120, 90, 170, 0.1);
+    text-align: center;
+}
+
+.pathway-empty-icon {
+    width: 45px;
+    height: 45px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.pathway-empty h3 {
+    margin: 0;
+    color: var(--primary);
+    font-size: 16px;
+}
+
+.pathway-empty p {
+    max-width: 500px;
+    margin: 8px auto 0;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* MOBILE */
+
+@media (max-width: 800px) {
+
+    .pathway-skill-content {
+        padding-left: 20px;
+    }
+
+    .pathway-skill-header {
+        padding: 15px;
+    }
+
+}

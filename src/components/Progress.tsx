@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "./ui/Navbar";
 import { useAuth } from "../context/authContext";
 import "../css/progress.css";
+import PersonalizedPathway from "./PersonalizedPathway";
 
 type RoadmapSkill = {
     skill_id: number;
@@ -12,6 +13,7 @@ type RoadmapSkill = {
     skill_level: "Beginner" | "Intermediate" | "Advanced";
     roadmap_stage: number;
     sequence_order: number;
+    priority: "High" | "Medium" | "Low";
     status: "completed" | "started" | "not-started";
     progress_percentage?: number;
 };
@@ -509,6 +511,261 @@ const progressPercentage =
                     </div>
 
                 </section>
+                {/* VISUAL CAREER MAP */}
+
+<section className="career-map-section">
+
+    <div className="section-heading">
+
+        <div>
+            <p className="dashboard-label">
+                VISUAL CAREER MAP
+            </p>
+
+            <h2>
+                Your Career Journey
+            </h2>
+
+            <p className="career-map-subtitle">
+                A high-level view of your progress from your
+                current skills to your target career.
+            </p>
+        </div>
+
+    </div>
+
+
+    {/* TARGET CAREER */}
+
+    <div className="career-map-target">
+
+        <div className="career-map-target-icon">
+            🎯
+        </div>
+
+        <div>
+            <span>TARGET CAREER</span>
+            <h3>{career.career_name}</h3>
+        </div>
+
+    </div>
+
+
+    {/* CAREER JOURNEY */}
+
+    <div className="career-map-flow">
+
+        {stages.map((stage, index) => {
+
+            const stageSkills = effectiveRoadmap
+                .filter(
+                    skill =>
+                        skill.roadmap_stage === stage
+                )
+                .sort(
+                    (a, b) =>
+                        a.sequence_order -
+                        b.sequence_order
+                );
+
+            const completedInStage =
+                stageSkills.filter(
+                    skill =>
+                        skill.status === "completed"
+                ).length;
+
+            const developingInStage =
+                stageSkills.filter(
+                    skill =>
+                        skill.status === "started"
+                ).length;
+
+            const requiredInStage =
+                stageSkills.filter(
+                    skill =>
+                        skill.status === "not-started"
+                ).length;
+
+            const stageComplete =
+                stageSkills.length > 0 &&
+                completedInStage ===
+                    stageSkills.length;
+
+            return (
+                <div
+                    className="career-map-flow-item"
+                    key={stage}
+                >
+
+                    <div
+                        className={`career-map-stage-card ${
+                            stageComplete
+                                ? "stage-complete"
+                                : ""
+                        }`}
+                    >
+
+                        <div className="career-map-stage-top">
+
+                            <div className="career-map-stage-circle">
+                                {stage}
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    STAGE {stage}
+                                </span>
+
+                                <h3>
+                                    Learning Stage {stage}
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="career-map-stage-count">
+
+                            <strong>
+                                {stageSkills.length}
+                            </strong>
+
+                            <span>
+                                skills
+                            </span>
+
+                        </div>
+
+
+                        <div className="career-map-status">
+
+                            <div>
+                                <b>
+                                    {completedInStage}
+                                </b>
+                                <span>Completed</span>
+                            </div>
+
+                            <div>
+                                <b>
+                                    {developingInStage}
+                                </b>
+                                <span>Developing</span>
+                            </div>
+
+                            <div>
+                                <b>
+                                    {requiredInStage}
+                                </b>
+                                <span>Required</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    {/* CONNECTION */}
+
+                    {index < stages.length - 1 && (
+                        <div className="career-map-arrow">
+                            →
+                        </div>
+                    )}
+
+                </div>
+            );
+
+        })}
+
+
+        {/* FINAL CAREER */}
+
+        <div className="career-map-flow-item">
+
+            <div className="career-map-final-card">
+
+                <div className="career-map-final-icon">
+                    ✓
+                </div>
+
+                <div>
+                    <span>CAREER GOAL</span>
+
+                    <h3>
+                        {career.career_name}
+                    </h3>
+
+                    <p>
+                        Target role
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {/* MAP SUMMARY */}
+
+    <div className="career-map-summary">
+
+        <div>
+            <strong>
+                {completedCount}
+            </strong>
+
+            <span>
+                Skills Acquired
+            </span>
+        </div>
+
+        <div>
+            <strong>
+                {
+                    effectiveRoadmap.filter(
+                        skill =>
+                            skill.status === "started"
+                    ).length
+                }
+            </strong>
+
+            <span>
+                Skills Developing
+            </span>
+        </div>
+
+        <div>
+            <strong>
+                {remainingCount}
+            </strong>
+
+            <span>
+                Skills Remaining
+            </span>
+        </div>
+
+        <div>
+            <strong>
+                {progressPercentage}%
+            </strong>
+
+            <span>
+                Career Progress
+            </span>
+        </div>
+
+    </div>
+
+</section>
+
+<PersonalizedPathway
+    careerId={career.career_id}
+/>
 
 
                 {/* ROADMAP PROGRESS */}
@@ -620,19 +877,24 @@ const stagePercentage =
 
                                                     <div className="skill-info">
 
-                                                        <h4>
-                                                            {
-                                                                skill.skill_name
-                                                            }
-                                                        </h4>
+    <h4>
+        {skill.skill_name}
+    </h4>
 
-                                                        <span>
-                                                            {
-                                                                skill.skill_level
-                                                            }
-                                                        </span>
+    <div className="skill-meta">
 
-                                                    </div>
+        <span>
+            {skill.skill_level}
+        </span>
+
+        <span
+    className={`skill-priority priority-${(skill.priority || "Medium").toLowerCase()}`}
+>
+    {skill.priority || "Medium"} Priority
+</span>
+    </div>
+
+</div>
 
 
                                                     <div className="skill-status">

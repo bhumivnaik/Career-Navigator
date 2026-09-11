@@ -97,6 +97,7 @@ const getCareerRoadmap = (req, res) => {
             cs.skill_level,
             cs.roadmap_stage,
             cs.sequence_order,
+            cs.priority,
 
             CASE
                 WHEN us.skill_id IS NOT NULL
@@ -132,6 +133,78 @@ const getCareerRoadmap = (req, res) => {
                     message: "Failed to get career roadmap"
                 });
             }
+
+            console.log("ROADMAP RESULTS:", results);
+
+            res.json(results);
+        }
+    );
+};
+
+const getPersonalizedPathway = (req, res) => {
+
+    const userId = req.user.user_id;
+    const careerId = req.params.careerId;
+
+    const sql = `
+        SELECT
+            cs.skill_id,
+            s.skill_name,
+            s.category,
+            cs.skill_level,
+            cs.roadmap_stage,
+            cs.sequence_order,
+            cs.priority,
+
+            sp.description,
+            sp.importance_reason,
+            sp.learning_resources,
+            sp.suggested_projects,
+            sp.suggested_courses,
+            sp.certifications,
+            sp.estimated_progression,
+            sp.related_roles
+
+        FROM career_skills cs
+
+        JOIN skills s
+            ON cs.skill_id = s.skill_id
+
+        LEFT JOIN skill_pathways sp
+            ON cs.skill_id = sp.skill_id
+
+        LEFT JOIN user_skills us
+            ON cs.skill_id = us.skill_id
+            AND us.user_id = ?
+
+        WHERE cs.career_id = ?
+        AND us.skill_id IS NULL
+
+        ORDER BY
+            CASE cs.priority
+                WHEN 'High' THEN 1
+                WHEN 'Medium' THEN 2
+                WHEN 'Low' THEN 3
+                ELSE 4
+            END,
+            cs.roadmap_stage,
+            cs.sequence_order;
+    `;
+
+    db.query(
+        sql,
+        [userId, careerId],
+        (err, results) => {
+
+            if (err) {
+                console.error("PERSONALIZED PATHWAY ERROR:", err);
+
+                return res.status(500).json({
+                    message: "Failed to get personalized pathway"
+                });
+            }
+
+            console.log("PERSONALIZED PATHWAY:", results);
 
             res.json(results);
         }
@@ -292,6 +365,7 @@ module.exports = {
     getCareers,
     getCareerbyId,
     getCareerRoadmap,
+    getPersonalizedPathway,
     setCareerGoal,
     getCareerComparison
 };
