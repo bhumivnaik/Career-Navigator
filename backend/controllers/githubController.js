@@ -829,6 +829,179 @@ const getGithubSync = async (req, res) => {
     }
 };
 
+
+
+
+
+
+// ============================================================
+// Get GitHub repositories for project import
+// ============================================================
+
+const getGithubRepositories = async (req, res) => {
+
+    try {
+
+        const userId = req.user.user_id;
+
+
+        // ----------------------------------------------------
+        // Get GitHub URL from user's profile
+        // ----------------------------------------------------
+
+        const userSql = `
+            SELECT github_profile_url
+            FROM users
+            WHERE user_id = ?
+        `;
+
+
+        const userResult = await new Promise(
+            (resolve, reject) => {
+
+                db.query(
+                    userSql,
+                    [userId],
+                    (err, result) => {
+
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(result);
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        if (
+            userResult.length === 0 ||
+            !userResult[0].github_profile_url
+        ) {
+
+            return res.status(400).json({
+                message:
+                    "GitHub profile URL is not added to your profile"
+            });
+
+        }
+
+
+        const githubUrl =
+            userResult[0].github_profile_url;
+
+
+        const username =
+            extractUsername(githubUrl);
+
+
+        if (!username) {
+
+            return res.status(400).json({
+                message:
+                    "Invalid GitHub profile URL"
+            });
+
+        }
+
+
+        // ----------------------------------------------------
+        // Get repositories
+        // ----------------------------------------------------
+
+        const repositories =
+            await getRepositories(username);
+
+
+        const repositoryData = [];
+
+
+        // ----------------------------------------------------
+        // Analyze every repository
+        // ----------------------------------------------------
+
+        for (const repository of repositories) {
+
+            // Get languages
+            const languages =
+                await getRepositoryLanguages(
+                    username,
+                    repository.name
+                );
+
+
+            // Get technologies
+            const technologies =
+                await detectRepositoryTechnologies(
+                    username,
+                    repository.name
+                );
+
+
+            repositoryData.push({
+
+                name:
+                    repository.name,
+
+                description:
+                    repository.description || "",
+
+                html_url:
+                    repository.html_url,
+
+                created_at:
+                    repository.created_at,
+
+                updated_at:
+                    repository.updated_at,
+
+                languages:
+                    Object.keys(languages || {}),
+
+                technologies:
+                    technologies || []
+
+            });
+
+        }
+
+
+        res.json(repositoryData);
+
+
+    } catch (error) {
+
+        console.error(
+            "GET GITHUB REPOSITORIES ERROR:",
+            error
+        );
+
+
+        if (
+            error.response &&
+            error.response.status === 404
+        ) {
+
+            return res.status(404).json({
+                message:
+                    "GitHub user not found"
+            });
+
+        }
+
+
+        res.status(500).json({
+            message:
+                "Failed to fetch GitHub repositories"
+        });
+
+    }
+
+};
+
 module.exports = {
-    syncGithub, getGithubSync
+    syncGithub, getGithubSync, getGithubRepositories
 };

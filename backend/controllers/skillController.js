@@ -137,6 +137,7 @@ const saveUserSkills = (req, res) => {
     });
 
 };
+
 // Get skill progress for current user
 // Get missing skill progress for the user's selected career
 const getSkillProgress = (req, res) => {
@@ -185,6 +186,8 @@ const getSkillProgress = (req, res) => {
         res.json(result);
     });
 };
+
+
 // Update skill progress
 // Update progress for a missing career skill
 // Update progress for a career skill
@@ -401,6 +404,8 @@ const updateSkillProgress = (req, res) => {
         }
     );
 };
+
+
 // Get quiz questions for a selected skill
 const getQuizQuestions = (req, res) => {
 
