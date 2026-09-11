@@ -1,523 +1,467 @@
+const axios = require("axios");
+const cheerio = require("cheerio");
+
 const db = require("../config/db");
 
-// Add
+//Add
 const addCourse = (req, res) => {
     const userId = req.user.user_id;
+    const { course_name, provider, description, completion_date, certificate_url, skill_ids } = req.body;
 
-    const {
-        course_name,
-        provider,
-        description,
-        completion_date,
-        certificate_url,
-        skill_ids
-    } = req.body;
+    const addsql = `insert into user_courses (user_id, course_name, provider, description, completion_date, certificate_url)
+    values (?,?,?,?,?,?)`;
 
-    const addSql = `
-        INSERT INTO user_courses
-        (user_id, course_name, provider, description, completion_date, certificate_url)
-        VALUES (?, ?, ?, ?, ?, ?)
-    `;
-
-    db.query(
-        addSql,
-        [
-            userId,
-            course_name,
-            provider,
-            description,
-            completion_date,
-            certificate_url
-        ],
-        (err, result) => {
+    db.query(addsql, [userId, course_name, provider, description, completion_date, certificate_url],
+        async (err, result) => {
             if (err) {
-                console.error("ADD COURSE ERROR:", err);
-                return res.status(500).json({
-                    message: "Failed to add course"
-                });
+                return res.status(500).json({ message: "Failed to add course" });
             }
 
             const courseId = result.insertId;
-
-            if (!Array.isArray(skill_ids) || skill_ids.length === 0) {
+            if (!skill_ids || skill_ids.length === 0) {
                 return res.status(201).json({
                     message: "Course added successfully",
                     course_id: courseId
                 });
             }
 
-            const skillValues = skill_ids.map(skillId => [
-                courseId,
-                skillId
-            ]);
+            const courseskillsql = `insert into course_skills (course_id, skill_id) values ?`;
+            const skillValues = skill_ids.map(skillId =>
+                [courseId, skillId]
+            );
 
-            const courseSkillSql = `
-                INSERT INTO course_skills
-                (course_id, skill_id)
-                VALUES ?
-            `;
-
-            db.query(courseSkillSql, [skillValues], (err) => {
+            db.query(courseskillsql, [skillValues], (err) => {
                 if (err) {
-                    console.error("ADD COURSE SKILLS ERROR:", err);
-                    return res.status(500).json({
-                        message: "Course added but skills could not be added"
-                    });
+                    return res.status(500).json({ message: "Course added but skills could not be added" });
                 }
 
-                const sourceValues = skill_ids.map(skillId => [
-                    userId,
-                    skillId,
-                    "course",
-                    courseId
-                ]);
-
-                const sourceSql = `
-                    INSERT INTO user_skill_sources
-                    (user_id, skill_id, source_type, source_record_id)
-                    VALUES ?
-                `;
-
-                db.query(sourceSql, [sourceValues], (err) => {
-                    if (err) {
-                        console.error("ADD COURSE SOURCES ERROR:", err);
-                        return res.status(500).json({
-                            message: "Course added but skill sources could not be added"
-                        });
-                    }
-
-                    const userSkillValues = skill_ids.map(skillId => [
-                        userId,
-                        skillId
-                    ]);
-
-                    const userSkillSql = `
-                        INSERT IGNORE INTO user_skills
-                        (user_id, skill_id)
-                        VALUES ?
-                    `;
-
-                    db.query(userSkillSql, [userSkillValues], (err) => {
-                        if (err) {
-                            console.error("ADD USER SKILLS ERROR:", err);
-                            return res.status(500).json({
-                                message: "Course added but user skills could not be added"
-                            });
-                        }
-
-                        res.status(201).json({
-                            message: "Course and skills added successfully",
-                            course_id: courseId
-                        });
-                    });
+                res.status(201).json({
+                    message: "Course and skills added successfully",
+                    course_id: courseId
                 });
-            });
+            }
+            );
         }
-    );
-};
+    )
+}
 
-
-// Get
+//Get
 const getCourse = (req, res) => {
     const userId = req.user.user_id;
 
-    const getSql = `
-        SELECT
-            uc.*,
-            COALESCE(
-                GROUP_CONCAT(cs.skill_id),
-                ''
-            ) AS skill_ids
-        FROM user_courses uc
-        LEFT JOIN course_skills cs
-            ON uc.course_id = cs.course_id
-        WHERE uc.user_id = ?
-        GROUP BY uc.course_id
-    `;
+    const getsql = `select * from user_courses where user_id = ?`;
 
-    db.query(getSql, [userId], (err, result) => {
+    db.query(getsql, [userId], (err, result) => {
         if (err) {
-            console.error("GET COURSE ERROR:", err);
-            return res.status(500).json({
-                message: "Failed to get course"
-            });
+            return res.status(500).json({ message: "Failed to get course" });
         }
-
-        const formattedResult = result.map(item => ({
-            ...item,
-            skill_ids: item.skill_ids
-                ? item.skill_ids.split(",").map(Number)
-                : []
-        }));
-
-        res.json(formattedResult);
+        res.json(result);
     });
-};
 
+}
 
-// Delete
+//Delete
 const delCourse = (req, res) => {
     const userId = req.user.user_id;
     const courseId = req.params.id;
 
-    // First find the skills connected to this course
-    const getSkillsSql = `
-        SELECT skill_id
-        FROM course_skills
-        WHERE course_id = ?
-    `;
+    const delsql = `delete from user_courses where course_id = ? and user_id = ?`;
 
-    db.query(getSkillsSql, [courseId], (err, oldSkills) => {
+    db.query(delsql, [courseId, userId], (err, result) => {
         if (err) {
-            console.error("GET OLD COURSE SKILLS ERROR:", err);
-            return res.status(500).json({
-                message: "Failed to delete course"
-            });
+            return res.status(500).json({ message: "Failed to delete Course" });
         }
-
-        const oldSkillIds = oldSkills.map(row => row.skill_id);
-
-        // Delete source records
-        const deleteSourcesSql = `
-            DELETE FROM user_skill_sources
-            WHERE user_id = ?
-            AND source_type = 'course'
-            AND source_record_id = ?
-        `;
-
-        db.query(
-            deleteSourcesSql,
-            [userId, courseId],
-            (err) => {
-                if (err) {
-                    console.error("DELETE COURSE SOURCES ERROR:", err);
-                    return res.status(500).json({
-                        message: "Failed to delete course skill sources"
-                    });
-                }
-
-                // Delete course
-                const deleteCourseSql = `
-                    DELETE FROM user_courses
-                    WHERE course_id = ?
-                    AND user_id = ?
-                `;
-
-                db.query(
-                    deleteCourseSql,
-                    [courseId, userId],
-                    (err) => {
-                        if (err) {
-                            console.error("DELETE COURSE ERROR:", err);
-                            return res.status(500).json({
-                                message: "Failed to delete Course"
-                            });
-                        }
-
-                        // Remove user_skills only if no other source exists
-                        if (oldSkillIds.length === 0) {
-                            return res.json({
-                                message: "Course deleted successfully"
-                            });
-                        }
-
-                        const cleanupSql = `
-                            DELETE FROM user_skills
-                            WHERE user_id = ?
-                            AND skill_id IN (?)
-                            AND NOT EXISTS (
-                                SELECT 1
-                                FROM user_skill_sources
-                                WHERE user_skill_sources.user_id = ?
-                                AND user_skill_sources.skill_id = user_skills.skill_id
-                            )
-                        `;
-
-                        db.query(
-                            cleanupSql,
-                            [userId, oldSkillIds, userId],
-                            (err) => {
-                                if (err) {
-                                    console.error(
-                                        "CLEANUP COURSE SKILLS ERROR:",
-                                        err
-                                    );
-                                    return res.status(500).json({
-                                        message: "Course deleted but skill cleanup failed"
-                                    });
-                                }
-
-                                res.json({
-                                    message: "Course deleted successfully"
-                                });
-                            }
-                        );
-                    }
-                );
-            }
-        );
+        res.json({ message: "Course deleted successfully" });
     });
-};
+}
 
-
-// Update
+//Update
 const putCourse = (req, res) => {
     const userId = req.user.user_id;
     const courseId = req.params.id;
 
-    const {
-        course_name,
-        provider,
-        description,
-        completion_date,
-        certificate_url,
-        skill_ids
-    } = req.body;
+    const { course_name, provider, description, completion_date, certificate_url, skill_ids } = req.body;
 
-    // First get the old skills
-    const getOldSkillsSql = `
-        SELECT skill_id
-        FROM course_skills
-        WHERE course_id = ?
-    `;
+    const putsql = `update user_courses set course_name= ?, provider= ?, description= ?, completion_date= ?, certificate_url= ? where course_id = ? and user_id = ?`;
 
-    db.query(getOldSkillsSql, [courseId], (err, oldSkills) => {
+    db.query(putsql, [course_name, provider, description, completion_date, certificate_url, courseId, userId], (err, result) => {
         if (err) {
-            console.error("GET OLD COURSE SKILLS ERROR:", err);
-            return res.status(500).json({
-                message: "Failed to update course"
-            });
+            return res.status(500).json({ message: "Failed to update course" });
         }
 
-        const oldSkillIds = oldSkills.map(row => row.skill_id);
-
-        // Update course details
-        const updateSql = `
-            UPDATE user_courses
-            SET
-                course_name = ?,
-                provider = ?,
-                description = ?,
-                completion_date = ?,
-                certificate_url = ?
-            WHERE course_id = ?
-            AND user_id = ?
-        `;
-
-        db.query(
-            updateSql,
-            [
-                course_name,
-                provider,
-                description,
-                completion_date,
-                certificate_url,
-                courseId,
-                userId
-            ],
-            (err) => {
-                if (err) {
-                    console.error("UPDATE COURSE ERROR:", err);
-                    return res.status(500).json({
-                        message: "Failed to update course"
-                    });
-                }
-
-                // Remove old course skills
-                const deleteCourseSkillsSql = `
-                    DELETE FROM course_skills
-                    WHERE course_id = ?
-                `;
-
-                db.query(
-                    deleteCourseSkillsSql,
-                    [courseId],
-                    (err) => {
-                        if (err) {
-                            console.error(
-                                "DELETE OLD COURSE SKILLS ERROR:",
-                                err
-                            );
-                            return res.status(500).json({
-                                message: "Failed to update course skills"
-                            });
-                        }
-
-                        // Remove old source records
-                        const deleteSourcesSql = `
-                            DELETE FROM user_skill_sources
-                            WHERE user_id = ?
-                            AND source_type = 'course'
-                            AND source_record_id = ?
-                        `;
-
-                        db.query(
-                            deleteSourcesSql,
-                            [userId, courseId],
-                            (err) => {
-                                if (err) {
-                                    console.error(
-                                        "DELETE OLD COURSE SOURCES ERROR:",
-                                        err
-                                    );
-                                    return res.status(500).json({
-                                        message: "Failed to update course sources"
-                                    });
-                                }
-
-                                // Clean old skills that no longer have any source
-                                const cleanupOldSkills = () => {
-                                    if (oldSkillIds.length === 0) {
-                                        return addNewSkills();
-                                    }
-
-                                    const cleanupSql = `
-                                        DELETE FROM user_skills
-                                        WHERE user_id = ?
-                                        AND skill_id IN (?)
-                                        AND NOT EXISTS (
-                                            SELECT 1
-                                            FROM user_skill_sources
-                                            WHERE user_skill_sources.user_id = ?
-                                            AND user_skill_sources.skill_id = user_skills.skill_id
-                                        )
-                                    `;
-
-                                    db.query(
-                                        cleanupSql,
-                                        [userId, oldSkillIds, userId],
-                                        (err) => {
-                                            if (err) {
-                                                console.error(
-                                                    "CLEANUP OLD COURSE SKILLS ERROR:",
-                                                    err
-                                                );
-                                                return res.status(500).json({
-                                                    message: "Failed to clean old course skills"
-                                                });
-                                            }
-
-                                            addNewSkills();
-                                        }
-                                    );
-                                };
-
-                                // Add new skills
-                                const addNewSkills = () => {
-                                    if (
-                                        !Array.isArray(skill_ids) ||
-                                        skill_ids.length === 0
-                                    ) {
-                                        return res.json({
-                                            message: "Course updated successfully"
-                                        });
-                                    }
-
-                                    const skillValues = skill_ids.map(
-                                        skillId => [courseId, skillId]
-                                    );
-
-                                    const insertCourseSkillsSql = `
-                                        INSERT INTO course_skills
-                                        (course_id, skill_id)
-                                        VALUES ?
-                                    `;
-
-                                    db.query(
-                                        insertCourseSkillsSql,
-                                        [skillValues],
-                                        (err) => {
-                                            if (err) {
-                                                console.error(
-                                                    "ADD NEW COURSE SKILLS ERROR:",
-                                                    err
-                                                );
-                                                return res.status(500).json({
-                                                    message: "Failed to add new course skills"
-                                                });
-                                            }
-
-                                            const sourceValues =
-                                                skill_ids.map(skillId => [
-                                                    userId,
-                                                    skillId,
-                                                    "course",
-                                                    courseId
-                                                ]);
-
-                                            const insertSourcesSql = `
-                                                INSERT INTO user_skill_sources
-                                                (user_id, skill_id, source_type, source_record_id)
-                                                VALUES ?
-                                            `;
-
-                                            db.query(
-                                                insertSourcesSql,
-                                                [sourceValues],
-                                                (err) => {
-                                                    if (err) {
-                                                        console.error(
-                                                            "ADD NEW COURSE SOURCES ERROR:",
-                                                            err
-                                                        );
-                                                        return res.status(500).json({
-                                                            message: "Failed to add new course sources"
-                                                        });
-                                                    }
-
-                                                    const userSkillValues =
-                                                        skill_ids.map(
-                                                            skillId => [
-                                                                userId,
-                                                                skillId
-                                                            ]
-                                                        );
-
-                                                    const insertUserSkillsSql = `
-                                                        INSERT IGNORE INTO user_skills
-                                                        (user_id, skill_id)
-                                                        VALUES ?
-                                                    `;
-
-                                                    db.query(
-                                                        insertUserSkillsSql,
-                                                        [userSkillValues],
-                                                        (err) => {
-                                                            if (err) {
-                                                                console.error(
-                                                                    "ADD USER SKILLS ERROR:",
-                                                                    err
-                                                                );
-                                                                return res.status(500).json({
-                                                                    message: "Failed to update user skills"
-                                                                });
-                                                            }
-
-                                                            res.json({
-                                                                message: "Course updated successfully"
-                                                            });
-                                                        }
-                                                    );
-                                                }
-                                            );
-                                        }
-                                    );
-                                };
-
-                                cleanupOldSkills();
-                            }
-                        );
-                    }
-                );
+        const putSkillsSql = `DELETE FROM course_skills WHERE course_id = ?`;
+        db.query(putSkillsSql, [courseId], (err, result) => {
+            if (err) {
+                return res.status(500).json({ message: "Failed to update experience" });
             }
-        );
+
+            if (skill_ids && skill_ids.length > 0) {
+                const values = skill_ids.map(skillId => [courseId, skillId]);
+                const addSkillsql = `Insert into course_skills (course_id, skill_id) values ?`;
+                db.query(addSkillsql, [values], (err, result) => {
+                    if (err) {
+                        return res.status(500).json({ message: "Failed to update course skills" });
+                    }
+                    res.json({ message: "course updated successfully" });
+                });
+            } else {
+                res.json({ message: "update course successfully" });
+            }
+        })
     });
 };
 
 
-module.exports = {
-    addCourse,
-    getCourse,
-    delCourse,
-    putCourse
+
+
+// ===============================
+// IMPORT CREDLY CREDENTIAL
+// ===============================
+
+const importCredlyCredential = async (req, res) => {
+
+    try {
+
+        const { url } = req.body;
+
+        if (!url) {
+            return res.status(400).json({
+                message: "Credly URL is required"
+            });
+        }
+
+
+        // Check that it is actually a Credly URL
+        let parsedUrl;
+
+        try {
+            parsedUrl = new URL(url);
+        } catch (error) {
+            return res.status(400).json({
+                message: "Invalid URL"
+            });
+        }
+
+
+        if (
+            parsedUrl.hostname !== "www.credly.com" &&
+            parsedUrl.hostname !== "credly.com"
+        ) {
+            return res.status(400).json({
+                message: "Please provide a valid Credly URL"
+            });
+        }
+
+
+        // Fetch public Credly page
+        const response = await axios.get(url, {
+            timeout: 10000,
+            headers: {
+                "User-Agent":
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131 Safari/537.36"
+            }
+        });
+
+
+        const html = response.data;
+
+        const $ = cheerio.load(html);
+
+
+        let credential = {
+            name: "",
+            issuer: "",
+            description: "",
+            issuedDate: "",
+            expiryDate: "",
+            credentialType: "",
+            level: "",
+            imageUrl: "",
+            skills: []
+        };
+
+
+        // =====================================
+        // 1. Try JSON-LD structured data
+        // =====================================
+
+        $('script[type="application/ld+json"]').each(
+            (index, element) => {
+
+                try {
+
+                    const jsonText = $(element).html();
+
+                    if (!jsonText) {
+                        return;
+                    }
+
+                    const data = JSON.parse(jsonText);
+
+                    const objects = Array.isArray(data)
+                        ? data
+                        : [data];
+
+
+                    for (const item of objects) {
+
+                        if (
+                            !credential.name &&
+                            item.name
+                        ) {
+                            credential.name = item.name;
+                        }
+
+                        if (
+                            !credential.description &&
+                            item.description
+                        ) {
+                            credential.description =
+                                item.description;
+                        }
+
+                        if (
+                            !credential.issuer &&
+                            item.issuer
+                        ) {
+
+                            if (
+                                typeof item.issuer === "string"
+                            ) {
+                                credential.issuer =
+                                    item.issuer;
+                            } else {
+                                credential.issuer =
+                                    item.issuer.name || "";
+                            }
+                        }
+
+                    }
+
+                } catch (error) {
+                    // Ignore invalid JSON-LD
+                }
+
+            }
+        );
+
+
+        // =====================================
+        // 2. Meta tags
+        // =====================================
+
+        const metaTitle =
+            $('meta[property="og:title"]').attr("content");
+
+        const metaDescription =
+            $('meta[property="og:description"]').attr("content");
+
+        const metaImage =
+            $('meta[property="og:image"]').attr("content");
+
+
+        if (!credential.name && metaTitle) {
+            credential.name = metaTitle;
+        }
+
+        if (
+            !credential.description &&
+            metaDescription
+        ) {
+            credential.description =
+                metaDescription;
+        }
+
+        if (metaImage) {
+            credential.imageUrl = metaImage;
+        }
+
+
+        // =====================================
+        // 3. Page title fallback
+        // =====================================
+
+        if (!credential.name) {
+
+            credential.name =
+                $("title").first().text().trim();
+
+        }
+
+
+        // =====================================
+        // 4. Extract visible text
+        // =====================================
+
+        const pageText = $("body")
+            .text()
+            .replace(/\s+/g, " ")
+            .trim();
+
+
+        // =====================================
+        // 5. Issuer
+        // =====================================
+
+        if (!credential.issuer) {
+
+            const issuedByMatch =
+                pageText.match(
+                    /Issued by\s+(.+?)(?=\s+(Skills|Type|Level|Time|Cost|Earning Criteria)|$)/i
+                );
+
+            if (issuedByMatch) {
+                credential.issuer =
+                    issuedByMatch[1].trim();
+            }
+        }
+
+
+        // =====================================
+        // 6. Type
+        // =====================================
+
+        const typeMatch =
+            pageText.match(
+                /Type\s+([A-Za-z ]+?)(?=\s+(Level|Time|Cost|Skills|Earning Criteria)|$)/i
+            );
+
+        if (typeMatch) {
+            credential.credentialType =
+                typeMatch[1].trim();
+        }
+
+
+        // =====================================
+        // 7. Level
+        // =====================================
+
+        const levelMatch =
+            pageText.match(
+                /Level\s+([A-Za-z ]+?)(?=\s+(Time|Cost|Skills|Earning Criteria)|$)/i
+            );
+
+        if (levelMatch) {
+            credential.level =
+                levelMatch[1].trim();
+        }
+
+
+        // =====================================
+        // 8. Find issued date
+        // =====================================
+
+        const issuedMatch =
+            pageText.match(
+                /Issued\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})/i
+            );
+
+        if (issuedMatch) {
+            credential.issuedDate =
+                issuedMatch[1];
+        }
+
+
+        // =====================================
+        // 9. Find expiry date
+        // =====================================
+
+        const expiryMatch =
+            pageText.match(
+                /Expires\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})/i
+            );
+
+        if (expiryMatch) {
+            credential.expiryDate =
+                expiryMatch[1];
+        }
+
+
+        // =====================================
+        // 10. Extract skills
+        // =====================================
+
+        const skills = [];
+
+        $("a").each((index, element) => {
+
+            const text =
+                $(element)
+                    .text()
+                    .trim();
+
+            if (!text) {
+                return;
+            }
+
+            const href =
+                $(element).attr("href") || "";
+
+            if (
+                href.includes("/skills/") &&
+                !skills.includes(text)
+            ) {
+                skills.push(text);
+            }
+
+        });
+
+        credential.skills = skills;
+
+
+        // =====================================
+        // Check if we actually found something
+        // =====================================
+
+        if (!credential.name) {
+
+            return res.status(422).json({
+                message:
+                    "Could not extract credential information from this Credly page. Make sure the badge is public."
+            });
+
+        }
+
+
+        // =====================================
+        // Return extracted data
+        // =====================================
+
+        res.json({
+            success: true,
+            credential: {
+                ...credential,
+                credentialUrl: url
+            }
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "CREDLY IMPORT ERROR:",
+            error.message
+        );
+
+
+        if (
+            error.response &&
+            error.response.status === 404
+        ) {
+            return res.status(404).json({
+                message:
+                    "Credly credential not found."
+            });
+        }
+
+
+        return res.status(500).json({
+            message:
+                "Unable to read the Credly credential. Make sure the badge is public and the URL is correct."
+        });
+
+    }
+
 };
+
+module.exports = { addCourse, getCourse, delCourse, putCourse, importCredlyCredential };

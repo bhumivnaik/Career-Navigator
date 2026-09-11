@@ -1,0 +1,147 @@
+.popup-overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.35);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 1000;
+}
+
+
+.credly-popup {
+    position: relative;
+    width: 460px;
+    max-width: calc(100vw - 40px);
+    max-height: 85vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.credly-badge-image {
+    width: 590px;
+    height: 250px;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+    margin: 0px auto;
+}
+
+
+.credly-popup h2 {
+    margin: 0 0 8px;
+}
+
+
+.credly-popup p {
+    margin: 0 0 22px;
+
+    color: #666;
+
+    font-size: 14px;
+}
+
+
+.credly-popup label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+.credly-popup input {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px 14px;
+
+    border: 1px solid #d9d9d9;
+
+    border-radius: 8px;
+
+    outline: none;
+
+    font-size: 14px;
+}
+
+
+.credly-popup input:focus {
+    border-color: var(--primary);
+}
+
+
+.popup-close {
+    position: absolute;
+
+    top: 12px;
+    right: 15px;
+
+    border: none;
+
+    background: none;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    color: #777;
+}
+
+
+.popup-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 24px;
+}
+
+
+.popup-cancel,
+.popup-submit {
+    padding: 10px 16px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+
+.popup-cancel {
+    background: white;
+    color: black;
+    border: 1px solid var(--primary);
+}
+
+
+.popup-submit {
+    background: var(--primary);
+
+    color: white;
+
+    border: none;
+}
+
+
+.popup-submit:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}

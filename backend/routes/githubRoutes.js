@@ -6,7 +6,7 @@ const authMiddleware =
     require("../middleware/authMiddleware");
 
 const {
-    syncGithub, getGithubSync
+    syncGithub, getGithubSync, getGithubRepositories
 } = require("../controllers/githubController");
 
 
@@ -19,6 +19,11 @@ router.get(
     "/sync",
     authMiddleware,
     getGithubSync
+);
+router.get(
+    "/repositories",
+    authMiddleware,
+    getGithubRepositories
 );
 
 module.exports = router;

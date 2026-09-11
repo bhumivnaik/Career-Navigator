@@ -1,9 +1,19 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/authContext";
 import Navbar from "../components/ui/Navbar";
 import "../css/account.css";
+import {
+    GraduationCap, Briefcase, FolderGit2, BookOpen,
+    Pencil,
+    Trash2
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import EducationForm from "../components/forms/EducationForm";
+import CourseForm from "../components/forms/CourseForm";
+import ExperienceForm from "../components/forms/ExperienceForm";
+import ProjectForm from "../components/forms/ProjectForm";
+import CredlyPopup from "../components/ui/CredlyPopup";
 
 type GithubData = {
     github_username: string;
@@ -13,14 +23,14 @@ type GithubData = {
     synced_at: string;
 };
 
-type Education = {
+export type Education = {
     education_id: number;
     degree: string;
     field_of_study: string;
     institution: string;
     start_year: number;
     end_year: number;
-    skill_ids?: number[];
+    skills?: [];
 };
 
 type Course = {
@@ -30,10 +40,10 @@ type Course = {
     description: string;
     completion_date: string;
     certificate_url?: string;
-    skill_ids?: number[];
+    skills?: number[];
 };
 
-type Experience = {
+export type Experience = {
     experience_id: number;
     experience_type: string;
     job_title: string;
@@ -41,104 +51,73 @@ type Experience = {
     description: string;
     start_date: string;
     end_date?: string;
-    skill_ids?: number[];
+    skills?: string[];
 };
 
 type Project = {
     project_id: number;
     project_name: string;
     description: string;
+    technologies_used: string;
     start_date: string;
-    end_date?: string;
-    skill_ids?: number[];
-};
-type Skill = {
-    skill_id: number;
-    skill_name: string;
-    category: string;
+    end_date: string;
+    github_repo_url?: string;
+    project_source?: "Manual" | "GitHub";
+    skills?: number[];
 };
 
 function Account() {
-
-
-    const { user, login } = useAuth();
-    const location = useLocation();
-
     const navigate = useNavigate();
+    const { user, login } = useAuth();
 
-    const [githubData, setGithubData] = useState<GithubData | null>(null);
-    const [githubSyncing, setGithubSyncing] = useState(false);
     const [education, setEducation] = useState<Education[]>([]);
     const [courses, setCourses] = useState<Course[]>([]);
     const [experience, setExperience] = useState<Experience[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
-    const [skills, setSkills] = useState<Skill[]>([]);
 
     const [loading, setLoading] = useState(true);
-    const [showProfileForm, setShowProfileForm] = useState(false);
+    const [githubData, setGithubData] =
+        useState<GithubData | null>(null);
+    const [githubSyncing, setGithubSyncing] =
+        useState(false);
 
-    const [profileForm, setProfileForm] = useState({
-        full_name: "",
-        github_profile_url: "",
-        linkedin_profile_url: "",
-        about: "",
-    });
+    //for form add
     const [showEducationForm, setShowEducationForm] = useState(false);
-    const [editingEducation, setEditingEducation] = useState<Education | null>(null);
-
-    const [educationForm, setEducationForm] = useState({
-    degree: "",
-    field_of_study: "",
-    institution: "",
-    start_year: "",
-    end_year: "",
-    skill_ids: [] as number[],
-});
-
     const [showCourseForm, setShowCourseForm] = useState(false);
-    const [editingCourse, setEditingCourse] = useState<Course | null>(null);
-
-    const [courseForm, setCourseForm] = useState({
-    course_name: "",
-    provider: "",
-    description: "",
-    completion_date: "",
-    certificate_url: "",
-    skill_ids: [] as number[],
-});
     const [showExperienceForm, setShowExperienceForm] = useState(false);
-    const [editingExperience, setEditingExperience] = useState<Experience | null>(null);
-
-    const [experienceForm, setExperienceForm] = useState({
-    experience_type: "",
-    job_title: "",
-    company_name: "",
-    description: "",
-    start_date: "",
-    end_date: "",
-    skill_ids: [] as number[],
-});
     const [showProjectForm, setShowProjectForm] = useState(false);
-    const [editingProject, setEditingProject] = useState<Project | null>(null);
 
-    const [projectForm, setProjectForm] = useState({
-    project_name: "",
-    description: "",
-    start_date: "",
-    end_date: "",
-    skill_ids: [] as number[],
-});
+    //for form edit
+    const [selectedEducation, setSelectedEducation] = useState<Education | null>(null);
+    const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+    const [selectedExperience, setSelectedExperience] = useState<Experience | null>(null);
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+    //for form delete
+    const [deleteEducationItem, setDeleteEducationItem] =
+        useState<Education | null>(null);
+    const [deleteExperience, setDeleteExperience] =
+        useState<Experience | null>(null);
+    const [deleteProject, setDeleteProject] = useState<Project | null>(null);
+    const [deleteCourse, setDeleteCourse] =
+        useState<Course | null>(null);
+
+    //for courses
+    const [showCredlyModal, setShowCredlyModal] = useState(false);
+    const [credlyUrl, setCredlyUrl] = useState("");
+    const [credlyLoading, setCredlyLoading] = useState(false);
+    const [credlyCredential, setCredlyCredential] = useState<any>(null);
+
+    const [githubImport, setGithubImport] =
+        useState(false);
 
     const token = localStorage.getItem("token");
-
     const headers = {
         Authorization: `Bearer ${token}`
     };
 
     useEffect(() => {
-
         loadAccountData();
-
     }, []);
 
     const handleGithubSync = async () => {
@@ -203,15 +182,12 @@ function Account() {
 
     const loadAccountData = async () => {
         try {
-
             const [
-    educationResponse,
-    coursesResponse,
-    experienceResponse,
-    projectsResponse,
-    skillsResponse
-] = await Promise.all([
-
+                educationResponse,
+                coursesResponse,
+                experienceResponse,
+                projectsResponse
+            ] = await Promise.all([
                 axios.get(
                     "http://localhost:5000/api/profile/education",
                     { headers }
@@ -230,20 +206,12 @@ function Account() {
                 axios.get(
                     "http://localhost:5000/api/profile/project",
                     { headers }
-                ),
-
-                axios.get(
-    "http://localhost:5000/api/skills",
-    { headers }
-)
-
+                )
             ]);
-
             setEducation(educationResponse.data);
             setCourses(coursesResponse.data);
             setExperience(experienceResponse.data);
             setProjects(projectsResponse.data);
-            setSkills(skillsResponse.data);
 
             const githubResponse = await axios.get(
                 "http://localhost:5000/api/github/sync",
@@ -256,487 +224,12 @@ function Account() {
 
             setGithubData(githubResponse.data);
         } catch (error) {
-
             console.error("ACCOUNT DATA ERROR:", error);
-
         } finally {
-
             setLoading(false);
-
-        }
-    };
-    const handleAddEducation = () => {
-        setEditingEducation(null);
-
-        setEducationForm({
-    degree: "",
-    field_of_study: "",
-    institution: "",
-    start_year: "",
-    end_year: "",
-    skill_ids: [],
-});
-
-        setShowEducationForm(true);
-    };
-
-    const handleEditEducation = (item: Education) => {
-        setEditingEducation(item);
-
-        setEducationForm({
-            degree: item.degree,
-            field_of_study: item.field_of_study,
-            institution: item.institution,
-            start_year: item.start_year.toString(),
-            end_year: item.end_year.toString(),
-            skill_ids: item.skill_ids || [],
-        });
-
-        setShowEducationForm(true);
-    };
-
-    const handleSaveEducation = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        try {
-            const data = {
-                degree: educationForm.degree,
-                field_of_study: educationForm.field_of_study,
-                institution: educationForm.institution,
-                start_year: Number(educationForm.start_year),
-                end_year: Number(educationForm.end_year),
-                skill_ids: educationForm.skill_ids,
-            };
-
-            if (editingEducation) {
-                await axios.put(
-                    `http://localhost:5000/api/profile/education/${editingEducation.education_id}`,
-                    data,
-                    { headers }
-                );
-            } else {
-                await axios.post(
-                    "http://localhost:5000/api/profile/education",
-                    data,
-                    { headers }
-                );
-            }
-
-            setShowEducationForm(false);
-            setEditingEducation(null);
-
-            await loadAccountData();
-
-        } catch (error) {
-            console.error("EDUCATION SAVE ERROR:", error);
         }
     };
 
-    const handleDeleteEducation = async (educationId: number) => {
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this education?"
-        );
-
-        if (!confirmDelete) return;
-
-        try {
-            await axios.delete(
-                `http://localhost:5000/api/profile/education/${educationId}`,
-                { headers }
-            );
-
-            await loadAccountData();
-
-        } catch (error) {
-            console.error("EDUCATION DELETE ERROR:", error);
-        }
-    };
-    const handleAddCourse = () => {
-        setEditingCourse(null);
-
-       setCourseForm({
-    course_name: "",
-    provider: "",
-    description: "",
-    completion_date: "",
-    certificate_url: "",
-    skill_ids: [],
-});
-
-        setShowCourseForm(true);
-    };
-    const handleEditCourse = (item: Course) => {
-        setEditingCourse(item);
-
-        setCourseForm({
-            course_name: item.course_name,
-            provider: item.provider,
-            description: item.description,
-            completion_date: item.completion_date,
-            certificate_url: item.certificate_url || "",
-            skill_ids: item.skill_ids || [],
-        });
-
-        setShowCourseForm(true);
-    };
-    const handleSaveCourse = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        try {
-            const data = {
-                course_name: courseForm.course_name,
-                provider: courseForm.provider,
-                description: courseForm.description,
-                completion_date: courseForm.completion_date,
-                certificate_url: courseForm.certificate_url,
-                skill_ids: courseForm.skill_ids,
-            };
-
-            if (editingCourse) {
-                await axios.put(
-                    `http://localhost:5000/api/profile/course/${editingCourse.course_id}`,
-                    data,
-                    { headers }
-                );
-            } else {
-                await axios.post(
-                    "http://localhost:5000/api/profile/course",
-                    data,
-                    { headers }
-                );
-            }
-
-            setShowCourseForm(false);
-            setEditingCourse(null);
-
-            await loadAccountData();
-
-        } catch (error) {
-            console.error("COURSE SAVE ERROR:", error);
-        }
-    };
-    const handleDeleteCourse = async (courseId: number) => {
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this course?"
-        );
-
-        if (!confirmDelete) return;
-
-        try {
-            await axios.delete(
-                `http://localhost:5000/api/profile/course/${courseId}`,
-                { headers }
-            );
-
-            await loadAccountData();
-
-        } catch (error) {
-            console.error("COURSE DELETE ERROR:", error);
-        }
-    };
-
-    const handleAddExperience = () => {
-        setEditingExperience(null);
-
-       setExperienceForm({
-    experience_type: "",
-    job_title: "",
-    company_name: "",
-    description: "",
-    start_date: "",
-    end_date: "",
-    skill_ids: [],
-});
-
-        setShowExperienceForm(true);
-    };
-    const handleEditExperience = (item: Experience) => {
-        setEditingExperience(item);
-
-        setExperienceForm({
-            experience_type: item.experience_type,
-            job_title: item.job_title,
-            company_name: item.company_name,
-            description: item.description,
-            start_date: item.start_date,
-            end_date: item.end_date || "",
-            skill_ids: item.skill_ids || [],
-        });
-
-        setShowExperienceForm(true);
-    };
-    const handleSaveExperience = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        try {
-            const data = {
-                experience_type: experienceForm.experience_type,
-                job_title: experienceForm.job_title,
-                company_name: experienceForm.company_name,
-                description: experienceForm.description,
-                start_date: experienceForm.start_date,
-                end_date: experienceForm.end_date || null,
-                skill_ids: experienceForm.skill_ids,
-            };
-
-            console.log("SAVE EXPERIENCE CLICKED");
-            console.log("EXPERIENCE DATA:", data);
-
-            if (editingExperience) {
-                console.log("UPDATING EXPERIENCE");
-
-                await axios.put(
-                    `http://localhost:5000/api/profile/experience/${editingExperience.experience_id}`,
-                    data,
-                    { headers }
-                );
-            } else {
-                console.log("ADDING EXPERIENCE");
-
-                await axios.post(
-                    "http://localhost:5000/api/profile/experience",
-                    data,
-                    { headers }
-                );
-            }
-
-            console.log("EXPERIENCE SAVED");
-
-            setShowExperienceForm(false);
-            setEditingExperience(null);
-
-            await loadAccountData();
-
-        } catch (error: any) {
-            console.error("EXPERIENCE SAVE ERROR:", error);
-            console.error("SERVER RESPONSE:", error.response?.data);
-        }
-    };
-    const handleDeleteExperience = async (experienceId: number) => {
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this experience?"
-        );
-
-        if (!confirmDelete) return;
-
-        try {
-            await axios.delete(
-                `http://localhost:5000/api/profile/experience/${experienceId}`,
-                { headers }
-            );
-
-            await loadAccountData();
-
-        } catch (error) {
-            console.error("EXPERIENCE DELETE ERROR:", error);
-        }
-    };
-    const handleAddProject = () => {
-        setEditingProject(null);
-
-        setProjectForm({
-    project_name: "",
-    description: "",
-    start_date: "",
-    end_date: "",
-    skill_ids: [],
-});
-
-        setShowProjectForm(true);
-    };
-
-    const handleEditProject = (item: Project) => {
-        setEditingProject(item);
-
-        setProjectForm({
-            project_name: item.project_name,
-            description: item.description,
-            start_date: item.start_date,
-            end_date: item.end_date || "",
-            skill_ids: item.skill_ids || [],
-        });
-
-        setShowProjectForm(true);
-    };
-
-    const handleSaveProject = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        try {
-            const data = {
-                project_name: projectForm.project_name,
-                description: projectForm.description,
-                start_date: projectForm.start_date,
-                end_date: projectForm.end_date || null,
-                skill_ids: projectForm.skill_ids,
-            };
-
-            if (editingProject) {
-                await axios.put(
-                    `http://localhost:5000/api/profile/project/${editingProject.project_id}`,
-                    data,
-                    { headers }
-                );
-            } else {
-                await axios.post(
-                    "http://localhost:5000/api/profile/project",
-                    data,
-                    { headers }
-                );
-            }
-
-            setShowProjectForm(false);
-            setEditingProject(null);
-
-            await loadAccountData();
-
-        } catch (error: any) {
-            console.error("PROJECT SAVE ERROR:", error);
-            console.error("SERVER RESPONSE:", error.response?.data);
-        }
-    };
-
-    const handleDeleteProject = async (projectId: number) => {
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this project?"
-        );
-
-        if (!confirmDelete) return;
-
-        try {
-            await axios.delete(
-                `http://localhost:5000/api/profile/project/${projectId}`,
-                { headers }
-            );
-
-            await loadAccountData();
-
-        } catch (error: any) {
-            console.error("PROJECT DELETE ERROR:", error);
-            console.error("SERVER RESPONSE:", error.response?.data);
-        }
-    };
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const openSection = params.get("open");
-
-        if (openSection === "education") {
-            handleAddEducation();
-        }
-
-        if (openSection === "courses") {
-            handleAddCourse();
-        }
-
-        if (openSection === "experience") {
-            handleAddExperience();
-        }
-
-        if (openSection === "projects") {
-            handleAddProject();
-        }
-
-        if (openSection) {
-            navigate("/account", { replace: true });
-        }
-    }, [location.search]);
-
-    const handleEditProfile = () => {
-        setProfileForm({
-            full_name: user?.full_name || "",
-            github_profile_url: user?.github_profile_url || "",
-            linkedin_profile_url: user?.linkedin_profile_url || "",
-            about: user?.about || "",
-        });
-
-        setShowProfileForm(true);
-    };
-    const handleSaveProfile = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        try {
-            await axios.put(
-                "http://localhost:5000/api/profile/",
-                {
-                    full_name: profileForm.full_name,
-                    github_profile_url: profileForm.github_profile_url,
-                    linkedin_profile_url: profileForm.linkedin_profile_url,
-                    about: profileForm.about,
-                },
-                { headers }
-            );
-
-            setShowProfileForm(false);
-
-            // Refresh so the updated profile information is displayed
-            window.location.reload();
-
-        } catch (error: any) {
-            console.error("PROFILE UPDATE ERROR:", error);
-            console.error("SERVER RESPONSE:", error.response?.data);
-        }
-    };
-    const toggleSkill = (
-    skillId: number,
-    selectedSkills: number[],
-    setSelectedSkills: (skills: number[]) => void
-) => {
-    if (selectedSkills.includes(skillId)) {
-        setSelectedSkills(
-            selectedSkills.filter(id => id !== skillId)
-        );
-    } else {
-        setSelectedSkills([
-            ...selectedSkills,
-            skillId
-        ]);
-    }
-};
-const renderSkillSelector = (
-    selectedSkills: number[],
-    setSelectedSkills: (skills: number[]) => void,
-    title: string,
-    description: string
-) => (
-    <div className="skill-selector">
-
-        <label>{title}</label>
-
-        <p className="skill-selector-description">
-            {description}
-        </p>
-
-        <div className="skill-checkbox-list">
-
-            {skills.map((skill) => (
-
-                <label
-                    key={skill.skill_id}
-                    className="skill-checkbox"
-                >
-
-                    <input
-                        type="checkbox"
-                        checked={selectedSkills.includes(skill.skill_id)}
-                        onChange={() =>
-                            toggleSkill(
-                                skill.skill_id,
-                                selectedSkills,
-                                setSelectedSkills
-                            )
-                        }
-                    />
-
-                    <span>{skill.skill_name}</span>
-
-                </label>
-
-            ))}
-
-        </div>
-
-    </div>
-);
     return (
         <>
             <Navbar />
@@ -751,7 +244,6 @@ const renderSkillSelector = (
 
 
                 {/* PROFILE */}
-
                 <section className="profile-card">
                     <div className="profile-avatar">
                         {user?.full_name?.split(" ").map((name) => name[0])
@@ -770,11 +262,7 @@ const renderSkillSelector = (
                                                 : "Build your career profile"}
                                         </p>
                                     </div>
-                                    <button
-                                        type="button"
-                                        className="profile-edit-button"
-                                        onClick={handleEditProfile}
-                                    >
+                                    <button className="profile-edit-button" onClick={() => { navigate("/profile") }}>
                                         ✎ Edit Profile
                                     </button>
                                 </div>
@@ -800,19 +288,23 @@ const renderSkillSelector = (
                                 <div className="profile-info-icon">
                                     ◉
                                 </div>
+
                                 <div>
                                     <span>GitHub</span>
+
                                     {user?.github_profile_url ? (
-                                        <a
-                                            href={user.github_profile_url}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                        >
-                                            View Profile ↗
-                                        </a>
+                                        <>
+                                            <a
+                                                href={user.github_profile_url}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                            >
+                                                View Profile ↗
+                                            </a>
+                                        </>
                                     ) : (
                                         <strong className="not-added">
-                                            Not added
+                                            Add GitHub profile first
                                         </strong>
                                     )}
                                 </div>
@@ -881,6 +373,7 @@ const renderSkillSelector = (
                         </div>
                     )}
                 </section>
+
 
                 <section className="github-section">
                     {!githubData ? (
@@ -1061,14 +554,10 @@ const renderSkillSelector = (
                             <h2>Education</h2>
                             <p>Your educational background</p>
                         </div>
-                        <button
-                            className="add-button"
-                            onClick={handleAddEducation}
-                        >
+                        <button className="add-button" onClick={() => { setSelectedEducation(null); setShowEducationForm(true); }}>
                             + Add Education
                         </button>
                     </div>
-                    <div className="profile-divider"></div>
                     {education.length === 0 ? (
                         <div className="empty-section">
                             No education added yet.
@@ -1080,46 +569,51 @@ const renderSkillSelector = (
                                     className="account-item"
                                     key={item.education_id}
                                 >
+                                    <div className="item-icon">
+                                        <GraduationCap size={20} />
+                                    </div>
                                     <div className="item-content">
                                         <h3>
                                             {item.degree}
                                         </h3>
-
                                         <p>
                                             {item.field_of_study}
                                         </p>
-
                                         <span>
                                             {item.institution}
-                                            {" • "}
+                                        </span>
+                                        {/* <span>
                                             {item.start_year}
                                             {" - "}
                                             {item.end_year}
-                                        </span>
-
+                                        </span> */}
                                     </div>
-
 
                                     <div className="item-actions">
-
-                                        <button onClick={() => handleEditEducation(item)}>
-                                            Edit
+                                        <button title="Edit education" className="icon-button edit-icon" onClick={() => { setSelectedEducation(item); setDeleteEducationItem(null); setShowEducationForm(true); }}>
+                                            <Pencil size={14} />
                                         </button>
-
-                                        <button className="delete-button" onClick={() => handleDeleteEducation(item.education_id)}>
-                                            Delete
+                                        <button title="Delete education" className="icon-button delete-icon" onClick={() => { setDeleteEducationItem(item); setShowEducationForm(true); }}>
+                                            <Trash2 size={14} />
                                         </button>
-
                                     </div>
-
                                 </div>
-
                             ))}
-
                         </div>
-
                     )}
 
+                    {showEducationForm && (
+                        <EducationForm
+                            education={selectedEducation}
+                            deleteEducation={deleteEducationItem}
+                            onClose={() => {
+                                setShowEducationForm(false);
+                                setSelectedEducation(null);
+                                setDeleteEducationItem(null);
+                            }}
+                            onSuccess={loadAccountData}
+                        />
+                    )}
                 </section>
 
                 {/* COURSES */}
@@ -1129,13 +623,25 @@ const renderSkillSelector = (
                             <h2>Courses & Certifications</h2>
                             <p>Courses and certifications you completed</p>
                         </div>
-                        <button
-                            type="button"
-                            className="add-button"
-                            onClick={handleAddCourse}
-                        >
-                            + Add Course
-                        </button>
+                        <div>
+                            <button
+                                className="add-button"
+                                onClick={() => {
+                                    setSelectedCourse(null);
+                                    setDeleteCourse(null);
+                                    setShowCourseForm(true);
+                                }}
+                            >
+                                + Add Course
+                            </button>
+                            <button style={{ marginLeft: "5px" }}
+                                className="add-button"
+                                onClick={() => setShowCredlyModal(true)}
+                            >
+                                Import from Credly
+                            </button>
+                        </div>
+
                     </div>
 
                     {courses.length === 0 ? (
@@ -1149,7 +655,9 @@ const renderSkillSelector = (
                                     className="account-item"
                                     key={item.course_id}
                                 >
-
+                                    <div className="item-icon">
+                                        <BookOpen size={20} />
+                                    </div>
                                     <div className="item-content">
 
                                         <h3>
@@ -1161,7 +669,7 @@ const renderSkillSelector = (
                                         </p>
 
                                         <span>
-                                            Completed:
+                                            Completed
                                             {" "}
                                             {item.completion_date}
                                         </span>
@@ -1170,22 +678,30 @@ const renderSkillSelector = (
 
 
                                     <div className="item-actions">
-
                                         <button
-                                            type="button"
-                                            onClick={() => handleEditCourse(item)}
+                                            title="Edit course"
+                                            className="icon-button edit-icon"
+                                            onClick={() => {
+                                                setSelectedCourse(item);
+                                                setDeleteCourse(null);
+                                                setShowCourseForm(true);
+                                            }}
                                         >
-                                            Edit
+                                            <Pencil size={14} />
                                         </button>
 
-                                        <button
-                                            type="button"
-                                            className="delete-button"
-                                            onClick={() => handleDeleteCourse(item.course_id)}
-                                        >
-                                            Delete
-                                        </button>
 
+                                        <button
+                                            title="Delete course"
+                                            className="icon-button delete-icon"
+                                            onClick={() => {
+                                                setDeleteCourse(item);
+                                                setSelectedCourse(null);
+                                                setShowCourseForm(true);
+                                            }}
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
                                     </div>
 
                                 </div>
@@ -1195,7 +711,34 @@ const renderSkillSelector = (
                         </div>
 
                     )}
+                    {showCourseForm && (
 
+                        <CourseForm
+                            course={selectedCourse}
+                            deleteCourse={deleteCourse}
+
+                            onClose={() => {
+                                setShowCourseForm(false);
+                                setSelectedCourse(null);
+                                setDeleteCourse(null);
+                            }}
+
+                            onSuccess={loadAccountData}
+                        />
+
+                    )}
+                    {showCredlyModal && (
+                        <CredlyPopup
+                            onClose={() =>
+                                setShowCredlyModal(false)
+                            }
+                            onSaved={() => {
+                                setShowCredlyModal(false);
+
+                                loadAccountData();
+                            }}
+                        />
+                    )}
                 </section>
 
                 {/* EXPERIENCE */}
@@ -1208,16 +751,11 @@ const renderSkillSelector = (
                             <p>Your internships and work experience</p>
                         </div>
 
-                        <button
-                            type="button"
-                            className="add-button"
-                            onClick={handleAddExperience}
-                        >
+                        <button className="add-button" onClick={() => { setSelectedExperience(null); setShowExperienceForm(true); }}>
                             + Add Experience
                         </button>
 
                     </div>
-
 
                     {experience.length === 0 ? (
 
@@ -1235,7 +773,9 @@ const renderSkillSelector = (
                                     className="account-item"
                                     key={item.experience_id}
                                 >
-
+                                    <div className="item-icon">
+                                        <Briefcase size={20} />
+                                    </div>
                                     <div className="item-content">
 
                                         <h3>
@@ -1247,31 +787,40 @@ const renderSkillSelector = (
                                         </p>
 
                                         <span>
+                                            {item.experience_type}
+                                        </span>
+                                        {/* {" • "}
                                             {item.start_date}
                                             {" - "}
                                             {item.end_date || "Present"}
-                                        </span>
+                                        </span> */}
 
                                     </div>
 
 
                                     <div className="item-actions">
-
                                         <button
-                                            type="button"
-                                            onClick={() => handleEditExperience(item)}
+                                            title="Edit experience"
+                                            className="icon-button edit-icon"
+                                            onClick={() => {
+                                                setSelectedExperience(item);
+                                                setDeleteExperience(null);
+                                                setShowExperienceForm(true);
+                                            }}
                                         >
-                                            Edit
+                                            <Pencil size={14} />
                                         </button>
 
                                         <button
-                                            type="button"
-                                            className="delete-button"
-                                            onClick={() =>
-                                                handleDeleteExperience(item.experience_id)
-                                            }
+                                            title="Delete experience"
+                                            className="icon-button delete-icon"
+                                            onClick={() => {
+                                                setDeleteExperience(item);
+                                                setSelectedExperience(null);
+                                                setShowExperienceForm(true);
+                                            }}
                                         >
-                                            Delete
+                                            <Trash2 size={14} />
                                         </button>
 
                                     </div>
@@ -1283,681 +832,146 @@ const renderSkillSelector = (
                         </div>
 
                     )}
-
+                    {showExperienceForm && (
+                        <ExperienceForm
+                            experience={selectedExperience}
+                            deleteExperience={deleteExperience}
+                            onClose={() => {
+                                setShowExperienceForm(false);
+                                setSelectedExperience(null);
+                                setDeleteExperience(null);
+                            }}
+                            onSuccess={loadAccountData}
+                        />
+                    )}
                 </section>
 
                 {/* PROJECTS */}
                 <section className="account-section">
-
                     <div className="section-header">
-
                         <div>
                             <h2>Projects</h2>
                             <p>Projects you have worked on</p>
                         </div>
+                        <div>
+                            <button className="add-button" onClick={() => {
+                                setSelectedProject(null);
+                                setDeleteProject(null);
+                                setGithubImport(false);
+                                setShowProjectForm(true);
+                            }}>
+                                + Add Project
+                            </button>
 
-                        <button
-                            type="button"
-                            className="add-button"
-                            onClick={handleAddProject}
-                        >
-                            + Add Project
-                        </button>
+                            <button style={{ marginLeft: "5px" }}
+                                className="add-button"
+                                onClick={() => {
+                                    setSelectedProject(null);
+                                    setDeleteProject(null);
+                                    setGithubImport(true);
+                                    setShowProjectForm(true);
+                                }}
+                            >
+                                Import from Github
+                            </button></div>
 
                     </div>
 
-
                     {projects.length === 0 ? (
+
                         <div className="empty-section">
                             No projects added yet.
                         </div>
+
                     ) : (
+
                         <div className="account-list">
+
                             {projects.map((item) => (
+
                                 <div
                                     className="account-item"
                                     key={item.project_id}
                                 >
+                                    <div className="item-icon">
+                                        <FolderGit2 size={20} />
+                                    </div>
                                     <div className="item-content">
-                                        <h3>{item.project_name}</h3>
 
-                                        <p>{item.description}</p>
+                                        <h3>
+                                            {item.project_name}
+                                        </h3>
+
+                                        <p>
+                                            {item.description}
+                                        </p>
 
                                         <span>
-                                            {item.start_date}
+                                            {item.start_date.slice(0, 10)}
                                             {" - "}
                                             {item.end_date || "Present"}
                                         </span>
+
                                     </div>
+
 
                                     <div className="item-actions">
                                         <button
-                                            type="button"
-                                            onClick={() => handleEditProject(item)}
+                                            title="Edit project"
+                                            className="icon-button edit-icon"
+                                            onClick={() => {
+                                                setSelectedProject(item);
+                                                setDeleteProject(null);
+                                                setGithubImport(false);
+                                                setShowProjectForm(true);
+                                            }}
                                         >
-                                            Edit
+                                            <Pencil size={14} />
                                         </button>
 
+
                                         <button
-                                            type="button"
-                                            className="delete-button"
-                                            onClick={() =>
-                                                handleDeleteProject(item.project_id)
-                                            }
+                                            title="Delete project"
+                                            className="icon-button delete-icon"
+                                            onClick={() => {
+                                                setDeleteProject(item);
+                                                setSelectedProject(null);
+                                                setGithubImport(false);
+                                                setShowProjectForm(true);
+                                            }}
                                         >
-                                            Delete
+                                            <Trash2 size={14} />
                                         </button>
                                     </div>
+
                                 </div>
+
                             ))}
+
                         </div>
+
                     )}
-                    {showProfileForm && (
-                        <div className="modal-overlay">
-                            <div className="modal">
+                    {showProjectForm && (
 
-                                <div className="modal-header">
-                                    <h2>Edit Profile</h2>
+                        <ProjectForm
+                            project={selectedProject}
+                            deleteProject={deleteProject}
+                            githubImport={githubImport}
 
-                                    <button
-                                        type="button"
-                                        className="modal-close"
-                                        onClick={() => setShowProfileForm(false)}
-                                    >
-                                        ×
-                                    </button>
-                                </div>
+                            onClose={() => {
+                                setShowProjectForm(false);
+                                setSelectedProject(null);
+                                setDeleteProject(null);
+                                setGithubImport(false);
+                            }}
 
-                                <form onSubmit={handleSaveProfile}>
+                            onSuccess={loadAccountData}
+                        />
 
-                                    <label>Full Name</label>
-
-                                    <input
-                                        type="text"
-                                        value={profileForm.full_name}
-                                        onChange={(e) =>
-                                            setProfileForm({
-                                                ...profileForm,
-                                                full_name: e.target.value,
-                                            })
-                                        }
-                                        required
-                                    />
-
-                                    <label>GitHub Profile URL</label>
-
-                                    <input
-                                        type="url"
-                                        value={profileForm.github_profile_url}
-                                        onChange={(e) =>
-                                            setProfileForm({
-                                                ...profileForm,
-                                                github_profile_url: e.target.value,
-                                            })
-                                        }
-                                        placeholder="https://github.com/username"
-                                    />
-
-                                    <label>LinkedIn Profile URL</label>
-
-                                    <input
-                                        type="url"
-                                        value={profileForm.linkedin_profile_url}
-                                        onChange={(e) =>
-                                            setProfileForm({
-                                                ...profileForm,
-                                                linkedin_profile_url: e.target.value,
-                                            })
-                                        }
-                                        placeholder="https://linkedin.com/in/username"
-                                    />
-
-                                    <label>About</label>
-
-                                    <textarea
-                                        value={profileForm.about}
-                                        onChange={(e) =>
-                                            setProfileForm({
-                                                ...profileForm,
-                                                about: e.target.value,
-                                            })
-                                        }
-                                        rows={4}
-                                        placeholder="Tell us about yourself..."
-                                    />
-
-                                    <div className="modal-actions">
-
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowProfileForm(false)}
-                                        >
-                                            Cancel
-                                        </button>
-
-                                        <button type="submit">
-                                            Save Profile
-                                        </button>
-
-                                    </div>
-
-                                </form>
-
-                            </div>
-                        </div>
                     )}
-
 
                 </section>
-                {showEducationForm && (
-                    <div className="modal-overlay">
-                        <div className="modal">
 
-                            <div className="modal-header">
-                                <h2>
-                                    {editingEducation
-                                        ? "Edit Education"
-                                        : "Add Education"}
-                                </h2>
-
-                                <button
-                                    className="modal-close"
-                                    onClick={() => setShowEducationForm(false)}
-                                >
-                                    ×
-                                </button>
-                            </div>
-
-                            <form onSubmit={handleSaveEducation}>
-
-                                <label>Degree</label>
-                                <input
-                                    type="text"
-                                    value={educationForm.degree}
-                                    onChange={(e) =>
-                                        setEducationForm({
-                                            ...educationForm,
-                                            degree: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-                                <label>Field of Study</label>
-                                <input
-                                    type="text"
-                                    value={educationForm.field_of_study}
-                                    onChange={(e) =>
-                                        setEducationForm({
-                                            ...educationForm,
-                                            field_of_study: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-                                <label>Institution</label>
-                                <input
-                                    type="text"
-                                    value={educationForm.institution}
-                                    onChange={(e) =>
-                                        setEducationForm({
-                                            ...educationForm,
-                                            institution: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-                                <label>Start Year</label>
-                                <input
-                                    type="number"
-                                    value={educationForm.start_year}
-                                    onChange={(e) =>
-                                        setEducationForm({
-                                            ...educationForm,
-                                            start_year: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-                                <label>End Year</label>
-                                <input
-                                    type="number"
-                                    value={educationForm.end_year}
-                                    onChange={(e) =>
-                                        setEducationForm({
-                                            ...educationForm,
-                                            end_year: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-                                {renderSkillSelector(
-    educationForm.skill_ids,
-    (selectedSkills) =>
-        setEducationForm({
-            ...educationForm,
-            skill_ids: selectedSkills,
-        }),
-    "Skills Learned",
-    "Select the skills you learned during this education."
-)}
-
-                                <div className="modal-actions">
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowEducationForm(false)}
-                                    >
-                                        Cancel
-                                    </button>
-
-                                    <button type="submit">
-                                        {editingEducation
-                                            ? "Update Education"
-                                            : "Save Education"}
-                                    </button>
-
-                                </div>
-
-                            </form>
-                        </div>
-                    </div>
-                )}
-                {showCourseForm && (
-                    <div className="modal-overlay">
-
-                        <div className="modal">
-
-                            <div className="modal-header">
-
-                                <h2>
-                                    {editingCourse
-                                        ? "Edit Course"
-                                        : "Add Course"}
-                                </h2>
-
-                                <button
-                                    type="button"
-                                    className="modal-close"
-                                    onClick={() => setShowCourseForm(false)}
-                                >
-                                    ×
-                                </button>
-
-                            </div>
-
-                            <form onSubmit={handleSaveCourse}>
-
-                                <label>Course Name</label>
-
-                                <input
-                                    type="text"
-                                    value={courseForm.course_name}
-                                    onChange={(e) =>
-                                        setCourseForm({
-                                            ...courseForm,
-                                            course_name: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-
-                                <label>Provider</label>
-
-                                <input
-                                    type="text"
-                                    value={courseForm.provider}
-                                    onChange={(e) =>
-                                        setCourseForm({
-                                            ...courseForm,
-                                            provider: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-
-                                <label>Description</label>
-
-                                <textarea
-                                    value={courseForm.description}
-                                    onChange={(e) =>
-                                        setCourseForm({
-                                            ...courseForm,
-                                            description: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-
-                                <label>Completion Date</label>
-
-                                <input
-                                    type="date"
-                                    value={courseForm.completion_date}
-                                    onChange={(e) =>
-                                        setCourseForm({
-                                            ...courseForm,
-                                            completion_date: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-
-                                <label>Certificate URL</label>
-
-                                <input
-                                    type="url"
-                                    value={courseForm.certificate_url}
-                                    onChange={(e) =>
-                                        setCourseForm({
-                                            ...courseForm,
-                                            certificate_url: e.target.value,
-                                        })
-                                    }
-                                    placeholder="https://..."
-                                />
-                                {renderSkillSelector(
-    courseForm.skill_ids,
-    (selectedSkills) =>
-        setCourseForm({
-            ...courseForm,
-            skill_ids: selectedSkills,
-        }),
-    "Skills Learned",
-    "Select the skills you learned from this course."
-)}
-
-
-                                <div className="modal-actions">
-
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            setShowCourseForm(false)
-                                        }
-                                    >
-                                        Cancel
-                                    </button>
-
-                                    <button type="submit">
-                                        {editingCourse
-                                            ? "Update Course"
-                                            : "Save Course"}
-                                    </button>
-
-                                </div>
-
-                            </form>
-
-                        </div>
-
-                    </div>
-                )}
-                {showExperienceForm && (
-                    <div className="modal-overlay">
-
-                        <div className="modal">
-
-                            <div className="modal-header">
-
-                                <h2>
-                                    {editingExperience
-                                        ? "Edit Experience"
-                                        : "Add Experience"}
-                                </h2>
-
-                                <button
-                                    type="button"
-                                    className="modal-close"
-                                    onClick={() => setShowExperienceForm(false)}
-                                >
-                                    ×
-                                </button>
-
-                            </div>
-
-                            <form onSubmit={handleSaveExperience}>
-
-                                <label>Experience Type</label>
-
-                                <input
-                                    type="text"
-                                    value={experienceForm.experience_type}
-                                    onChange={(e) =>
-                                        setExperienceForm({
-                                            ...experienceForm,
-                                            experience_type: e.target.value,
-                                        })
-                                    }
-                                    placeholder="Internship / Full-time / Part-time"
-                                    required
-                                />
-
-
-                                <label>Job Title</label>
-
-                                <input
-                                    type="text"
-                                    value={experienceForm.job_title}
-                                    onChange={(e) =>
-                                        setExperienceForm({
-                                            ...experienceForm,
-                                            job_title: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-
-                                <label>Company Name</label>
-
-                                <input
-                                    type="text"
-                                    value={experienceForm.company_name}
-                                    onChange={(e) =>
-                                        setExperienceForm({
-                                            ...experienceForm,
-                                            company_name: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-
-                                <label>Description</label>
-
-                                <textarea
-                                    value={experienceForm.description}
-                                    onChange={(e) =>
-                                        setExperienceForm({
-                                            ...experienceForm,
-                                            description: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-
-                                <label>Start Date</label>
-
-                                <input
-                                    type="date"
-                                    value={experienceForm.start_date}
-                                    onChange={(e) =>
-                                        setExperienceForm({
-                                            ...experienceForm,
-                                            start_date: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-
-                                <label>End Date</label>
-
-                                <input
-                                    type="date"
-                                    value={experienceForm.end_date}
-                                    onChange={(e) =>
-                                        setExperienceForm({
-                                            ...experienceForm,
-                                            end_date: e.target.value,
-                                        })
-                                    }
-                                />
-                                {renderSkillSelector(
-    experienceForm.skill_ids,
-    (selectedSkills) =>
-        setExperienceForm({
-            ...experienceForm,
-            skill_ids: selectedSkills,
-        }),
-    "Skills Gained",
-    "Select the skills you gained or used during this experience."
-)}
-
-
-                                <div className="modal-actions">
-
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            setShowExperienceForm(false)
-                                        }
-                                    >
-                                        Cancel
-                                    </button>
-
-                                    <button type="submit">
-                                        {editingExperience
-                                            ? "Update Experience"
-                                            : "Save Experience"}
-                                    </button>
-
-                                </div>
-
-                            </form>
-
-                        </div>
-
-                    </div>
-                )}
-                {showProjectForm && (
-                    <div className="modal-overlay">
-                        <div className="modal">
-
-                            <div className="modal-header">
-                                <h2>
-                                    {editingProject
-                                        ? "Edit Project"
-                                        : "Add Project"}
-                                </h2>
-
-                                <button
-                                    type="button"
-                                    className="modal-close"
-                                    onClick={() => setShowProjectForm(false)}
-                                >
-                                    ×
-                                </button>
-                            </div>
-
-                            <form onSubmit={handleSaveProject}>
-
-                                <label>Project Name</label>
-
-                                <input
-                                    type="text"
-                                    value={projectForm.project_name}
-                                    onChange={(e) =>
-                                        setProjectForm({
-                                            ...projectForm,
-                                            project_name: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-                                <label>Description</label>
-
-                                <textarea
-                                    value={projectForm.description}
-                                    onChange={(e) =>
-                                        setProjectForm({
-                                            ...projectForm,
-                                            description: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-                                <label>Start Date</label>
-
-                                <input
-                                    type="date"
-                                    value={projectForm.start_date}
-                                    onChange={(e) =>
-                                        setProjectForm({
-                                            ...projectForm,
-                                            start_date: e.target.value,
-                                        })
-                                    }
-                                    required
-                                />
-
-                                <label>End Date</label>
-
-                                <input
-                                    type="date"
-                                    value={projectForm.end_date}
-                                    onChange={(e) =>
-                                        setProjectForm({
-                                            ...projectForm,
-                                            end_date: e.target.value,
-                                        })
-                                    }
-                                />
-                                {renderSkillSelector(
-    projectForm.skill_ids,
-    (selectedSkills) =>
-        setProjectForm({
-            ...projectForm,
-            skill_ids: selectedSkills,
-        }),
-    "Skills Used / Demonstrated",
-    "Select the skills you used or demonstrated while working on this project."
-)}
-
-                                <div className="modal-actions">
-
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            setShowProjectForm(false)
-                                        }
-                                    >
-                                        Cancel
-                                    </button>
-
-                                    <button type="submit">
-                                        {editingProject
-                                            ? "Update Project"
-                                            : "Save Project"}
-                                    </button>
-
-                                </div>
-
-                            </form>
-                        </div>
-                    </div>
-                )}
             </main>
         </>
     );
