@@ -1,52 +1,76 @@
-/* ================================
+/* =========================================================
    PROGRESS PAGE
-================================ */
+   Career Navigator UI
+========================================================= */
 
 .progress-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 25px;
+    gap: 24px;
+    margin-bottom: 28px;
 }
 
 .progress-header h1 {
-    margin: 6px 0;
+    margin: 6px 0 7px;
     color: #25213a;
-    font-size: 32px;
+    font-family: "Poppins", sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.25;
 }
 
 .progress-subtitle {
     margin: 0;
-    color: #888;
-    font-size: 14px;
+    color: #777286;
+    font-family: "Poppins", sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
 }
 
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
 .roadmap-button {
-    padding: 11px 18px;
-    border: none;
-    border-radius: 9px;
-    background: var(--primary-dark);
-    color: white;
-    font-size: 13px;
+    flex-shrink: 0;
+    min-height: 42px;
+    padding: 10px 17px;
+    border: 1px solid #ddd6ef;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 }
 
 .roadmap-button:hover {
-    background: var(--primary2);
+    border-color: #c9bced;
+    background: #f8f6ff;
+    box-shadow: 0 5px 14px rgba(83, 62, 145, 0.08);
+    transform: translateY(-1px);
 }
 
 
-/* ================================
+/* =========================================================
    OVERALL PROGRESS
-================================ */
+========================================================= */
 
 .overall-progress-card {
-    padding: 25px;
-    background: white;
-    border: 1px solid #e8e5f0;
-    border-radius: 16px;
-    margin-bottom: 20px;
+    padding: 25px 26px;
+    margin-bottom: 22px;
+    background: #ffffff;
+    border: 1px solid #e8e5ed;
+    border-radius: 17px;
+    box-shadow: 0 4px 16px rgba(37, 33, 58, 0.035);
 }
 
 .overall-progress-info {
@@ -57,59 +81,56 @@
 
 .progress-card-label {
     color: #8b849d;
-    font-size: 11px;
+    font-family: "Poppins", sans-serif;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.7px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
 }
 
 .overall-progress-info h2 {
-    margin: 8px 0 2px;
-    color: var(--primary-dark);
+    margin: 7px 0 2px;
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
     font-size: 38px;
+    font-weight: 700;
+    line-height: 1;
 }
 
 .overall-progress-info p {
-    margin: 0;
-    color: #888;
-    font-size: 13px;
+    margin: 7px 0 0;
+    color: #777286;
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
 }
-
-/* Large progress bar */
 
 .large-progress-bar {
     width: 100%;
     height: 9px;
-    margin-top: 20px;
-
-    background: #eeeaf7;
-    border-radius: 10px;
+    margin-top: 22px;
     overflow: hidden;
+    background: #eeeaf7;
+    border-radius: 20px;
 }
 
 .large-progress-fill {
     height: 100%;
-    background: var(--primary-dark);
-    border-radius: 10px;
-
-    transition: width 0.4s ease;
+    background: linear-gradient(
+        90deg,
+        #7051d6,
+        #8062e2
+    );
+    border-radius: 20px;
+    transition: width 0.45s ease;
 }
 
-/* ================================
-   CURRENT POSITION
-================================ */
 
-.current-position-card {
-    padding: 25px;
-
-    background: white;
-    border: 1px solid #e8e5f0;
-    border-radius: 16px;
-
-    margin-bottom: 25px;
-}
+/* =========================================================
+   SECTION HEADINGS
+========================================================= */
 
 .section-heading {
-    margin-bottom: 20px;
+    margin-bottom: 19px;
 }
 
 .section-heading .dashboard-label {
@@ -118,659 +139,215 @@
 
 .section-heading h2 {
     margin: 0;
-    color: #25213a;
-    font-size: 22px;
+    color: #29243b;
+    font-family: "Poppins", sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.35;
 }
 
 
-/* Position */
+/* =========================================================
+   CURRENT POSITION
+========================================================= */
+
+.current-position-card {
+    padding: 25px 26px;
+    margin-bottom: 28px;
+    background: #ffffff;
+    border: 1px solid #e8e5ed;
+    border-radius: 17px;
+    box-shadow: 0 4px 16px rgba(37, 33, 58, 0.035);
+}
 
 .position-content {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 15px;
 }
 
 .position-item {
     flex: 1;
-
     display: flex;
     align-items: center;
     gap: 14px;
-
-    padding: 17px;
-
-    border-radius: 12px;
+    min-height: 78px;
+    padding: 16px 18px;
+    border-radius: 13px;
 }
 
 .completed-position {
-    background: #f5fbf7;
-    border: 1px solid #dcefe2;
+    background: #f7fbf8;
+    border: 1px solid #dfeee3;
 }
 
 .next-position {
-    background: #faf8ff;
-    border: 1px solid #e7e1f8;
+    background: #faf9ff;
+    border: 1px solid #e5dff4;
 }
 
 .position-number {
-    min-width: 38px;
-    height: 38px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
+    min-width: 39px;
+    width: 39px;
+    height: 39px;
     border-radius: 50%;
-
+    font-family: "Poppins", sans-serif;
+    font-size: 13px;
     font-weight: 700;
 }
 
 .completed-position .position-number {
-    background: #e3f4e9;
-    color: #369258;
+    background: #e5f3e9;
+    color: #398d56;
 }
 
 .next-position .position-number {
     background: #eee9ff;
-    color: #6c5ce7;
+    color: #6246b8;
 }
 
 .position-item h3 {
-    margin: 0 0 5px;
+    margin: 0 0 4px;
     color: #302b43;
-    font-size: 15px;
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    font-weight: 650;
 }
 
 .position-item p {
     margin: 0;
-    color: #888;
-    font-size: 12px;
-    line-height: 1.5;
+    color: #827d8d;
+    font-family: "Poppins", sans-serif;
+    font-size: 11px;
+    line-height: 1.55;
 }
 
 .position-line {
-    width: 35px;
-    height: 2px;
-    background: #ddd8e9;
+    width: 34px;
+    height: 1px;
+    background: #d9d4e2;
 }
 
 
-/* ================================
-   ROADMAP PROGRESS
-================================ */
-
-.roadmap-progress-section {
-    margin-bottom: 25px;
-}
-
-.progress-roadmap {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-
-/* Stage */
-
-.progress-stage {
-    padding: 22px;
-
-    background: white;
-    border: 1px solid #e8e5f0;
-    border-radius: 16px;
-}
-
-.stage-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.stage-number {
-    color: #6c5ce7;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-}
-
-.stage-header h3 {
-    margin: 5px 0 0;
-    color: #25213a;
-    font-size: 17px;
-}
-
-.stage-percentage {
-    color: #6c5ce7;
-    font-size: 14px;
-    font-weight: 700;
-}
-
-
-/* Stage progress */
-
-.stage-progress-bar {
-    width: 100%;
-    height: 6px;
-    margin: 15px 0 18px;
-
-    background: #eeeaf7;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.stage-progress-fill {
-    height: 100%;
-    background: #6c5ce7;
-    border-radius: 10px;
-
-    transition: width 0.4s ease;
-}
-
-
-/* Skills */
-
-.stage-skills {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-}
-
-.progress-skill {
-    display: flex;
-    align-items: center;
-
-    padding: 12px 14px;
-
-    border-radius: 10px;
-    border: 1px solid #eeeaf4;
-}
-
-.skill-completed {
-    background: #f8fcf9;
-}
-
-.skill-remaining {
-    background: #fcfbfe;
-}
-
-.skill-check {
-    width: 28px;
-    height: 28px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    margin-right: 12px;
-
-    border-radius: 50%;
-
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.skill-completed .skill-check {
-    background: #e4f4e9;
-    color: #39945a;
-}
-
-.skill-remaining .skill-check {
-    background: #eeeaf6;
-    color: #999;
-}
-
-.skill-info {
-    flex: 1;
-}
-
-.skill-info h4 {
-    margin: 0 0 3px;
-    color: #302b43;
-    font-size: 14px;
-}
-
-.skill-info span {
-    color: #999;
-    font-size: 11px;
-}
-
-.skill-status {
-    font-size: 11px;
-    font-weight: 600;
-}
-
-.skill-completed .skill-status {
-    color: #3a9659;
-}
-
-.skill-remaining .skill-status {
-    color: #999;
-}
-
-
-/* ================================
-   NEXT STEP
-================================ */
-
-.next-step-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    padding: 24px;
-
-    background: #f8f6ff;
-    border: 1px solid #e3ddf7;
-    border-radius: 16px;
-
-    margin-bottom: 30px;
-}
-
-.next-step-card h2 {
-    margin: 7px 0;
-    color: #25213a;
-    font-size: 21px;
-}
-
-.next-step-card p {
-    max-width: 600px;
-    margin: 0;
-
-    color: #888;
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-.next-step-card button {
-    flex-shrink: 0;
-
-    margin-left: 25px;
-    padding: 11px 17px;
-
-    border: none;
-    border-radius: 9px;
-
-    background: #6c5ce7;
-    color: white;
-
-    font-size: 12px;
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.next-step-card button:hover {
-    background: #5948d5;
-}
-
-
-/* ================================
-   EMPTY / LOADING
-================================ */
-
-.progress-empty {
-    min-height: 500px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    text-align: center;
-}
-
-.progress-empty-icon {
-    width: 55px;
-    height: 55px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    margin-bottom: 15px;
-
-    border-radius: 50%;
-
-    background: #f0edff;
-    color: #6c5ce7;
-
-    font-size: 22px;
-}
-
-.progress-empty h1 {
-    margin: 0 0 8px;
-    color: #25213a;
-    font-size: 25px;
-}
-
-.progress-empty p {
-    margin: 0 0 20px;
-    color: #888;
-    font-size: 14px;
-}
-
-.progress-empty button {
-    padding: 11px 18px;
-
-    border: none;
-    border-radius: 9px;
-
-    background: #6c5ce7;
-    color: white;
-
-    font-size: 13px;
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.progress-empty button:hover {
-    background: #5948d5;
-}
-
-.progress-loading {
-    padding: 80px;
-
-    text-align: center;
-
-    color: #888;
-    font-size: 14px;
-}
-
-
-/* ================================
-   RESPONSIVE
-================================ */
-
-@media (max-width: 1100px) {
-
-    .progress-stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-}
-
-@media (max-width: 800px) {
-
-    .progress-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .position-content {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .position-line {
-        width: 2px;
-        height: 20px;
-        margin: 0 auto;
-    }
-
-    .next-step-card {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 18px;
-    }
-
-    .next-step-card button {
-        margin-left: 0;
-    }
-
-}
-
-@media (max-width: 600px) {
-
-    .progress-stats {
-        grid-template-columns: 1fr;
-    }
-
-    .overall-progress-info {
-        align-items: flex-start;
-    }
-
-    .progress-circle {
-        width: 65px;
-        height: 65px;
-    }
-
-}
-
-/* ================================
-   SKILL PROGRESS TRACKER
-================================ */
-
-.skill-progress-tracker {
-    margin-bottom: 25px;
-}
-
-.progress-section-description {
-    margin: 6px 0 0;
-    color: #888;
-    font-size: 13px;
-}
-
-
-/* Career readiness */
-
-.career-readiness-card {
-    padding: 22px 25px;
-    background: white;
-    border: 1px solid #e8e5f0;
-    border-radius: 16px;
-    margin-bottom: 15px;
-}
-
-.career-readiness-card h2 {
-    margin: 7px 0 15px;
-    color: var(--primary-dark);
-    font-size: 32px;
-}
-
-.readiness-bar {
-    width: 100%;
-    height: 8px;
-    background: #eeeaf7;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.readiness-fill {
-    height: 100%;
-    background: var(--primary-dark);
-    border-radius: 10px;
-    transition: width 0.4s ease;
-}
-
-
-/* Individual skills */
-
-.individual-skills {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.tracked-skill {
-    padding: 18px 20px;
-    background: white;
-    border: 1px solid #e8e5f0;
-    border-radius: 14px;
-}
-
-.tracked-skill-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.tracked-skill-header h3 {
-    margin: 0 0 4px;
-    color: #302b43;
-    font-size: 15px;
-}
-
-.tracked-skill-header span {
-    color: #999;
-    font-size: 11px;
-}
-
-.tracked-skill-level {
-    padding: 6px 10px;
-    border-radius: 8px;
-    background: #f1edff;
-    color: #6c5ce7;
-    font-size: 11px;
-    font-weight: 700;
-}
-
-.skill-progress-bar {
-    width: 100%;
-    height: 7px;
-    background: #eeeaf7;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.skill-progress-fill {
-    height: 100%;
-    background: #6c5ce7;
-    border-radius: 10px;
-    transition: width 0.4s ease;
-}
-
-.tracked-skill-footer {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 7px;
-}
-
-.tracked-skill-footer span {
-    color: #888;
-    font-size: 11px;
-}
-
-.no-skills-message {
-    padding: 25px;
-    background: white;
-    border: 1px solid #e8e5f0;
-    border-radius: 14px;
-    color: #888;
-    font-size: 13px;
-    text-align: center;
-}
-.tracked-skill-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-}
-
-.tracked-skill-footer select {
-    padding: 6px 10px;
-    border: 1px solid #ddd6ee;
-    border-radius: 8px;
-    background: white;
-    color: #6c5ce7;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-/* =========================================
+/* =========================================================
    VISUAL CAREER MAP
-========================================= */
+========================================================= */
 
 .career-map-section {
-    margin-top: 35px;
+    margin-top: 32px;
+    margin-bottom: 5px;
 }
 
 .career-map-subtitle {
-    margin-top: 6px;
-    color: var(--text-muted);
-    font-size: 14px;
-    line-height: 1.6;
+    max-width: 700px;
+    margin: 6px 0 0;
+    color: #777286;
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
+    line-height: 1.65;
 }
 
 
-/* TARGET CAREER */
+/* Target career */
 
 .career-map-target {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-top: 25px;
-    padding: 18px 22px;
-    background: var(--primary);
-    border-radius: 16px;
-    color: white;
+    margin-top: 22px;
+    padding: 18px 21px;
+    background: #ffffff;
+    border: 1px solid #ded5f3;
+    border-left: 4px solid #6d4bd8;
+    border-radius: 14px;
+    color: #29243b;
+    box-shadow: 0 4px 14px rgba(37, 33, 58, 0.035);
 }
 
 .career-map-target-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.15);
-    font-size: 21px;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #f0ebff;
+    color: #6246b8;
+    font-size: 20px;
 }
 
 .career-map-target span {
-    font-size: 10px;
-    letter-spacing: 1px;
-    opacity: 0.7;
+    display: block;
+    color: #8b849d;
+    font-family: "Poppins", sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.9px;
 }
 
 .career-map-target h3 {
     margin: 4px 0 0;
-    font-size: 19px;
+    color: #29243b;
+    font-family: "Poppins", sans-serif;
+    font-size: 17px;
+    font-weight: 700;
 }
 
 
-/* FLOW */
+/* Journey flow */
 
 .career-map-flow {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: 25px;
+    gap: 11px;
+    margin-top: 22px;
+    padding: 7px 3px 15px;
     overflow-x: auto;
-    padding: 8px 3px 15px;
+    scrollbar-width: thin;
 }
 
 .career-map-flow-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 11px;
     flex-shrink: 0;
 }
 
 
-/* STAGE CARD */
+/* Stage cards */
 
 .career-map-stage-card {
     width: 235px;
     min-height: 165px;
     padding: 18px;
-    background: white;
-    border: 1px solid rgba(120, 90, 170, 0.15);
-    border-radius: 16px;
-    box-shadow: 0 4px 14px rgba(60, 40, 100, 0.05);
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #e7e3ec;
+    border-radius: 15px;
+    box-shadow: 0 4px 14px rgba(37, 33, 58, 0.04);
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.career-map-stage-card:hover {
+    border-color: #d8cff0;
+    box-shadow: 0 8px 20px rgba(37, 33, 58, 0.07);
+    transform: translateY(-2px);
 }
 
 .career-map-stage-card.stage-complete {
-    border: 2px solid rgba(34, 197, 94, 0.35);
+    border: 1px solid #bfe2ca;
+    background: #fbfefc;
 }
 
 
-/* STAGE TOP */
+/* Stage top */
 
 .career-map-stage-top {
     display: flex;
@@ -779,33 +356,39 @@
 }
 
 .career-map-stage-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 38px;
     height: 38px;
     flex-shrink: 0;
     border-radius: 50%;
-    background: var(--primary);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
+    background: #f0ebff;
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
     font-weight: 700;
 }
 
 .career-map-stage-top span {
-    font-size: 9px;
-    letter-spacing: 1px;
-    color: var(--text-muted);
+    display: block;
+    color: #918b9d;
+    font-family: "Poppins", sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.9px;
 }
 
 .career-map-stage-top h3 {
     margin: 3px 0 0;
-    font-size: 14px;
-    color: var(--primary);
+    color: #302b43;
+    font-family: "Poppins", sans-serif;
+    font-size: 13px;
+    font-weight: 650;
 }
 
 
-/* SKILL COUNT */
+/* Skill count */
 
 .career-map-stage-count {
     display: flex;
@@ -815,17 +398,20 @@
 }
 
 .career-map-stage-count strong {
-    font-size: 25px;
-    color: var(--primary);
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
 }
 
 .career-map-stage-count span {
-    font-size: 11px;
-    color: var(--text-muted);
+    color: #8c8797;
+    font-family: "Poppins", sans-serif;
+    font-size: 10px;
 }
 
 
-/* STATUS */
+/* Status */
 
 .career-map-status {
     display: grid;
@@ -833,7 +419,7 @@
     gap: 5px;
     margin-top: 14px;
     padding-top: 12px;
-    border-top: 1px solid rgba(120, 90, 170, 0.1);
+    border-top: 1px solid #eeeaf3;
 }
 
 .career-map-status div {
@@ -843,122 +429,284 @@
 }
 
 .career-map-status b {
-    font-size: 14px;
-    color: var(--primary);
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 .career-map-status span {
+    color: #8e8998;
+    font-family: "Poppins", sans-serif;
     font-size: 8px;
-    color: var(--text-muted);
 }
 
 
-/* ARROW */
+/* Arrow */
 
 .career-map-arrow {
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--primary);
+    color: #b0a8bf;
+    font-size: 20px;
+    font-weight: 500;
 }
 
 
-/* FINAL CAREER */
+/* Final career */
 
 .career-map-final-card {
     width: 215px;
     min-height: 165px;
     box-sizing: border-box;
     padding: 18px;
-    border-radius: 16px;
-    background: var(--primary);
-    color: white;
+    background: #6d4bd8;
+    border-radius: 15px;
+    color: #ffffff;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    box-shadow: 0 7px 20px rgba(109, 75, 216, 0.15);
 }
 
 .career-map-final-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.15);
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
     font-weight: 700;
 }
 
 .career-map-final-card span {
-    font-size: 9px;
-    letter-spacing: 1px;
-    opacity: 0.7;
+    font-family: "Poppins", sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.9px;
+    opacity: 0.72;
 }
 
 .career-map-final-card h3 {
     margin: 4px 0 0;
+    color: #ffffff;
+    font-family: "Poppins", sans-serif;
     font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
 }
 
 .career-map-final-card p {
-    margin: 3px 0 0;
-    font-size: 10px;
-    opacity: 0.7;
+    margin: 4px 0 0;
+    color: #ffffff;
+    font-family: "Poppins", sans-serif;
+    font-size: 9px;
+    opacity: 0.72;
 }
 
 
-/* SUMMARY */
+/* Summary */
 
 .career-map-summary {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
+    gap: 11px;
     margin-top: 15px;
 }
 
 .career-map-summary > div {
-    padding: 15px;
-    background: white;
+    padding: 15px 16px;
+    background: #ffffff;
+    border: 1px solid #e8e5ed;
     border-radius: 12px;
-    border: 1px solid rgba(120, 90, 170, 0.1);
+    box-shadow: 0 3px 10px rgba(37, 33, 58, 0.025);
 }
 
 .career-map-summary strong {
     display: block;
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
     font-size: 21px;
-    color: var(--primary);
+    font-weight: 700;
 }
 
 .career-map-summary span {
     display: block;
     margin-top: 3px;
+    color: #817b8d;
+    font-family: "Poppins", sans-serif;
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   SKILL ROADMAP
+========================================================= */
+
+.roadmap-progress-section {
+    margin-top: 32px;
+    margin-bottom: 27px;
+}
+
+.progress-roadmap {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.progress-stage {
+    padding: 21px 22px;
+    background: #ffffff;
+    border: 1px solid #e8e5ed;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(37, 33, 58, 0.03);
+}
+
+.stage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.stage-number {
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.stage-header h3 {
+    margin: 5px 0 0;
+    color: #29243b;
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.stage-percentage {
+    flex-shrink: 0;
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+/* Stage progress */
+
+.stage-progress-bar {
+    width: 100%;
+    height: 6px;
+    margin: 15px 0 17px;
+    overflow: hidden;
+    background: #eeeaf7;
+    border-radius: 20px;
+}
+
+.stage-progress-fill {
+    height: 100%;
+    background: #6d4bd8;
+    border-radius: 20px;
+    transition: width 0.4s ease;
+}
+
+
+/* Skills */
+
+.stage-skills {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.progress-skill {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-height: 54px;
+    padding: 10px 13px;
+    box-sizing: border-box;
+    background: #fcfbfd;
+    border: 1px solid #ece9f1;
+    border-radius: 11px;
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.progress-skill:hover {
+    border-color: #ddd6ea;
+    background: #ffffff;
+    transform: translateX(2px);
+}
+
+.skill-completed {
+    background: #f9fcfa;
+    border-color: #e2eee5;
+}
+
+.skill-remaining {
+    background: #fcfbfd;
+}
+
+.skill-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 29px;
+    height: 29px;
+    flex-shrink: 0;
+    margin-right: 12px;
+    border-radius: 50%;
+    font-family: "Poppins", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.skill-completed .skill-check {
+    background: #e3f3e8;
+    color: #398e57;
+}
+
+.skill-remaining .skill-check {
+    background: #efedf3;
+    color: #918b99;
+}
+
+.skill-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.skill-info h4 {
+    margin: 0 0 4px;
+    color: #302b43;
+    font-family: "Poppins", sans-serif;
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.35;
+}
+
+.skill-info span {
+    color: #8d8797;
+    font-family: "Poppins", sans-serif;
     font-size: 10px;
-    color: var(--text-muted);
 }
-
-
-/* MOBILE */
-
-@media (max-width: 800px) {
-
-    .career-map-summary {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-}
-/* =========================================
-   SKILL PRIORITY
-========================================= */
 
 .skill-meta {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 4px;
     flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 3px;
 }
 
 .skill-meta > span:first-child {
-    color: var(--text-muted);
+    color: #8d8797;
 }
 
 .skill-priority {
@@ -966,99 +714,284 @@
     align-items: center;
     padding: 3px 8px;
     border-radius: 20px;
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
+    font-family: "Poppins", sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.25px;
 }
 
 .priority-high {
-    background: #fee2e2;
-    color: #b91c1c;
+    background: #fff0f0;
+    color: #b64b4b;
 }
 
 .priority-medium {
-    background: #fef3c7;
-    color: #92400e;
+    background: #fff7df;
+    color: #99721d;
 }
 
 .priority-low {
-    background: #dcfce7;
-    color: #166534;
-}
-/* =========================================
-   PERSONALIZED PATHWAY
-========================================= */
-
-.personalized-pathway-section {
-    margin-top: 35px;
+    background: #edf8f0;
+    color: #398253;
 }
 
-.pathway-subtitle {
-    margin-top: 6px;
-    color: var(--text-muted);
-    font-size: 14px;
+.skill-status {
+    flex-shrink: 0;
+    margin-left: 15px;
+    font-family: "Poppins", sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.skill-completed .skill-status {
+    color: #398e57;
+}
+
+.skill-remaining .skill-status {
+    color: #8d8797;
+}
+
+
+/* =========================================================
+   SKILL PROGRESS TRACKER
+========================================================= */
+
+.skill-progress-tracker {
+    margin-bottom: 27px;
+}
+
+.progress-section-description {
+    margin: 6px 0 0;
+    color: #777286;
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
     line-height: 1.6;
 }
 
-/* LIST */
+
+/* Career readiness */
+
+.career-readiness-card {
+    padding: 22px 25px;
+    margin-bottom: 15px;
+    background: #ffffff;
+    border: 1px solid #e8e5ed;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(37, 33, 58, 0.03);
+}
+
+.career-readiness-card h2 {
+    margin: 7px 0 15px;
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
+    font-size: 31px;
+    font-weight: 700;
+}
+
+.readiness-bar {
+    width: 100%;
+    height: 8px;
+    overflow: hidden;
+    background: #eeeaf7;
+    border-radius: 20px;
+}
+
+.readiness-fill {
+    height: 100%;
+    background: #6d4bd8;
+    border-radius: 20px;
+    transition: width 0.4s ease;
+}
+
+
+/* Individual skills */
+
+.individual-skills {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tracked-skill {
+    padding: 17px 19px;
+    background: #ffffff;
+    border: 1px solid #e8e5ed;
+    border-radius: 14px;
+    box-shadow: 0 3px 11px rgba(37, 33, 58, 0.025);
+}
+
+.tracked-skill-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 11px;
+}
+
+.tracked-skill-header h3 {
+    margin: 0 0 4px;
+    color: #302b43;
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.tracked-skill-header span {
+    color: #8d8797;
+    font-family: "Poppins", sans-serif;
+    font-size: 10px;
+}
+
+.tracked-skill-level {
+    flex-shrink: 0;
+    padding: 5px 9px;
+    border-radius: 8px;
+    background: #f1edff;
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.skill-progress-bar {
+    width: 100%;
+    height: 7px;
+    overflow: hidden;
+    background: #eeeaf7;
+    border-radius: 20px;
+}
+
+.skill-progress-fill {
+    height: 100%;
+    background: #6d4bd8;
+    border-radius: 20px;
+    transition: width 0.4s ease;
+}
+
+.tracked-skill-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 9px;
+}
+
+.tracked-skill-footer span {
+    color: #888291;
+    font-family: "Poppins", sans-serif;
+    font-size: 10px;
+}
+
+.tracked-skill-footer select {
+    padding: 6px 10px;
+    border: 1px solid #ddd7e9;
+    border-radius: 8px;
+    outline: none;
+    background: #ffffff;
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.tracked-skill-footer select:focus {
+    border-color: #bcaef0;
+    box-shadow: 0 0 0 3px rgba(109, 75, 216, 0.08);
+}
+
+.no-skills-message {
+    padding: 25px;
+    background: #ffffff;
+    border: 1px solid #e8e5ed;
+    border-radius: 14px;
+    color: #888291;
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
+    text-align: center;
+}
+
+
+/* =========================================================
+   PERSONALIZED PATHWAY
+========================================================= */
+
+.personalized-pathway-section {
+    margin-top: 34px;
+}
+
+.pathway-subtitle {
+    max-width: 700px;
+    margin: 6px 0 0;
+    color: #777286;
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
+    line-height: 1.65;
+}
 
 .personalized-pathway-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-top: 22px;
+    gap: 10px;
+    margin-top: 20px;
 }
 
-/* SKILL CARD */
-
 .pathway-skill-card {
-    background: white;
-    border: 1px solid rgba(120, 90, 170, 0.12);
-    border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 3px 12px rgba(60, 40, 100, 0.04);
+    background: #ffffff;
+    border: 1px solid #e8e5ed;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(37, 33, 58, 0.025);
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .pathway-skill-card.pathway-skill-expanded {
-    border-color: rgba(120, 90, 170, 0.25);
+    border-color: #d8cff0;
+    box-shadow: 0 7px 20px rgba(37, 33, 58, 0.055);
 }
 
-/* HEADER */
-
 .pathway-skill-header {
-    width: 100%;
-    border: none;
-    background: transparent;
-    padding: 18px 20px;
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 14px;
+    width: 100%;
+    padding: 17px 19px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
     text-align: left;
     cursor: pointer;
-    font-family: inherit;
+    transition: background 0.2s ease;
 }
 
 .pathway-skill-header:hover {
-    background: rgba(120, 90, 170, 0.025);
+    background: #faf9fc;
 }
 
-/* NUMBER */
+
+/* Number */
 
 .pathway-skill-number {
-    width: 38px;
-    height: 38px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    background: var(--primary);
-    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    width: 37px;
+    height: 37px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #f0ebff;
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
     font-weight: 700;
 }
 
-/* MAIN */
+
+/* Main */
 
 .pathway-skill-main {
     flex: 1;
@@ -1068,130 +1001,337 @@
 .pathway-skill-title {
     display: flex;
     align-items: center;
-    gap: 10px;
     flex-wrap: wrap;
+    gap: 9px;
 }
 
 .pathway-skill-title h3 {
     margin: 0;
-    color: var(--primary);
-    font-size: 16px;
+    color: #302b43;
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
 }
 
 .pathway-skill-main > p {
     margin: 5px 0 0;
-    color: var(--text-muted);
-    font-size: 11px;
+    color: #888291;
+    font-family: "Poppins", sans-serif;
+    font-size: 10px;
 }
 
-/* PRIORITY */
+
+/* Pathway priority */
 
 .pathway-skill-title .skill-priority {
     display: inline-flex;
     align-items: center;
     padding: 4px 8px;
     border-radius: 20px;
-    font-size: 9px;
-    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+    font-size: 8px;
+    font-weight: 700;
 }
 
-/* EXPAND ICON */
+
+/* Expand icon */
 
 .pathway-expand-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 28px;
     height: 28px;
     flex-shrink: 0;
     border-radius: 50%;
-    background: rgba(120, 90, 170, 0.08);
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 19px;
+    background: #f3f0f8;
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
+    font-size: 17px;
     font-weight: 500;
 }
 
-/* CONTENT */
+
+/* Content */
 
 .pathway-skill-content {
-    padding: 0 20px 20px 73px;
-    border-top: 1px solid rgba(120, 90, 170, 0.08);
+    padding: 0 20px 20px 70px;
+    border-top: 1px solid #eeeaf2;
 }
 
-/* DETAILS */
+
+/* Details */
 
 .pathway-detail {
-    padding-top: 17px;
+    padding-top: 16px;
 }
 
 .pathway-detail h4 {
     margin: 0 0 6px;
-    color: var(--primary);
-    font-size: 12px;
+    color: #6246b8;
+    font-family: "Poppins", sans-serif;
+    font-size: 10px;
     font-weight: 700;
 }
 
 .pathway-detail p {
     margin: 0;
-    color: var(--text-muted);
-    font-size: 12px;
+    color: #777286;
+    font-family: "Poppins", sans-serif;
+    font-size: 11px;
     line-height: 1.7;
 }
 
-/* LOADING */
+
+/* Loading */
 
 .pathway-loading {
-    margin-top: 20px;
+    margin-top: 18px;
     padding: 25px;
-    background: white;
+    background: #ffffff;
+    border: 1px solid #e8e5ed;
     border-radius: 14px;
-    border: 1px solid rgba(120, 90, 170, 0.1);
-    color: var(--text-muted);
-    font-size: 13px;
+    color: #888291;
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
 }
 
-/* EMPTY */
+
+/* Empty */
 
 .pathway-empty {
-    margin-top: 20px;
-    padding: 35px 25px;
-    background: white;
+    margin-top: 18px;
+    padding: 32px 25px;
+    background: #ffffff;
+    border: 1px solid #e8e5ed;
     border-radius: 14px;
-    border: 1px solid rgba(120, 90, 170, 0.1);
     text-align: center;
 }
 
 .pathway-empty-icon {
-    width: 45px;
-    height: 45px;
-    margin: 0 auto 12px;
-    border-radius: 50%;
-    background: rgba(34, 197, 94, 0.1);
-    color: #16a34a;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 11px;
+    border-radius: 50%;
+    background: #edf8f0;
+    color: #398253;
+    font-size: 19px;
     font-weight: 700;
 }
 
 .pathway-empty h3 {
     margin: 0;
-    color: var(--primary);
-    font-size: 16px;
+    color: #302b43;
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
 }
 
 .pathway-empty p {
     max-width: 500px;
-    margin: 8px auto 0;
-    color: var(--text-muted);
+    margin: 7px auto 0;
+    color: #888291;
+    font-family: "Poppins", sans-serif;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   NEXT STEP
+========================================================= */
+
+.next-step-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+    padding: 23px 25px;
+    margin-bottom: 30px;
+    background: #faf9ff;
+    border: 1px solid #e1daf3;
+    border-radius: 16px;
+}
+
+.next-step-card h2 {
+    margin: 7px 0;
+    color: #29243b;
+    font-family: "Poppins", sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.next-step-card p {
+    max-width: 600px;
+    margin: 0;
+    color: #777286;
+    font-family: "Poppins", sans-serif;
+    font-size: 11px;
+    line-height: 1.65;
+}
+
+.next-step-card button {
+    flex-shrink: 0;
+    min-height: 42px;
+    margin-left: 10px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    background: #6d4bd8;
+    color: #ffffff;
+    font-family: "Poppins", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.next-step-card button:hover {
+    background: #5b3fc0;
+    box-shadow: 0 6px 15px rgba(109, 75, 216, 0.18);
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   EMPTY / LOADING
+========================================================= */
+
+.progress-empty {
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    text-align: center;
+}
+
+.progress-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    margin-bottom: 15px;
+    border-radius: 15px;
+    background: #f0ebff;
+    color: #6246b8;
+    font-size: 21px;
+}
+
+.progress-empty h1,
+.progress-empty h2 {
+    margin: 0 0 8px;
+    color: #29243b;
+    font-family: "Poppins", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.progress-empty p {
+    max-width: 430px;
+    margin: 0 0 20px;
+    color: #817b8d;
+    font-family: "Poppins", sans-serif;
     font-size: 12px;
     line-height: 1.6;
 }
 
-/* MOBILE */
+.progress-empty button {
+    min-height: 42px;
+    padding: 10px 17px;
+    border: none;
+    border-radius: 10px;
+    background: #6d4bd8;
+    color: #ffffff;
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.progress-empty button:hover {
+    background: #5b3fc0;
+    box-shadow: 0 6px 15px rgba(109, 75, 216, 0.18);
+    transform: translateY(-1px);
+}
+
+.progress-loading {
+    padding: 80px 20px;
+    color: #817b8d;
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
+    text-align: center;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .career-map-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .progress-header h1 {
+        font-size: 28px;
+    }
+}
+
 
 @media (max-width: 800px) {
+
+    .progress-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .roadmap-button {
+        width: auto;
+    }
+
+    .position-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .position-line {
+        width: 1px;
+        height: 18px;
+        margin: 0 auto;
+    }
+
+    .next-step-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .next-step-card button {
+        margin-left: 0;
+    }
+
+    .career-map-flow {
+        padding-bottom: 12px;
+    }
+
+    .career-map-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
 
     .pathway-skill-content {
         padding-left: 20px;
@@ -1200,5 +1340,110 @@
     .pathway-skill-header {
         padding: 15px;
     }
+}
 
+
+@media (max-width: 600px) {
+
+    .overall-progress-card,
+    .current-position-card {
+        padding: 20px;
+    }
+
+    .overall-progress-info {
+        align-items: flex-start;
+    }
+
+    .overall-progress-info h2 {
+        font-size: 34px;
+    }
+
+    .career-map-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .career-map-target {
+        padding: 16px;
+    }
+
+    .career-map-target h3 {
+        font-size: 15px;
+    }
+
+    .progress-stage {
+        padding: 18px;
+    }
+
+    .stage-header {
+        align-items: flex-start;
+    }
+
+    .progress-skill {
+        align-items: flex-start;
+    }
+
+    .skill-status {
+        margin-left: 10px;
+        padding-top: 5px;
+    }
+
+    .tracked-skill-header {
+        align-items: flex-start;
+    }
+}
+
+
+@media (max-width: 450px) {
+
+    .progress-header h1 {
+        font-size: 24px;
+    }
+
+    .progress-subtitle {
+        font-size: 12px;
+    }
+
+    .position-item {
+        padding: 14px;
+    }
+
+    .position-item h3 {
+        font-size: 13px;
+    }
+
+    .position-item p {
+        font-size: 10px;
+    }
+
+    .career-map-stage-card {
+        width: 220px;
+    }
+
+    .career-map-final-card {
+        width: 200px;
+    }
+
+    .career-map-summary > div {
+        padding: 14px;
+    }
+
+    .progress-skill {
+        padding: 10px;
+    }
+
+    .skill-info h4 {
+        font-size: 12px;
+    }
+
+    .skill-status {
+        font-size: 9px;
+    }
+
+    .next-step-card {
+        padding: 20px;
+    }
+
+    .next-step-card h2 {
+        font-size: 18px;
+    }
 }
