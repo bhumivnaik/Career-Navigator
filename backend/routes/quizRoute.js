@@ -5,20 +5,20 @@ const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 
 const {
-    getQuizQuestions,
+    generateQuiz,
     submitQuiz
 } = require("../controllers/quizController");
 
 
-// Get questions for a selected skill
+// Generate AI quiz for a selected skill
 router.get(
-    "/:skill_id",
+    "/generate/:skill_id",
     authMiddleware,
-    getQuizQuestions
+    generateQuiz
 );
 
 
-// Submit quiz answers
+// Submit AI-generated quiz
 router.post(
     "/submit",
     authMiddleware,
