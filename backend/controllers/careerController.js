@@ -65,6 +65,13 @@ const getCareerbyId = (req, res) => {
             });
         }
 
+        // Career does not exist or has no career_skills rows
+        if (results.length === 0) {
+            return res.status(404).json({
+                message: "Career not found"
+            });
+        }
+
         const career = results[0];
 
         const response = {
@@ -361,11 +368,107 @@ const getCareerComparison = (req, res) => {
     });
 };
 
+
+
+//for 2 or more career pathway
+const addCareerPath = (req, res) => {
+    const userId = req.user.user_id;
+    const { career_id } = req.body;
+
+    if (!career_id) {
+        return res.status(400).json({
+            message: "Career ID is required"
+        });
+    }
+
+    const sql = `
+        INSERT INTO user_careers
+        (user_id, career_id)
+        VALUES (?, ?)
+    `;
+
+    db.query(
+        sql,
+        [userId, career_id],
+        (err, result) => {
+
+            if (err) {
+
+                // Career already selected
+                if (err.code === "ER_DUP_ENTRY") {
+                    return res.status(409).json({
+                        message:
+                            "This career is already in your career paths"
+                    });
+                }
+
+                console.error(
+                    "ADD CAREER PATH ERROR:",
+                    err
+                );
+
+                return res.status(500).json({
+                    message:
+                        "Failed to add career path"
+                });
+            }
+
+            res.status(201).json({
+                message:
+                    "Career added to your career paths",
+                career_id
+            });
+        }
+    );
+};
+const getCareerPaths = (req, res) => {
+
+    const userId = req.user.user_id;
+
+    const sql = `
+        SELECT
+            uc.user_career_id,
+            c.career_id,
+            c.career_name,
+            c.description,
+            c.category
+        FROM user_careers uc
+        JOIN careers c
+            ON uc.career_id = c.career_id
+        WHERE uc.user_id = ?
+        ORDER BY uc.user_career_id DESC
+    `;
+
+    db.query(
+        sql,
+        [userId],
+        (err, result) => {
+
+            if (err) {
+
+                console.error(
+                    "GET CAREER PATHS ERROR:",
+                    err
+                );
+
+                return res.status(500).json({
+                    message:
+                        "Failed to fetch career paths"
+                });
+            }
+
+            res.json(result);
+        }
+    );
+};
+
 module.exports = {
     getCareers,
     getCareerbyId,
     getCareerRoadmap,
     getPersonalizedPathway,
     setCareerGoal,
-    getCareerComparison
+    getCareerComparison,
+    addCareerPath,
+    getCareerPaths
 };

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import type { Career } from "./Dashboard";
 import CareerRoadmap from "../components/ui/CareerRoadmap"
-import { useAuth } from "../context/authContext";
+// import { useAuth } from "../context/authContext";
 
 
 function CareerDetails() {
@@ -14,10 +14,8 @@ function CareerDetails() {
     const [animatedPercentage, setAnimatedPercentage] = useState(0);
 
 
-    const { user, login } = useAuth();
-    const [showGoalPopup, setShowGoalPopup] = useState(false);
-    const [settingGoal, setSettingGoal] = useState(false);
-
+    const [careerAdded, setCareerAdded] = useState(false);
+    const [addingCareer, setAddingCareer] = useState(false);
 
     useEffect(() => {
         async function loadDetails() {
@@ -65,46 +63,85 @@ function CareerDetails() {
 
     }, [career]);
 
-    async function changeCareerGoal() {
+    useEffect(() => {
+        async function checkCareerSelection() {
+            try {
+                const token = localStorage.getItem("token");
+
+                const response = await axios.get(
+                    "http://localhost:5000/api/careers/paths",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                console.log("USER CAREER PATHS:", response.data);
+
+                const alreadyAdded = response.data.some(
+                    (item: any) =>
+                        Number(item.career_id) === Number(careerId)
+                );
+
+                setCareerAdded(alreadyAdded);
+
+            } catch (error) {
+                console.error("CHECK CAREER SELECTION ERROR:", error);
+            }
+        }
+
+        if (careerId) {
+            checkCareerSelection();
+        }
+    }, [careerId]);
+
+    async function addCareerToPath() {
+
         if (!career) return;
+
         try {
-            setSettingGoal(true);
+
+            setAddingCareer(true);
+
             const token = localStorage.getItem("token");
 
-            await axios.put(
-                "http://localhost:5000/api/careers/goal",
-                { career_id: career.career_id },
+            await axios.post(
+                "http://localhost:5000/api/careers/paths",
                 {
-                    headers: { Authorization: `Bearer ${token}` }
+                    career_id: career.career_id
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 }
             );
 
-            if (user) {
-                login({
-                    ...user,
-                    career_goal_id: career.career_id,
-                    career_goal_name: career.career_name
-                });
-            }
-            setShowGoalPopup(false);
-        } catch (error) {
-            console.error("SET CAREER GOAL ERROR:", error);
-            alert("Failed to update career goal");
-        } finally {
-            setSettingGoal(false);
-        }
-    }
+            setCareerAdded(true);
 
-    function handleCareerGoalClick() {
-        if (!career) return;
-        if (!user?.career_goal_id) {
-            changeCareerGoal();
-            return;
+        } catch (error: any) {
+
+            console.error(
+                "ADD CAREER TO PATH ERROR:",
+                error
+            );
+
+            if (error.response?.status === 409) {
+
+                setCareerAdded(true);
+
+            } else {
+
+                alert("Failed to add career to your career path.");
+
+            }
+
+        } finally {
+
+            setAddingCareer(false);
+
         }
-        if (user.career_goal_id === career.career_id) {
-            return;
-        }
-        setShowGoalPopup(true);
     }
 
     return (
@@ -145,12 +182,16 @@ function CareerDetails() {
                                     <strong>{animatedPercentage}%</strong>
                                 </div>
                             </div>
-                            <button className={user?.career_goal_id === career?.career_id
-                                ? "goal current" : "goal"} onClick={handleCareerGoalClick}
-                                disabled={settingGoal}>
-                                {user?.career_goal_id === career?.career_id
-                                    ? "✓ Current Career Goal"
-                                    : "Set as Goal"
+                            <button
+                                className={careerAdded ? "goal current" : "goal"}
+                                onClick={addCareerToPath}
+                                disabled={addingCareer || careerAdded}
+                            >
+                                {addingCareer
+                                    ? "Adding..."
+                                    : careerAdded
+                                        ? "✓ Added to Career Path"
+                                        : "Add to Career Path"
                                 }
                             </button>
 
@@ -266,47 +307,7 @@ function CareerDetails() {
                         {career && (<CareerRoadmap careerId={career.career_id} />)}
                     </div>
                 </section>
-                {showGoalPopup && (
-                    <div className="goal-popup-overlay">
-                        <div className="goal-popup">
-                            <div className="goal-popup-icon">
-                                !
-                            </div>
 
-                            <h2>Change Career Goal?</h2>
-                            <p> Your current career goal is <strong>{" "}{user?.career_goal_name}</strong></p>
-
-                            <p>
-                                Are you sure you want to switch your career goal to
-                                <strong>{" "}{career?.career_name}</strong>.
-                            </p>
-
-                            <div className="goal-popup-actions">
-                                <button
-                                    className="goal-cancel-button"
-                                    onClick={() => setShowGoalPopup(false)}
-                                    disabled={settingGoal}
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    className="goal-confirm-button"
-                                    onClick={changeCareerGoal}
-                                    disabled={settingGoal}
-                                >
-                                    {settingGoal
-                                        ? "Switching..."
-                                        : "Switch Career"
-                                    }
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                )}
             </main>
         </div>
     );

@@ -115,11 +115,9 @@
 
 .large-progress-fill {
     height: 100%;
-    background: linear-gradient(
-        90deg,
-        #7051d6,
-        #8062e2
-    );
+    background: linear-gradient(90deg,
+            #7051d6,
+            #8062e2);
     border-radius: 20px;
     transition: width 0.45s ease;
 }
@@ -514,7 +512,7 @@
     margin-top: 15px;
 }
 
-.career-map-summary > div {
+.career-map-summary>div {
     padding: 15px 16px;
     background: #ffffff;
     border: 1px solid #e8e5ed;
@@ -705,7 +703,7 @@
     margin-top: 3px;
 }
 
-.skill-meta > span:first-child {
+.skill-meta>span:first-child {
     color: #8d8797;
 }
 
@@ -1013,7 +1011,7 @@
     font-weight: 700;
 }
 
-.pathway-skill-main > p {
+.pathway-skill-main>p {
     margin: 5px 0 0;
     color: #888291;
     font-family: "Poppins", sans-serif;
@@ -1423,7 +1421,7 @@
         width: 200px;
     }
 
-    .career-map-summary > div {
+    .career-map-summary>div {
         padding: 14px;
     }
 
@@ -1446,4 +1444,77 @@
     .next-step-card h2 {
         font-size: 18px;
     }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*dropdown*/
+.career-path-selector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+
+    margin-bottom: 30px;
+    padding: 20px 24px;
+
+    background: white;
+    border: 1px solid #e8e5f0;
+    border-radius: 15px;
+}
+
+.career-path-selector label {
+    display: block;
+    margin-bottom: 5px;
+
+    color: #6c5ce7;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: #666;
+}
+
+.career-path-selector select {
+    width: 350px;
+    padding: 12px 40px 12px 15px;
+
+    color: #302b45;
+    background: white;
+
+    border: 1px solid #dcd7e8;
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+    outline: none;
+}
+
+.career-path-selector select:focus {
+    border-color: var(--primary);
+}
+
+.selected-career-heading {
+    margin-bottom: 30px;
+}
+
+.selected-career-heading h2 {
+    margin: 5px 0 8px;
+}
+
+.selected-career-heading p:not(.dashboard-label) {
+    color: #777;
+    max-width: 800px;
+    line-height: 1.6;
 }

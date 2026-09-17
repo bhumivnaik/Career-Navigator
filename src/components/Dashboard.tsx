@@ -24,6 +24,16 @@ export type Career = {
     missing_skills: string[];
 };
 
+//new
+type CareerPath = {
+    user_career_id: number;
+    career_id: number;
+    career_name: string;
+    description: string;
+    category: string;
+};
+
+
 function Dashboard() {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
@@ -34,102 +44,147 @@ function Dashboard() {
     const [goalMatch, setGoalMatch] = useState(0);
     const [learningProgress, setLearningProgress] = useState(0);
 
+    //new
+    const [careerPaths, setCareerPaths] = useState<CareerPath[]>([]);
+    const [activeCareerIndex, setActiveCareerIndex] = useState(0);
+
     useEffect(() => {
 
-    // Do not load dashboard when there is no logged-in user
-    if (!user) {
-        return;
-    }
+        // Do not load dashboard when there is no logged-in user
+        if (!user) {
+            return;
+        }
 
-    async function loadDashboard() {
-        try {
-            const token = localStorage.getItem("token");
-
-            const headers = {
-                Authorization: `Bearer ${token}`
-            };
-
-            // ================= USER SKILLS =================
-try {
-    const skillsResponse = await axios.get(
-        "http://localhost:5000/api/skills/user",
-        { headers }
-    );
-
-    console.log("USER SKILLS:", skillsResponse.data);
-
-    setSkills(skillsResponse.data);
-
-    // Learning Progress = learned skills out of 50
-    const totalSkills = 50;
-    const learnedSkills = skillsResponse.data.length;
-
-    const overallProgress = Math.round(
-        (learnedSkills / totalSkills) * 100
-    );
-
-    console.log(
-        "LEARNED SKILLS:",
-        learnedSkills,
-        "OUT OF:",
-        totalSkills,
-        "LEARNING PROGRESS:",
-        overallProgress
-    );
-
-    setLearningProgress(overallProgress);
-
-} catch (error) {
-    console.error("USER SKILLS API ERROR:", error);
-    throw error;
-}
-
-
-            // ================= RECOMMENDED CAREERS =================
+        async function loadDashboard() {
             try {
-                const careersResponse = await axios.get(
-                    "http://localhost:5000/api/careers/recommended",
-                    { headers }
-                );
+                const token = localStorage.getItem("token");
 
-                console.log(
-                    "RECOMMENDED CAREERS:",
-                    careersResponse.data
-                );
+                const headers = {
+                    Authorization: `Bearer ${token}`
+                };
 
-                setCareers(careersResponse.data);
+                // ================= USER SKILLS =================
+                try {
+                    const skillsResponse = await axios.get(
+                        "http://localhost:5000/api/skills/user",
+                        { headers }
+                    );
 
-                const goalCareer = careersResponse.data.find(
-                    (career: Career) =>
-                        career.career_id === user.career_goal_id
-                );
+                    console.log("USER SKILLS:", skillsResponse.data);
 
-                setGoalMatch(
-                    goalCareer?.match_percentage ?? 0
-                );
+                    setSkills(skillsResponse.data);
+
+                    // Learning Progress = learned skills out of 50
+                    const totalSkills = 50;
+                    const learnedSkills = skillsResponse.data.length;
+
+                    const overallProgress = Math.round(
+                        (learnedSkills / totalSkills) * 100
+                    );
+
+                    console.log(
+                        "LEARNED SKILLS:",
+                        learnedSkills,
+                        "OUT OF:",
+                        totalSkills,
+                        "LEARNING PROGRESS:",
+                        overallProgress
+                    );
+
+                    setLearningProgress(overallProgress);
+
+                } catch (error) {
+                    console.error("USER SKILLS API ERROR:", error);
+                    throw error;
+                }
+
+
+                // ================= RECOMMENDED CAREERS =================
+                try {
+                    const careersResponse = await axios.get(
+                        "http://localhost:5000/api/careers/recommended",
+                        { headers }
+                    );
+
+                    console.log(
+                        "RECOMMENDED CAREERS:",
+                        careersResponse.data
+                    );
+
+                    setCareers(careersResponse.data);
+
+                    const goalCareer = careersResponse.data.find(
+                        (career: Career) =>
+                            career.career_id === user.career_goal_id
+                    );
+
+                    setGoalMatch(
+                        goalCareer?.match_percentage ?? 0
+                    );
+
+                } catch (error) {
+                    console.error("CAREERS API ERROR:", error);
+                    throw error;
+                }
+
+                // ================= USER CAREER PATHS =================
+                try {
+                    const pathsResponse = await axios.get(
+                        "http://localhost:5000/api/careers/paths",
+                        { headers }
+                    );
+
+                    console.log(
+                        "USER CAREER PATHS:",
+                        pathsResponse.data
+                    );
+
+                    setCareerPaths(pathsResponse.data);
+
+                } catch (error) {
+                    console.error(
+                        "CAREER PATHS API ERROR:",
+                        error
+                    );
+
+                    throw error;
+                }
+
 
             } catch (error) {
-                console.error("CAREERS API ERROR:", error);
-                throw error;
+                console.error(
+                    "DASHBOARD ERROR:",
+                    error
+                );
+
+                alert("Failed to load dashboard");
+
+            } finally {
+                setLoading(false);
             }
+        }
 
+        loadDashboard();
 
-        } catch (error) {
-            console.error(
-                "DASHBOARD ERROR:",
-                error
+    }, [user]);
+
+    useEffect(() => {
+
+        if (careerPaths.length <= 1) {
+            return;
+        }
+
+        const interval = setInterval(() => {
+
+            setActiveCareerIndex((currentIndex) =>
+                (currentIndex + 1) % careerPaths.length
             );
 
-            alert("Failed to load dashboard");
+        }, 4000);
 
-        } finally {
-            setLoading(false);
-        }
-    }
+        return () => clearInterval(interval);
 
-    loadDashboard();
-
-}, [user]);
+    }, [careerPaths]);
 
     function handleLogout() {
         logout();
@@ -180,33 +235,126 @@ try {
                         <button onClick={() => navigate("/careers")}>Explore Careers →</button>
                     </div>
                     <div className="div2">
-                        <span className="welcome-badge" style={{ color: "var(--primary-dark)", fontSize: "14px" }}>YOUR CURRENT GOAL</span>
-                        {user?.career_goal_id && (
-                            <>
-                                <h3>{user.career_goal_name}</h3>
-                                <div className="goal-match">
-                                    <strong>
-                                        {goalMatch}%
-                                    </strong>
-                                    <span>career match</span>
-                                </div>
 
-                                <div className="goal-progress">
-                                    <div
-                                        className="goal-progress-fill"
-                                        style={{
-                                            width: `${goalMatch}%`
-                                        }}
-                                    />
-                                </div>
+                        <span
+                            className="welcome-badge"
+                            style={{
+                                color: "var(--primary-dark)",
+                                fontSize: "14px"
+                            }}
+                        >
+                            YOUR CAREER PATH
+                        </span>
+
+                        {careerPaths.length > 0 ? (
+
+                            <div className="career-path-slider">
+
+                                {careerPaths.map((path, index) => {
+
+                                    const career = careers.find(
+                                        item =>
+                                            Number(item.career_id) ===
+                                            Number(path.career_id)
+                                    );
+
+                                    const matchPercentage =
+                                        career?.match_percentage ?? 0;
+
+                                    return (
+                                        <div
+                                            key={path.career_id}
+                                            className={`career-path-slide ${index === activeCareerIndex
+                                                ? "active"
+                                                : ""
+                                                }`}
+                                        >
+
+                                            <h3>
+                                                {path.career_name}
+                                            </h3>
+
+                                            <div className="goal-match">
+
+                                                <strong>
+                                                    {matchPercentage}%
+                                                </strong>
+
+                                                <span>
+                                                    career match
+                                                </span>
+
+                                            </div>
+
+                                            <div className="goal-progress">
+
+                                                <div
+                                                    className="goal-progress-fill"
+                                                    style={{
+                                                        width:
+                                                            `${matchPercentage}%`
+                                                    }}
+                                                />
+
+                                            </div>
+
+                                            <button
+                                                className="goal-button"
+                                                onClick={() =>
+                                                    navigate(`/progress?careerId=${path.career_id}`)
+                                                }
+                                            >
+                                                View Progress →
+                                            </button>
+
+                                        </div>
+                                    );
+
+                                })}
+
+                                {careerPaths.length > 1 && (
+                                    <div className="career-path-dots">
+
+                                        {careerPaths.map((path, index) => (
+
+                                            <span
+                                                key={path.career_id}
+                                                className={
+                                                    index === activeCareerIndex
+                                                        ? "active"
+                                                        : ""
+                                                }
+                                            />
+
+                                        ))}
+
+                                    </div>
+                                )}
+
+                            </div>
+
+                        ) : (
+
+                            <div className="no-career-path">
+
+                                <h3>
+                                    No Career Path Yet
+                                </h3>
+
+                                <p>
+                                    Explore careers and add one to your career path.
+                                </p>
 
                                 <button
                                     className="goal-button"
-                                    onClick={() => navigate("/progress")}
+                                    onClick={() =>
+                                        navigate("/careers")
+                                    }
                                 >
-                                    View Progress →
+                                    Explore Careers →
                                 </button>
-                            </>
+
+                            </div>
 
                         )}
 
@@ -262,8 +410,8 @@ try {
                                 Learning Progress
                             </span>
                             <strong>
-    {learningProgress}%
-</strong>
+                                {learningProgress}%
+                            </strong>
 
                             <p>
                                 Overall progress
@@ -395,29 +543,29 @@ try {
                     </div>
 
 
-                   <div className="quick-actions">
+                    <div className="quick-actions">
 
-    <button onClick={() => navigate("/account?open=education")}>
-        <span>+</span>
-        Education
-    </button>
+                        <button onClick={() => navigate("/account?open=education")}>
+                            <span>+</span>
+                            Education
+                        </button>
 
-    <button onClick={() => navigate("/account?open=projects")}>
-        <span>+</span>
-        Projects
-    </button>
+                        <button onClick={() => navigate("/account?open=projects")}>
+                            <span>+</span>
+                            Projects
+                        </button>
 
-    <button onClick={() => navigate("/account?open=experience")}>
-        <span>+</span>
-        Experience
-    </button>
+                        <button onClick={() => navigate("/account?open=experience")}>
+                            <span>+</span>
+                            Experience
+                        </button>
 
-    <button onClick={() => navigate("/account?open=courses")}>
-        <span>+</span>
-        Courses
-    </button>
+                        <button onClick={() => navigate("/account?open=courses")}>
+                            <span>+</span>
+                            Courses
+                        </button>
 
-</div>
+                    </div>
 
                 </section>
 
