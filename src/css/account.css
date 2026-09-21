@@ -1,36 +1,61 @@
+/* =========================================================
+   ACCOUNT PAGE
+========================================================= */
 .account-page {
-    margin-left: 260px;
+    width: 100%;
+    max-width: none;
+
     min-height: 100vh;
-    padding: 35px 15px;
-    width: 1100px;
+
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
 }
 
-/* HEADER */
+.account-page > * {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
 .account-header {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .account-header h1 {
     margin: 0;
-    font-size: 30px;
+    font-size: 24px;
     color: #25213a;
 }
 
 .account-header p {
-    margin: 8px 0 0;
+    margin: 5px 0 0;
     color: #777;
-    font-size: 15px;
+    font-size: 13px;
 }
 
-/* SECTION */
+
+/* =========================================================
+   SECTION
+========================================================= */
+
 .account-section {
+    width: 100%;
+
     background: white;
     border: 1px solid #e8e5f0;
-    border-radius: 16px;
-    padding: 15px;
-    margin-bottom: 25px;
-}
+    border-radius: 14px;
 
+    padding: 14px;
+    margin-bottom: 20px;
+
+    box-sizing: border-box;
+}
 
 .section-header {
     display: flex;
@@ -40,17 +65,19 @@
 
 .section-header h2 {
     margin: 0;
-    font-size: 16px;
+    font-size: 15px;
 }
-
 
 .section-header p {
     margin: 0;
     color: #acabab;
-    font-size: 12px;
+    font-size: 11px;
 }
 
-/* BUTTONS */
+
+/* =========================================================
+   BUTTONS
+========================================================= */
 
 .primary-button,
 .add-button,
@@ -59,27 +86,24 @@
     cursor: pointer;
     border-radius: 8px;
     font-weight: 600;
+    font-size: 12px;
 }
 
-
 .primary-button {
-    padding: 11px 18px;
+    padding: 10px 17px;
     background: var(--primary);
     color: white;
 }
 
-
 .primary-button:hover {
-    background: var(--primary);
+    background: var(--primary-dark);
 }
 
-
 .add-button {
-    padding: 9px 15px;
+    padding: 8px 14px;
     background: #f0edff;
     color: var(--primary);
 }
-
 
 .add-button:hover {
     background: var(--primary-dark);
@@ -87,58 +111,73 @@
     color: white;
 }
 
-
 .edit-button {
-    padding: 9px 15px;
+    padding: 8px 14px;
     background: #f3f2f7;
     color: #555;
 }
-
 
 .edit-button:hover {
     background: #e9e7ef;
 }
 
 
-/* LIST */
+/* =========================================================
+   LIST
+========================================================= */
+
 .account-list {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
+    gap: 12px;
+
+    width: 100%;
 }
 
+
 /* =========================================================
-   ACCOUNT ITEM WITH ICON
+   ACCOUNT ITEM
 ========================================================= */
 
 .account-item {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+
     border: 1px solid var(--primary-light2);
+
     padding: 5px;
-    border-radius: 10px;
+
+    border-radius: 9px;
+
+    min-width: 0;
 }
 
 
-/* ITEM LOGO / ICON */
+/* =========================================================
+   ITEM ICON
+========================================================= */
 
 .item-icon {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
 
     flex-shrink: 0;
 
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 9px;
+
+    border-radius: 8px;
+
     background: var(--primary-light);
     color: var(--primary-dark);
 }
 
 
-/* CONTENT */
+/* =========================================================
+   CONTENT
+========================================================= */
 
 .item-content {
     flex: 1;
@@ -155,10 +194,20 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+
     overflow: hidden;
+
+    font-size: 15px;
 }
 
-/* ACTIONS */
+.item-content span {
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
 
 .item-actions {
     display: flex;
@@ -169,7 +218,9 @@
 }
 
 
-/* ICON BUTTON */
+/* =========================================================
+   ICON BUTTON
+========================================================= */
 
 .icon-button {
     width: 30px;
@@ -185,7 +236,6 @@
     border-radius: 7px;
 
     background: var(--primary-light);
-
     color: var(--primary-dark);
 
     cursor: pointer;
@@ -195,7 +245,7 @@
 
 .icon-button:hover {
     background: var(--primary2);
-    color: var(--primary-light);
+    color: white;
 }
 
 
@@ -203,363 +253,495 @@
 
 .delete-icon:hover {
     background: var(--primary-dark);
-    color: var(--primary-light);
+    color: white;
 }
 
 
-/* EMPTY */
+/* =========================================================
+   EMPTY
+========================================================= */
 
 .empty-section {
-    padding: 20px;
+    padding: 18px;
+
     text-align: center;
+
     color: var(--primary-dark);
+
     opacity: 0.55;
+
     background: var(--primary-light2);
+
     border: 1px dashed var(--primary-light);
-    border-radius: 10px;
-    font-size: 11px;
+
+    border-radius: 9px;
+
+    font-size: 13px;
 }
 
 
-/* RESPONSIVE */
-
-@media (max-width: 750px) {
-    .account-list {
-        grid-template-columns: 1fr;
-    }
-}
-
-
-/* RESPONSIVE */
-
-@media (max-width: 900px) {
-
-    .account-page {
-        margin-left: 0;
-        padding: 25px;
-    }
-
-}
-
-
-@media (max-width: 600px) {
-
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .career-goal-card,
-    .empty-goal,
-    .account-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .item-actions {
-        width: 100%;
-    }
-
-}
-
-
-
-
-
-
-
-
-
-/* =========================================
+/* =========================================================
    PROFILE CARD
-========================================= */
+========================================================= */
 
 .profile-card {
     position: relative;
-    background: linear-gradient(135deg,
-            var(--primary-light2) 0%,
-            var(--primary2) 100%);
-    border: 2px solid #e9e6f2;
-    border-radius: 700px;
-    padding: 35px 18px;
-    margin-bottom: 28px;
+
+    width: 100% !important;
+    max-width: none !important;
+
+    background: linear-gradient(
+        135deg,
+        var(--primary-light2) 0%,
+        var(--primary2) 100%
+    );
+
+    border: 1px solid #ded8ec;
+
+    border-radius: 18px;
+
+    padding: 20px 26px;
+
+    margin-bottom: 18px;
+
     box-shadow:
-        0 8px 30px rgba(56, 42, 112, 0.05);
+        0 7px 22px rgba(56, 42, 112, 0.08);
+
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   PROFILE TOP
+========================================================= */
+
+.profile-card-top {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
     gap: 20px;
 }
 
-.profile-card-top {
-    display: flex;
-    align-items: flex-start;
-    gap: 24px;
-}
 
-
-/* AVATAR */
+/* =========================================================
+   PROFILE AVATAR
+========================================================= */
 
 .profile-avatar {
-    width: 182px;
-    height: 182px;
+    width: 100px;
+    height: 100px;
+
     flex-shrink: 0;
+
     border-radius: 50%;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg,
-            var(--primary-dark),
-            var(--primary-light2));
-    color: var(--primary-light);
-    font-size: 55px;
+
+    background: linear-gradient(
+        135deg,
+        var(--primary-dark),
+        var(--primary2)
+    );
+
+    color: white;
+
+    font-size: 34px;
     font-weight: 700;
-    box-shadow: 0 8px 18px rgba(158, 87, 229, 0.56);
+
+    box-shadow:
+        0 6px 16px rgba(100, 58, 170, 0.28);
 }
+
+
+/* =========================================================
+   PROFILE MAIN
+========================================================= */
 
 .profile-main {
     flex: 1;
     min-width: 0;
 }
 
+
+/* =========================================================
+   NAME ROW
+========================================================= */
+
 .profile-name-row {
     display: flex;
+
     justify-content: space-between;
     align-items: flex-start;
-    gap: 20px;
+
+    gap: 18px;
 }
 
 .profile-name-row h1 {
     margin: 0;
+
     color: #25213a;
-    font-size: 27px;
+
+    font-size: 23px;
     font-weight: 700;
 }
 
 .profile-subtitle {
-    margin: 5px 0 0;
+    margin: 4px 0 0;
+
     color: #2a2a2b;
-    font-size: 14px;
+
+    font-size: 12px;
 }
 
 
-/* EDIT */
+/* =========================================================
+   EDIT PROFILE
+========================================================= */
+
 .profile-edit-button {
     border: 1px solid #e3def5;
+
     background: #ffffff;
+
     color: var(--primary-dark);
-    padding: 9px 15px;
-    border-radius: 9px;
-    font-size: 13px;
+
+    padding: 8px 13px;
+
+    border-radius: 8px;
+
+    font-size: 11px;
     font-weight: 600;
+
     cursor: pointer;
+
     white-space: nowrap;
+
     transition: 0.2s ease;
 }
 
-
 .profile-edit-button:hover {
-    background: var(--primary2);
-    color: var(--primary-light);
-    border-color: #d8d0f5;
+    background: var(--primary-dark);
+    color: white;
+
+    border-color: var(--primary-dark);
 }
 
-/* ABOUT */
+
+/* =========================================================
+   ABOUT
+========================================================= */
+
 .profile-about {
-    margin: 16px 0 0;
-    max-width: 750px;
+    margin: 7px 0 0;
+
+    max-width: 700px;
+
     color: #666174;
-    font-size: 14px;
-    line-height: 1.6;
+
+    font-size: 12px;
+
+    line-height: 1.4;
 }
 
-/* DIVIDER */
+
+/* =========================================================
+   PROFILE DIVIDER
+========================================================= */
+
 .profile-divider {
     height: 1px;
-    background: #d3cedc;
-    margin: 25px 0;
+
+    background: rgba(255, 255, 255, 0.55);
+
+    margin: 11px 0;
 }
 
 
-/* INFO ROW */
+/* =========================================================
+   PROFILE INFO
+========================================================= */
+
 .profile-info-row {
     display: grid;
+
     grid-template-columns: 1.2fr 1fr 1fr;
-    gap: 15px;
+
+    gap: 12px;
+
+    width: 100%;
 }
 
 .profile-info {
     display: flex;
+
     align-items: center;
-    gap: 12px;
+
+    gap: 9px;
+
     min-width: 0;
 }
 
-/* ICON */
+
+/* INFO ICON */
+
 .profile-info-icon {
-    width: 34px;
-    height: 34px;
+    width: 30px;
+    height: 30px;
+
     flex-shrink: 0;
-    border-radius: 10px;
+
+    border-radius: 8px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f0edff;
+
+    background: #f7f3ff;
+
     color: var(--primary-dark);
-    font-size: 14px;
+
+    font-size: 12px;
     font-weight: 700;
 }
 
 .profile-info span {
     display: block;
-    margin-bottom: 3px;
+
+    margin-bottom: 2px;
+
     color: var(--primary-dark);
-    font-size: 11px;
-    font-weight: 900;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
     text-transform: uppercase;
+
     letter-spacing: 0.5px;
 }
 
 .profile-info strong {
     display: block;
+
     color: #403b50;
-    font-size: 13px;
+
+    font-size: 11px;
+
     font-weight: 600;
+
     overflow: hidden;
+
     text-overflow: ellipsis;
+
     white-space: nowrap;
 }
 
 .profile-info a {
     color: #403b50;
+
     text-decoration: none;
-    font-size: 13px;
+
+    font-size: 11px;
+
     font-weight: 600;
 }
 
 .profile-info a:hover {
-    /* text-decoration: underline; */
     cursor: pointer;
 }
 
 .not-added {
-    color: #e3dcdc !important;
+    color: #c7c1ce !important;
 }
 
-/* =========================================
+
+/* =========================================================
    CAREER DESTINATION
-========================================= */
+========================================================= */
+
 .career-goal-section {
-    margin-top: 40px;
-    margin-bottom: 28px;
-    background: linear-gradient(110deg,
-            #f8f6ff,
-            #ffffff);
-    border-radius: 20px;
-    border: 2px solid #bab8b8;
+    width: 100% !important;
+
+    margin-top: 18px;
+    margin-bottom: 18px;
+
+    background: #ffffff;
+
+    border-radius: 15px;
+
+    border: 1px solid #d7d3dc;
+
+    overflow: hidden;
 }
+
+
+/* =========================================================
+   CAREER HEADER
+========================================================= */
 
 .career-goal-heading {
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
-    padding: 10px 20px;
-    background: linear-gradient(135deg,
-            var(--primary-light2) 0%,
-            var(--primary2) 100%);
-    border-radius: 20px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
+
+    padding: 12px 20px;
+
+    background: linear-gradient(
+        135deg,
+        var(--primary-light2) 0%,
+        var(--primary2) 100%
+    );
+
+    border-radius: 0;
+
+    border-bottom: 1px solid #ddd5eb;
 }
 
 .career-goal-heading h2 {
     margin: 0;
+
     color: #25213a;
-    font-size: 20px;
+
+    font-size: 17px;
 }
 
 .career-goal-heading p {
-    margin: 5px 0 0;
-    color: #888;
-    font-size: 13px;
+    margin: 3px 0 0;
+
+    color: #777;
+
+    font-size: 11px;
 }
 
+
+/* =========================================================
+   ACTIVE GOAL
+========================================================= */
+
 .goal-active {
-    padding: 6px 11px;
-    border-radius: 20px;
+    padding: 5px 10px;
+
+    border-radius: 15px;
+
     background: #edf8ef;
+
     color: #3c984d;
-    font-size: 11px;
+
+    font-size: 9px;
+
     font-weight: 700;
 }
 
+
+/* =========================================================
+   DESTINATION
+========================================================= */
+
 .career-destination-card {
     display: flex;
+
     align-items: center;
+
     gap: 20px;
-    padding: 22px 24px;
-    border-radius: 17px;
-    /* border: 1px solid #e2ddf5; */
-    background: linear-gradient(110deg,
-            #f8f6ff,
-            #ffffff);
+
+    padding: 17px 22px;
+
+    background: #ffffff;
 }
 
 .career-destination-info {
     flex: 1;
+    min-width: 0;
 }
 
-.career-destination-info>span {
+.career-destination-info > span {
     display: block;
-    margin-bottom: 5px;
+
+    margin-bottom: 4px;
+
     color: #8b84a0;
-    font-size: 10px;
+
+    font-size: 9px;
+
     font-weight: 700;
+
     letter-spacing: 0.8px;
 }
 
 .career-destination-info h3 {
     margin: 0;
+
     color: #29243d;
-    font-size: 20px;
+
+    font-size: 17px;
 }
 
 .career-destination-info p {
-    margin: 5px 0 0;
+    margin: 4px 0 0;
+
     color: #777184;
-    font-size: 13px;
+
+    font-size: 11px;
 }
 
-/* BUTTON */
+
+/* =========================================================
+   VIEW CAREER
+========================================================= */
+
 .career-view-button {
     display: flex;
+
     align-items: center;
-    gap: 10px;
-    padding: 11px 17px;
+
+    gap: 8px;
+
+    padding: 10px 15px;
+
     border: none;
-    border-radius: 9px;
+
+    border-radius: 8px;
+
     background: var(--primary-dark);
+
     color: white;
-    font-size: 13px;
+
+    font-size: 11px;
+
     font-weight: 600;
+
     cursor: pointer;
+
     white-space: nowrap;
+
     transition: 0.2s ease;
 }
 
 .career-view-button:hover {
     background: var(--primary2);
+
     transform: translateX(2px);
 }
 
-
 .career-view-button span {
-    font-size: 17px;
+    font-size: 15px;
 }
 
 
-/* NO GOAL */
+/* =========================================================
+   NO GOAL
+========================================================= */
 
 .career-destination-card.no-goal {
     background: #faf9fd;
@@ -569,495 +751,382 @@
     border-color: #dcd7e8;
 }
 
-
 .career-destination-card.no-goal .career-destination-icon {
     background: #f0edff;
 }
 
 
-
-
-
-
-
-
-
-
 /* =========================================================
    GITHUB ANALYSIS
-   ========================================================= */
+========================================================= */
 
 .github-section {
-    margin-top: 30px;
-    margin-bottom: 30px;
-}
+    width: 100% !important;
 
+    margin-top: 18px;
+    margin-bottom: 20px;
+}
 
 .github-section-header {
     display: flex;
+
     justify-content: space-between;
     align-items: flex-start;
-
 }
 
-
 .github-section-header h2 {
-    margin: 0 0 0px;
-    font-size: 21px;
+    margin: 0;
+
+    font-size: 18px;
+
     color: #25213a;
 }
 
-
 .github-sync-status {
-    padding: 7px 12px;
-    border-radius: 20px;
+    padding: 6px 11px;
+
+    border-radius: 18px;
+
     background: #edf8ef;
+
     color: #3d9148;
-    font-size: 12px;
+
+    font-size: 11px;
+
     font-weight: 700;
 }
 
 
-/* Empty state */
+/* =========================================================
+   GITHUB EMPTY
+========================================================= */
 
 .github-empty {
+    width: 100%;
+
     background: white;
+
     border: 1px solid #e8e5f0;
-    border-radius: 16px;
-    padding: 24px;
+
+    border-radius: 14px;
+
+    padding: 20px;
+
     display: flex;
+
     align-items: center;
-    gap: 18px;
+
+    gap: 15px;
+
+    box-sizing: border-box;
 }
 
-
 .github-empty-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 45px;
+    height: 45px;
+
+    border-radius: 10px;
+
     background: #f0edff;
-    color: #6c5ce7;
+
+    color: var(--primary-dark);
+
     display: flex;
+
     align-items: center;
     justify-content: center;
-    font-size: 22px;
+
+    font-size: 19px;
+
     flex-shrink: 0;
 }
 
-
 .github-empty h3 {
-    margin: 0 0 5px;
-    font-size: 16px;
+    margin: 0 0 4px;
+
+    font-size: 14px;
+
     color: #25213a;
 }
 
-
 .github-empty p {
     margin: 0;
-    font-size: 13px;
+
+    font-size: 12px;
+
     color: #888;
 }
 
 
-/* Main analysis card */
+/* =========================================================
+   GITHUB MAIN ANALYSIS
+========================================================= */
 
 .github-analysis {
+    width: 100%;
+
     background: white;
+
     border: 1px solid #e8e5f0;
-    border-radius: 16px;
+
+    border-radius: 14px;
+
     overflow: hidden;
 }
 
 
-/* Overview */
+/* =========================================================
+   GITHUB OVERVIEW
+========================================================= */
 
 .github-overview {
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    gap: 25px;
-}
+    padding: 8px 14px;
 
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+}
 
 .github-profile {
     display: flex;
-    align-items: center;
-    gap: 14px;
-    flex: 1;
-}
 
+    align-items: center;
+
+    gap: 12px;
+
+    flex: 1;
+
+    min-width: 0;
+}
 
 .github-avatar {
-    width: 52px;
-    height: 52px;
+    width: 46px;
+    height: 46px;
+
     border-radius: 50%;
+
     background: #25213a;
+
     color: white;
+
     display: flex;
+
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-}
 
+    font-size: 18px;
+}
 
 .github-profile span {
     display: block;
-    font-size: 10px;
+
+    font-size: 9px;
+
     font-weight: 700;
+
     color: #999;
+
     letter-spacing: 0.7px;
-    margin-bottom: 3px;
+
+    margin-bottom: 2px;
 }
 
-
 .github-profile h3 {
-    margin: 0 0 4px;
-    font-size: 18px;
+    margin: 0 0 3px;
+
+    font-size: 16px;
+
     color: #25213a;
 }
 
-
 .github-profile a {
     color: var(--primary-dark);
-    font-size: 12px;
+
+    font-size: 11px;
+
     text-decoration: none;
 }
-
 
 .github-profile a:hover {
     text-decoration: underline;
 }
 
 
-/* Repository count */
+/* =========================================================
+   REPOSITORY COUNT
+========================================================= */
 
 .github-stat {
     text-align: center;
-    padding: 0 25px;
+
+    padding: 0 18px;
+
     border-left: 1px solid #eeeaf5;
+
     border-right: 1px solid #eeeaf5;
 }
 
-
 .github-stat strong {
     display: block;
-    font-size: 25px;
+
+    font-size: 21px;
+
     color: #25213a;
 }
 
-
 .github-stat span {
-    font-size: 11px;
+    font-size: 10px;
+
     color: #888;
 }
 
 
-/* Sync button */
+/* =========================================================
+   SYNC BUTTON
+========================================================= */
 
 .github-sync-main-button {
-    padding: 10px 16px;
+    padding: 9px 14px;
+
     border: none;
-    border-radius: 9px;
+
+    border-radius: 8px;
+
     background: var(--primary-dark);
+
     color: white;
-    font-size: 13px;
+
+    font-size: 11px;
+
     font-weight: 600;
+
     cursor: pointer;
+
     white-space: nowrap;
 }
-
 
 .github-sync-main-button:hover {
     background: var(--primary2);
 }
 
-
 .github-sync-main-button:disabled {
     opacity: 0.6;
+
     cursor: not-allowed;
 }
 
 
-/* Result sections */
+/* =========================================================
+   GITHUB RESULT SECTIONS
+========================================================= */
 
 .github-result-block {
-    padding: 20px 22px;
+    padding: 16px 20px;
+
     border-bottom: 1px solid #eeeaf5;
 }
 
-
 .github-result-title {
     display: flex;
+
     justify-content: space-between;
+
     align-items: flex-start;
+
     margin-bottom: 3px;
 }
 
-
 .github-result-title h3 {
     margin: 0;
-    font-size: 12px;
+
+    font-size: 13px;
+
     color: #302b45;
 }
 
-
 .github-result-title p {
-    margin: 4px 0 0;
+    margin: 3px 0 0;
+
     color: #999;
-    font-size: 11px;
+
+    font-size: 10px;
 }
 
+.github-result-title > span {
+    min-width: 24px;
+    height: 24px;
 
-.github-result-title>span {
-    min-width: 25px;
-    height: 25px;
     padding: 0 7px;
+
     border-radius: 20px;
+
     background: #f0edff;
-    color: #6c5ce7;
+
+    color: var(--primary-dark);
+
     display: flex;
+
     align-items: center;
     justify-content: center;
-    font-size: 11px;
+
+    font-size: 10px;
+
     font-weight: 700;
 }
 
 
-/* Tags */
+/* =========================================================
+   TAGS
+========================================================= */
 
 .github-tags {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
 
+    flex-wrap: wrap;
+
+    gap: 7px;
+}
 
 .github-tag {
     display: inline-flex;
+
     align-items: center;
-    padding: 7px 11px;
-    border-radius: 8px;
-    font-size: 12px;
+
+    padding: 6px 10px;
+
+    border-radius: 7px;
+
+    font-size: 11px;
+
     font-weight: 600;
 }
 
-
 .language-tag {
     background: #f5f3fa;
+
     color: #514b66;
 }
 
-
 .technology-tag {
     background: #f0edff;
+
     color: #6253cf;
 }
 
-
 .github-no-data {
     margin: 0;
+
     color: #999;
-    font-size: 12px;
-}
 
-
-.github-last-sync {
-    padding: 12px 22px;
-    font-size: 11px;
-    color: #999;
-}
-
-
-
-
-/* HEADER */
-.account-header h1 {
-    font-size: 24px;
-}
-
-.account-header p {
-    font-size: 13px;
-}
-
-
-/* SECTION */
-.section-header h2 {
-    font-size: 15px;
-}
-
-.section-header p {
-    font-size: 11px;
-}
-
-
-/* BUTTONS */
-.primary-button,
-.add-button,
-.edit-button {
-    font-size: 12px;
-}
-
-
-/* LIST ITEMS */
-.item-content h3 {
-    font-size: 15px;
-}
-
-.item-content p {
-    font-size: 13px;
-}
-
-.item-content span {
-    font-size: 11px;
-}
-
-.item-actions button {
-    font-size: 12px;
-}
-
-
-/* EMPTY */
-.empty-section {
-    font-size: 13px;
-}
-
-
-/* PROFILE */
-.profile-avatar {
-    width: 130px;
-    height: 130px;
-    font-size: 38px;
-}
-
-.profile-name-row h1 {
-    font-size: 23px;
-}
-
-.profile-subtitle {
-    font-size: 12px;
-}
-
-.profile-edit-button {
-    font-size: 12px;
-}
-
-.profile-about {
-    font-size: 13px;
-}
-
-
-/* PROFILE INFO */
-.profile-info-icon {
-    width: 30px;
-    height: 30px;
-    font-size: 12px;
-}
-
-.profile-info span {
-    font-size: 10px;
-}
-
-.profile-info strong,
-.profile-info a {
-    font-size: 12px;
-}
-
-
-/* CAREER DESTINATION */
-.career-goal-heading h2 {
-    font-size: 17px;
-}
-
-.career-goal-heading p {
-    font-size: 11px;
-}
-
-.goal-active {
-    font-size: 10px;
-}
-
-.career-destination-info>span {
-    font-size: 9px;
-}
-
-.career-destination-info h3 {
-    font-size: 17px;
-}
-
-.career-destination-info p {
-    font-size: 12px;
-}
-
-.career-view-button {
-    font-size: 12px;
-}
-
-.career-view-button span {
-    font-size: 15px;
-}
-
-
-/* GITHUB */
-.github-section-header h2 {
-    font-size: 18px;
-}
-
-.github-sync-status {
-    font-size: 11px;
-}
-
-.github-empty-icon {
-    font-size: 18px;
-}
-
-.github-empty h3 {
-    font-size: 14px;
-}
-
-.github-empty p {
-    font-size: 12px;
-}
-
-.github-profile h3 {
-    font-size: 16px;
-}
-
-.github-profile a {
-    font-size: 11px;
-}
-
-.github-stat strong {
-    font-size: 21px;
-}
-
-.github-stat span {
-    font-size: 10px;
-}
-
-.github-sync-main-button {
-    font-size: 12px;
-}
-
-.github-result-title h3 {
-    font-size: 13px;
-}
-
-.github-result-title p {
-    font-size: 10px;
-}
-
-.github-result-title>span {
-    font-size: 10px;
-}
-
-.github-tag {
-    font-size: 11px;
-}
-
-.github-no-data {
     font-size: 11px;
 }
 
 .github-last-sync {
+    padding: 10px 20px;
+
     font-size: 10px;
+
+    color: #999;
 }

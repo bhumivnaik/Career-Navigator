@@ -78,8 +78,8 @@ function Dashboard() {
 
                     setSkills(skillsResponse.data);
 
-                    // Learning Progress = learned skills out of 50
-                    const totalSkills = 50;
+                    // Learning Progress = learned skills out of 56
+                    const totalSkills = 56;
                     const learnedSkills = skillsResponse.data.length;
 
                     const overallProgress = Math.round(
