@@ -10,6 +10,8 @@ const careerRoutes = require("./routes/careerRoutes");
 const quizRoutes = require("./routes/quizRoute");
 const githubRoutes = require("./routes/githubRoutes");
 
+const streakRoutes = require("./routes/streakRoute");
+
 const app = express();
 
 app.use(cors());
@@ -21,6 +23,8 @@ app.use("/api/skills", skillRoutes);
 app.use("/api/careers", careerRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/github", githubRoutes);
+
+app.use("/api/streak", streakRoutes);
 
 app.get("/", (req, res) => {
     res.json({
