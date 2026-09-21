@@ -37,7 +37,11 @@ type CareerPath = {
 function Dashboard() {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
-
+    const [streak, setStreak] = useState({
+        current_streak: 0,
+        longest_streak: 0,
+        logged_in_today: false
+    });
     const [skills, setSkills] = useState<Skill[]>([]);
     const [careers, setCareers] = useState<Career[]>([]);
     const [loading, setLoading] = useState(true);
@@ -150,6 +154,13 @@ function Dashboard() {
                     throw error;
                 }
 
+                //get streak
+                const streakResponse = await axios.get(
+                    "http://localhost:5000/api/streak",
+                    { headers }
+                );
+
+                setStreak(streakResponse.data);
 
             } catch (error) {
                 console.error(
@@ -214,6 +225,21 @@ function Dashboard() {
                     </div>
 
                     <div className="user-profile">
+                        <div className="dashboard-stat-card streak-stat-card">
+
+                            <div className="stat-icon">
+                                🔥
+                            </div>
+
+                            <div>
+                                <h3>{streak.current_streak}</h3>
+
+                                <p>
+                                    Day Streak
+                                </p>
+                            </div>
+
+                        </div>
                         <div className="user-avatar">
                             {user?.full_name
                                 ?.charAt(0)

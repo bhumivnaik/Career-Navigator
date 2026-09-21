@@ -1081,3 +1081,36 @@
 
     line-height: 1.5;
 }
+
+
+
+
+.streak-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.streak-stat-card .stat-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    background: #f3e8ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.streak-stat-card h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #211d35;
+}
+
+.streak-stat-card p {
+    margin: 1px 0 0;
+    font-size: 10px;
+    color: #87939a;
+}
