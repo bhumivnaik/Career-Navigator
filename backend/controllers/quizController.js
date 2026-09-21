@@ -7,7 +7,11 @@ const ai = new GoogleGenAI({
 });
 
 // Gemini model used for AI quiz generation.
-const MODEL = "gemini-3.6-flash";
+const MODELS = [
+    "gemini-3.6-flash",
+    "gemini-3.7-flash",
+    "gemini-3.8-flash"
+];
 
 // Temporary in-memory storage for active quizzes.
 // Correct answers stay on the backend.
@@ -15,59 +19,110 @@ const activeQuizzes = new Map();
 
 
 const generateWithModel = async (prompt) => {
-    console.log(`Trying Gemini model: ${MODEL}`);
 
-    const response = await ai.models.generateContent({
-        model: MODEL,
-        contents: prompt,
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-                type: "array",
-                minItems: 5,
-                maxItems: 5,
-                items: {
-                    type: "object",
-                    properties: {
-                        question: {
-                            type: "string"
-                        },
-                        option_a: {
-                            type: "string"
-                        },
-                        option_b: {
-                            type: "string"
-                        },
-                        option_c: {
-                            type: "string"
-                        },
-                        option_d: {
-                            type: "string"
-                        },
-                        correct_option: {
-                            type: "string"
-                        },
-                        difficulty: {
-                            type: "string"
+    let lastError;
+
+    for (const model of MODELS) {
+
+        try {
+
+            console.log(`Trying Gemini model: ${model}`);
+
+            const response =
+                await ai.models.generateContent({
+
+                    model,
+
+                    contents: prompt,
+
+                    config: {
+
+                        responseMimeType:
+                            "application/json",
+
+                        responseSchema: {
+
+                            type: "array",
+
+                            minItems: 5,
+                            maxItems: 5,
+
+                            items: {
+
+                                type: "object",
+
+                                properties: {
+
+                                    question: {
+                                        type: "string"
+                                    },
+
+                                    option_a: {
+                                        type: "string"
+                                    },
+
+                                    option_b: {
+                                        type: "string"
+                                    },
+
+                                    option_c: {
+                                        type: "string"
+                                    },
+
+                                    option_d: {
+                                        type: "string"
+                                    },
+
+                                    correct_option: {
+                                        type: "string"
+                                    },
+
+                                    difficulty: {
+                                        type: "string"
+                                    }
+
+                                },
+
+                                required: [
+                                    "question",
+                                    "option_a",
+                                    "option_b",
+                                    "option_c",
+                                    "option_d",
+                                    "correct_option",
+                                    "difficulty"
+                                ]
+
+                            }
+
                         }
-                    },
-                    required: [
-                        "question",
-                        "option_a",
-                        "option_b",
-                        "option_c",
-                        "option_d",
-                        "correct_option",
-                        "difficulty"
-                    ]
-                }
-            }
+
+                    }
+
+                });
+
+            console.log(
+                `Gemini model succeeded: ${model}`
+            );
+
+            return response;
+
+        } catch (error) {
+
+            lastError = error;
+
+            console.error(
+                `Gemini model failed: ${model}`,
+                error.status || error.message
+            );
+
+            // Try the next model
+            continue;
         }
-    });
+    }
 
-    return response;
+    throw lastError;
 };
-
 
 const generateQuiz = async (req, res) => {
     try {
@@ -328,7 +383,7 @@ const submitQuiz = async (req, res) => {
                 if (
                     submittedAnswer &&
                     submittedAnswer.selected_option ===
-                        question.correct_option
+                    question.correct_option
                 ) {
                     score++;
                 }

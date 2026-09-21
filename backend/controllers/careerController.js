@@ -101,6 +101,10 @@ const getCareerRoadmap = (req, res) => {
             cs.skill_id,
             s.skill_name,
             s.category,
+            s.description,
+            s.documentation_url,
+            s.youtube_url,
+            s.learning_topics,
             cs.skill_level,
             cs.roadmap_stage,
             cs.sequence_order,
@@ -472,3 +476,4 @@ module.exports = {
     addCareerPath,
     getCareerPaths
 };
+

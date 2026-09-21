@@ -2,6 +2,26 @@
    PROGRESS PAGE
    Career Navigator UI
 ========================================================= */
+.dashboard-layout {
+    min-height: 100vh;
+    background: #f7f6fb;
+    display: flex;
+    flex-direction: row;
+    color: #211d35;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.dashboard-content {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+    min-height: 100vh;
+    padding: 38px 48px 60px;
+    box-sizing: border-box;
+}
 
 .progress-header {
     display: flex;

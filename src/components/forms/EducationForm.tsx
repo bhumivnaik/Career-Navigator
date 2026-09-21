@@ -100,7 +100,7 @@ function EducationForm({
             });
 
             // If your GET education API returns skill_ids
-            setSelectedSkills(education.skills || []);
+            setSelectedSkills(education.skill_ids || []);
 
         } else {
 

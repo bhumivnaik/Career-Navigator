@@ -5,7 +5,7 @@ import axios from "axios";
 import type { Career } from "./Dashboard";
 import CareerRoadmap from "../components/ui/CareerRoadmap"
 // import { useAuth } from "../context/authContext";
-
+import "../css/careerCard.css";
 
 function CareerDetails() {
     const { careerId } = useParams();
@@ -148,54 +148,53 @@ function CareerDetails() {
         <div className="dashboard-layout">
             <Navbar />
 
-            <main className="dashboard-content">
+            <main className="career-details-content">
                 <button className="career-back-button" onClick={() => navigate("/careers")}>
                     ←
                 </button>
-                <div>
-                    <div className="career-details-header">
-                        <div>
-                            <p className="career-category2">{career?.category.toUpperCase()}</p>
-                            <h1 className="career-title2">{career?.career_name}</h1>
-                            <p className="career-details-desc">{career?.description}</p>
-                            <br /><br />
-                            <h5>Skills for this Career</h5>
-                            {career?.missing_skills.map(
-                                (skill) => (
-                                    <span className="skilltag" key={skill}>{skill}</span>
-                                )
-                            )}
-                            {career?.matched_skills.map(
-                                (skill) => (
-                                    <span className="skilltag" key={skill}>{skill}</span>
-                                )
-                            )}
-                        </div>
 
-                        <div className="career-match-box">
-                            <span>Your Match</span>
-                            <div className="match-circle"
-                                style={{
-                                    background: `conic-gradient( var(--success2) ${animatedPercentage}%, var(--primary-light2) ${animatedPercentage}% 100%)`
-                                }}>
-                                <div className="match-circle-inner">
-                                    <strong>{animatedPercentage}%</strong>
-                                </div>
+                <div className="career-details-header">
+                    <div>
+                        <p className="career-category2">{career?.category.toUpperCase()}</p>
+                        <h1 className="career-title2">{career?.career_name}</h1>
+                        <p className="career-details-desc">{career?.description}</p>
+                        <br /><br />
+                        <h5>Skills for this Career</h5>
+                        {career?.missing_skills.map(
+                            (skill) => (
+                                <span className="skilltag" key={skill}>{skill}</span>
+                            )
+                        )}
+                        {career?.matched_skills.map(
+                            (skill) => (
+                                <span className="skilltag" key={skill}>{skill}</span>
+                            )
+                        )}
+                    </div>
+
+                    <div className="career-match-box">
+                        <span>Your Match</span>
+                        <div className="match-circle"
+                            style={{
+                                background: `conic-gradient( var(--success2) ${animatedPercentage}%, var(--primary-light2) ${animatedPercentage}% 100%)`
+                            }}>
+                            <div className="match-circle-inner">
+                                <strong>{animatedPercentage}%</strong>
                             </div>
-                            <button
-                                className={careerAdded ? "goal current" : "goal"}
-                                onClick={addCareerToPath}
-                                disabled={addingCareer || careerAdded}
-                            >
-                                {addingCareer
-                                    ? "Adding..."
-                                    : careerAdded
-                                        ? "✓ Added to Career Path"
-                                        : "Add to Career Path"
-                                }
-                            </button>
-
                         </div>
+                        <button
+                            className={careerAdded ? "goal current" : "goal"}
+                            onClick={addCareerToPath}
+                            disabled={addingCareer || careerAdded}
+                        >
+                            {addingCareer
+                                ? "Adding..."
+                                : careerAdded
+                                    ? "✓ Added to Career Path"
+                                    : "Add to Career Path"
+                            }
+                        </button>
+
                     </div>
                 </div>
 

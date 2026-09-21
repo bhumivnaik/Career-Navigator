@@ -1,9 +1,27 @@
 /* =========================================================
    CAREER NAVIGATOR — CAREERS PAGE
 ========================================================= */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    /* background-color: var(--background); */
+    background-color: #f7f6fb;
+    color: var(--text-primary);
+}
+
+.dashboard-layout {
+    min-height: 100vh;
+    background: #f7f6fb;
+    display: flex;
+    flex-direction: row;
+    color: #211d35;
+}
 
 .dashboard-content {
+    margin-left: 260px;
+    width: calc(100% - 260px);
     min-height: 100vh;
+    padding: 38px 48px 60px;
+    box-sizing: border-box;
 }
 
 /* =========================================================
@@ -182,7 +200,7 @@
 
 /* Recommended / least recommended containers */
 
-.dashboard-content > div[style*="backgroundColor"] {
+.dashboard-content>div[style*="backgroundColor"] {
     background: transparent !important;
 
     padding: 0 !important;
@@ -190,7 +208,7 @@
     border-radius: 0 !important;
 }
 
-.dashboard-content > div[style*="backgroundColor"] > div[style*="color"] {
+.dashboard-content>div[style*="backgroundColor"]>div[style*="color"] {
     padding: 0 !important;
 
     margin-bottom: 15px;
@@ -210,7 +228,7 @@
    SECTION HEADINGS
 ========================================================= */
 
-.dashboard-content > div[style*="backgroundColor"] > div[style*="color"]::after {
+.dashboard-content>div[style*="backgroundColor"]>div[style*="color"]::after {
     content: "";
 
     display: block;
@@ -499,6 +517,26 @@
     color: white;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* =========================================================
    CAREER DETAILS
 ========================================================= */
@@ -552,16 +590,23 @@
     border-radius: 18px;
 
     background:
-        linear-gradient(
-            135deg,
+        linear-gradient(135deg,
             var(--primary) 0%,
-            #7650a1 100%
-        );
+            #7650a1 100%);
 
     color: white;
 
     box-shadow:
         0 12px 30px rgba(79, 49, 103, 0.1);
+}
+
+.career-details-header .skilltag {
+    background-color: var(--primary-light);
+    margin-right: 5px;
+    color: var(--primary-dark);
+    border-radius: 20px;
+    padding: 5px;
+    font-size: small;
 }
 
 .career-header-info {
@@ -640,7 +685,7 @@
     background: rgba(255, 255, 255, 0.08);
 }
 
-.career-match-box > span {
+.career-match-box>span {
     display: block;
 
     margin-bottom: 12px;
@@ -893,7 +938,7 @@
     text-align: center;
 }
 
-.roadmap-placeholder > span {
+.roadmap-placeholder>span {
     font-size: 28px;
 
     color: var(--primary);
@@ -1104,11 +1149,9 @@
     padding: 15px 18px;
 
     background:
-        linear-gradient(
-            135deg,
+        linear-gradient(135deg,
             var(--primary),
-            #7650a1
-        );
+            #7650a1);
 
     border: 1px solid rgba(255, 255, 255, 0.1);
 
@@ -1195,6 +1238,18 @@
 }
 
 /* =========================================================
+   CAREER DETAILS — MAIN CONTENT
+========================================================= */
+
+.career-details-content {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+    min-height: 100vh;
+    padding: 38px 48px 60px;
+    box-sizing: border-box;
+}
+
+/* =========================================================
    RESPONSIVE — TABLET
 ========================================================= */
 
@@ -1230,11 +1285,11 @@
         flex-direction: column;
     }
 
-    .careers-page-header > div:last-child {
+    .careers-page-header>div:last-child {
         width: 100%;
     }
 
-    .careers-page-header > div:last-child {
+    .careers-page-header>div:last-child {
         justify-content: space-between;
     }
 
@@ -1281,7 +1336,7 @@
         flex: 1;
     }
 
-    .careers-page-header > div:last-child {
+    .careers-page-header>div:last-child {
         gap: 10px !important;
     }
 
@@ -1322,7 +1377,7 @@
 
 @media (max-width: 420px) {
 
-    .careers-page-header > div:last-child {
+    .careers-page-header>div:last-child {
         flex-direction: column;
 
         align-items: stretch;
@@ -1359,3 +1414,275 @@
     }
 }
 
+
+
+
+
+/* =========================================================
+   CAREER DETAILS — RESPONSIVE
+========================================================= */
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .dashboard-content {
+        margin-left: 260px;
+        width: calc(100% - 260px);
+
+        padding: 32px 30px 50px;
+    }
+
+    .career-details-header {
+        padding: 28px;
+        gap: 25px;
+    }
+
+    .career-title2 {
+        font-size: 27px;
+    }
+
+    .career-match-box {
+        width: 190px;
+    }
+}
+
+
+/* =========================================================
+   SMALL TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .dashboard-content {
+        margin-left: 210px;
+        width: calc(100% - 210px);
+
+        padding: 28px 22px 45px;
+    }
+
+    .career-details-header {
+        flex-direction: column;
+
+        min-height: auto;
+
+        gap: 24px;
+
+        padding: 27px;
+    }
+
+    .career-header-info {
+        width: 100%;
+    }
+
+    .career-match-box {
+        width: 100%;
+
+        min-height: 210px;
+    }
+
+    .skills-status-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .career-title2 {
+        font-size: 25px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .dashboard-content {
+        margin-left: 70px;
+        width: calc(100% - 70px);
+
+        padding: 22px 15px 35px;
+    }
+
+    .career-back-button {
+        width: 36px;
+        height: 36px;
+
+        margin-bottom: 15px;
+    }
+
+    .career-details-header {
+        padding: 22px;
+
+        border-radius: 17px;
+
+        gap: 20px;
+    }
+
+    .career-category2 {
+        font-size: 8px;
+
+        padding: 5px 9px;
+    }
+
+    .career-title2 {
+        font-size: 24px;
+
+        margin-bottom: 11px;
+    }
+
+    .career-details-desc {
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .career-match-box {
+        min-height: 200px;
+
+        padding: 18px;
+    }
+
+    .match-circle {
+        width: 130px;
+        height: 130px;
+    }
+
+    .match-circle-inner {
+        width: 98px;
+        height: 98px;
+    }
+
+    .match-circle-inner strong {
+        font-size: 27px;
+    }
+
+    .career-skills-section,
+    .career-roadmap-section {
+        border-radius: 15px;
+    }
+
+    .section-heading2 {
+        padding: 17px 18px;
+    }
+
+    .skills-status-grid {
+        padding: 15px;
+
+        grid-template-columns: 1fr;
+    }
+
+    .skill-status-card {
+        padding: 16px;
+    }
+
+    .compare-bar {
+        flex-direction: column;
+
+        align-items: stretch;
+
+        bottom: 10px;
+
+        padding: 14px;
+    }
+
+    .compare-bar button {
+        width: 100%;
+    }
+
+    .goal-popup {
+        padding: 23px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .dashboard-content {
+        margin-left: 70px;
+        width: calc(100% - 70px);
+
+        padding: 18px 12px 30px;
+    }
+
+    .career-title2 {
+        font-size: 21px;
+    }
+
+    .career-details-header {
+        padding: 19px;
+    }
+
+    .career-details-desc {
+        font-size: 10px;
+    }
+
+    .career-match-box {
+        min-height: 190px;
+    }
+
+    .section-heading2 {
+        padding: 16px;
+    }
+
+    .skills-status-grid {
+        padding: 12px;
+    }
+
+    .skill-status-card {
+        padding: 14px;
+    }
+
+    .goal {
+        width: 100%;
+    }
+}
+
+
+@media (max-width: 1200px) {
+
+    .career-details-content {
+        margin-left: 260px;
+        width: calc(100% - 260px);
+        padding: 32px 30px 50px;
+    }
+
+}
+
+
+@media (max-width: 900px) {
+
+    .career-details-content {
+        margin-left: 210px;
+        width: calc(100% - 210px);
+        padding: 28px 22px 45px;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .career-details-content {
+        margin-left: 70px;
+        width: calc(100% - 70px);
+        padding: 22px 15px 35px;
+    }
+
+}
+
+
+@media (max-width: 420px) {
+
+    .career-details-content {
+        margin-left: 70px;
+        width: calc(100% - 70px);
+        padding: 18px 12px 30px;
+    }
+
+}

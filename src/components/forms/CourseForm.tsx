@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { X, Trash2 } from "lucide-react";
+import type { Course } from "../Account";
 
 type Skill = {
     skill_id: number;
@@ -8,15 +9,16 @@ type Skill = {
     category: string;
 };
 
-type Course = {
-    course_id: number;
-    course_name: string;
-    provider: string;
-    description: string;
-    completion_date: string;
-    certificate_url?: string;
-    skills?: number[];
-};
+// type Course = {
+//     course_id: number;
+//     course_name: string;
+//     provider: string;
+//     description: string;
+//     completion_date: string;
+//     certificate_url?: string;
+//     skills?: number[];
+
+// };
 
 type CourseFormProps = {
     course: Course | null;
@@ -98,7 +100,7 @@ function CourseForm({
             });
 
             setSelectedSkills(
-                (course.skills || []).map(
+                (course.skill_ids || []).map(
                     (skill) => Number(skill)
                 )
             );
@@ -499,7 +501,7 @@ function CourseForm({
 
 
                     {/* Selected Skills */}
-                    {selectedSkills.length > 0 && (
+                    {/* {selectedSkills.length > 0 && (
 
                         <div className="selected-skills">
 
@@ -552,12 +554,11 @@ function CourseForm({
 
                         </div>
 
-                    )}
+                    )} */}
 
 
                     {/* Form buttons */}
                     <div className="form-actions">
-
                         <button
                             type="button"
                             className="cancel-button"

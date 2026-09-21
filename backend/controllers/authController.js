@@ -58,7 +58,20 @@ const login = async (req, res) => {
             { expiresIn: "1d" }
         );
 
-        res.json({ message: "Login Successful", token: token });
+        // res.json({ message: "Login Successful", token: token });
+        // Record today's login
+        const loginSql = `INSERT IGNORE INTO user_login_activity (user_id,login_date ) VALUES (?, CURDATE())`;
+
+        db.query(loginSql, [user.user_id], (loginErr, loginResult) => {
+            if (loginErr) {
+                console.error("LOGIN ACTIVITY ERROR:", loginErr);
+            } else {
+                console.log("LOGIN ACTIVITY INSERTED:", loginResult);
+            }
+
+            // Login should still succeed
+            res.json({ message: "Login Successful", token: token });
+        });
     });
 }
 

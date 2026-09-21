@@ -30,17 +30,17 @@ export type Education = {
     institution: string;
     start_year: number;
     end_year: number;
-    skills?: [];
+    skill_ids?: number[];
 };
 
-type Course = {
+export type Course = {
     course_id: number;
     course_name: string;
     provider: string;
     description: string;
     completion_date: string;
     certificate_url?: string;
-    skills?: number[];
+    skill_ids?: number[];
 };
 
 export type Experience = {
@@ -51,10 +51,10 @@ export type Experience = {
     description: string;
     start_date: string;
     end_date?: string;
-    skills?: string[];
+    skill_ids?: number[];
 };
 
-type Project = {
+export type Project = {
     project_id: number;
     project_name: string;
     description: string;
@@ -63,7 +63,7 @@ type Project = {
     end_date: string;
     github_repo_url?: string;
     project_source?: "Manual" | "GitHub";
-    skills?: number[];
+    skill_ids?: number[];
 };
 
 function Account() {
@@ -231,10 +231,11 @@ function Account() {
     };
 
     return (
-        <>
+        <div className="dashboard-layout">
+
             <Navbar />
 
-            <main className="account-page">
+            <main className="dashboard-content">
                 <div className="account-header">
                     <h1>Profile</h1>
                     <p>
@@ -973,7 +974,7 @@ function Account() {
                 </section>
 
             </main>
-        </>
+        </div>
     );
 }
 

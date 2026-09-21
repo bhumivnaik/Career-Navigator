@@ -5,6 +5,7 @@ import {
     Trash2,
     LucideFolderGit
 } from "lucide-react";
+import type { Project } from "../Account";
 
 type Skill = {
     skill_id: number;
@@ -12,17 +13,17 @@ type Skill = {
     category: string;
 };
 
-type Project = {
-    project_id: number;
-    project_name: string;
-    description: string;
-    technologies_used: string;
-    start_date: string;
-    end_date: string;
-    github_repo_url?: string;
-    project_source?: "Manual" | "GitHub";
-    skills?: number[];
-};
+// type Project = {
+//     project_id: number;
+//     project_name: string;
+//     description: string;
+//     technologies_used: string;
+//     start_date: string;
+//     end_date: string;
+//     github_repo_url?: string;
+//     project_source?: "Manual" | "GitHub";
+//     skills?: number[];
+// };
 
 type GithubRepository = {
     name: string;
@@ -146,7 +147,7 @@ function ProjectForm({
             });
 
             setSelectedSkills(
-                (project.skills || []).map(
+                (project.skill_ids || []).map(
                     (skill) => Number(skill)
                 )
             );
@@ -918,7 +919,7 @@ function ProjectForm({
                     </div>
 
 
-                    {selectedSkills.length > 0 && (
+                    {/* {selectedSkills.length > 0 && (
 
                         <div className="selected-skills">
 
@@ -977,7 +978,8 @@ function ProjectForm({
 
                         </div>
 
-                    )}
+                    )} */}
+
 
 
                     <div className="form-actions">

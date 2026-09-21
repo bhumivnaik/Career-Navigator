@@ -505,13 +505,9 @@ function Progress() {
     return (
 
         <div className="dashboard-layout">
-
             <Navbar />
-
             <main className="dashboard-content">
-
                 {/* PAGE HEADER */}
-
                 <div className="progress-header">
 
                     <div>

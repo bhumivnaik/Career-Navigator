@@ -122,7 +122,7 @@ function ExperienceForm({
 
             // If GET experience API returns skill_ids
             setSelectedSkills(
-                (experience.skills || []).map((skill) => Number(skill))
+                (experience.skill_ids || []).map((skill) => Number(skill))
             );
 
         } else {
