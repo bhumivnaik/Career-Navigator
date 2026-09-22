@@ -14,6 +14,7 @@ import CourseForm from "../components/forms/CourseForm";
 import ExperienceForm from "../components/forms/ExperienceForm";
 import ProjectForm from "../components/forms/ProjectForm";
 import CredlyPopup from "../components/ui/CredlyPopup";
+import ResumeImporter from "../components/ResumeImporter";
 
 type GithubData = {
     github_username: string;
@@ -333,6 +334,11 @@ function Account() {
                         </div>
                     </div>
                 </section>
+
+                {/* RESUME IMPORT */}
+<ResumeImporter
+    onImported={loadAccountData}
+/>
 
                 {/* CAREER GOAL */}
                 <section className="career-goal-section">
@@ -907,11 +913,15 @@ function Account() {
                                             {item.description}
                                         </p>
 
-                                        <span>
-                                            {item.start_date.slice(0, 10)}
-                                            {" - "}
-                                            {item.end_date || "Present"}
-                                        </span>
+                                       <span>
+    {item.start_date
+        ? item.start_date.slice(0, 10)
+        : "Start date not specified"}
+    {" - "}
+    {item.end_date
+        ? item.end_date.slice(0, 10)
+        : "Present"}
+</span>
 
                                     </div>
 

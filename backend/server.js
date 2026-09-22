@@ -12,6 +12,7 @@ const githubRoutes = require("./routes/githubRoutes");
 const skillVerificationRoutes = require("./routes/skillVerificationRoutes");
 
 const streakRoutes = require("./routes/streakRoute");
+const resumeRoutes = require("./routes/resumeRoute");
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/api/quiz", quizRoutes);
 app.use("/api/github", githubRoutes);
 
 app.use("/api/streak", streakRoutes);
+app.use("/api/resume", resumeRoutes);
 
 app.use("/api/skill-verification", skillVerificationRoutes);
 
