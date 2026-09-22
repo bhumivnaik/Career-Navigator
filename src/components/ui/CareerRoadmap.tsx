@@ -14,18 +14,47 @@ type RoadmapSkill = {
     skill_level: "Beginner" | "Intermediate" | "Advanced";
     roadmap_stage: number;
     sequence_order: number;
-    status: "completed" | "not_started";
+    status: "completed" | "not_started" | "verified";
+
+
+
+    verification_repository?: string;
+    verification_confidence?: number;
+    verification_evidence?: string;
+};
+
+type CareerPath = {
+    user_career_id: number;
+    career_id: number;
+    career_name: string;
+    description: string;
+    category: string;
 };
 
 type CareerRoadmapProps = {
     careerId: number;
 };
 
+
+
 function CareerRoadmap({ careerId }: CareerRoadmapProps) {
     const [roadmap, setRoadmap] = useState<RoadmapSkill[]>([]);
     const [loading, setLoading] = useState(true);
 
     const [openSkillId, setOpenSkillId] = useState<number | null>(null);
+
+    const [careerPaths, setCareerPaths] = useState<CareerPath[]>([]);
+    const [isCareerPath, setIsCareerPath] = useState(false);
+
+    const [verifySkill, setVerifySkill] = useState<RoadmapSkill | null>(null);
+    const [repositoryUrl, setRepositoryUrl] = useState("");
+    const [verificationResult, setVerificationResult] = useState<{
+        verified: boolean;
+        confidence?: number;
+        evidence?: string;
+    } | null>(null);
+    const [verifying, setVerifying] = useState(false);
+
 
     useEffect(() => {
         async function loadRoadmap() {
@@ -39,6 +68,36 @@ function CareerRoadmap({ careerId }: CareerRoadmapProps) {
                 );
                 console.log("CAREER ROADMAP:", response.data);
                 setRoadmap(response.data);
+
+                // ================= USER CAREER PATHS =================
+
+                const pathsResponse = await axios.get(
+                    "http://localhost:5000/api/careers/paths",
+                    {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }
+                );
+
+                console.log(
+                    "USER CAREER PATHS:",
+                    pathsResponse.data
+                );
+
+                setCareerPaths(pathsResponse.data);
+
+                // Check whether this career is selected
+                const selected = pathsResponse.data.some(
+                    (path: CareerPath) =>
+                        Number(path.career_id) === Number(careerId)
+                );
+
+                setIsCareerPath(selected);
+
+                console.log(
+                    "IS THIS CAREER PATH:",
+                    selected
+                );
+
             } catch (error) {
                 console.error("CAREER ROADMAP API ERROR:", error);
             } finally {
@@ -68,6 +127,107 @@ function CareerRoadmap({ careerId }: CareerRoadmapProps) {
         setOpenSkillId(openSkillId === skillId ? null : skillId);
     };
 
+    const openVerifyPopup = (skill: RoadmapSkill) => {
+        setVerifySkill(skill);
+        setRepositoryUrl("");
+        setVerificationResult(null);
+    };
+
+    const closeVerifyPopup = () => {
+        setVerifySkill(null);
+        setRepositoryUrl("");
+        setVerificationResult(null);
+    };
+
+    const handleVerifySkill = async () => {
+        if (!repositoryUrl.trim()) {
+            setVerificationResult({
+                verified: false,
+                evidence: "Please enter a GitHub repository URL."
+            });
+            return;
+        }
+
+        if (!repositoryUrl.startsWith("https://github.com/")) {
+            setVerificationResult({
+                verified: false,
+                evidence: "Please enter a valid GitHub repository URL."
+            });
+            return;
+        }
+
+        try {
+            setVerifying(true);
+            setVerificationResult(null);
+
+            const token = localStorage.getItem("token");
+
+            const response = await axios.post(
+                "http://localhost:5000/api/skill-verification/verify",
+                {
+                    skill_id: verifySkill?.skill_id,
+                    repository_url: repositoryUrl
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            console.log("VERIFICATION RESULT:", response.data);
+
+            if (response.data.verified) {
+
+                setRoadmap((currentRoadmap) =>
+                    currentRoadmap.map((skill) =>
+                        skill.skill_id === verifySkill?.skill_id
+                            ? {
+                                ...skill,
+                                status: "verified",
+                                verification_repository: repositoryUrl,
+                                verification_confidence:
+                                    response.data.confidence,
+                                verification_evidence:
+                                    response.data.evidence
+                            }
+                            : skill
+                    )
+                );
+
+                // Verification succeeded.
+                // Close popup instead of showing result inside it.
+                closeVerifyPopup();
+
+            } else {
+
+                // Only failed verification stays inside popup.
+                setVerificationResult({
+                    verified: false,
+                    confidence: response.data.confidence,
+                    evidence: response.data.evidence
+                });
+            }
+
+        } catch (error: any) {
+
+            console.error(
+                "VERIFICATION ERROR:",
+                error
+            );
+
+            setVerificationResult({
+                verified: false,
+                evidence:
+                    error.response?.data?.message ||
+                    "Something went wrong while verifying the skill."
+            });
+
+        } finally {
+            setVerifying(false);
+        }
+    };
+
     return (
         <div className="career-roadmap">
             <div className="roadmap-line">
@@ -86,10 +246,17 @@ function CareerRoadmap({ careerId }: CareerRoadmapProps) {
 
                                     return (
                                         <div className="roadmap-item" key={skill.skill_id} >
-                                            <div className={`roadmap-node ${skill.status === "completed"
-                                                ? "completed" : "not-started"}`} >
-                                                {skill.status === "completed"
-                                                    ? "✓" : index + 1}
+                                            <div
+                                                className={`roadmap-node ${skill.status === "completed" ||
+                                                    skill.status === "verified"
+                                                    ? "completed"
+                                                    : "not-started"
+                                                    }`}
+                                            >
+                                                {skill.status === "completed" ||
+                                                    skill.status === "verified"
+                                                    ? "✓"
+                                                    : index + 1}
                                             </div>
                                             <div className="roadmap-card">
                                                 <div className="roadmap-card-header">
@@ -99,18 +266,27 @@ function CareerRoadmap({ careerId }: CareerRoadmapProps) {
                                                     </div>
                                                     <div className="roadmap-card-actions">
                                                         {/* <p>{skill.skill_level} level </p> */}
-                                                        <span className={`roadmap-status ${skill.status === "completed"
-                                                            ? "status-completed" : "status-not-started"}`} >
-                                                            {skill.status === "completed"
-                                                                ? "Completed" : "Not Started"}
+                                                        <span
+                                                            className={`roadmap-status ${skill.status === "verified"
+                                                                ? "status-verified"
+                                                                : skill.status === "completed"
+                                                                    ? "status-completed"
+                                                                    : "status-not-started"
+                                                                }`}
+                                                        >
+                                                            {skill.status === "verified"
+                                                                ? "Verified"
+                                                                : skill.status === "completed"
+                                                                    ? "Completed"
+                                                                    : "Not Started"}
                                                         </span>
-                                                        <button type="button" className={`roadmap-toggle ${isOpen ? "open" : ""}`} onClick={() => toggleSkill(skill.skill_id)} aria-label={isOpen ? `Close ${skill.skill_name} details` : `Open ${skill.skill_name} details`} >
+                                                        {isCareerPath && (<button type="button" className={`roadmap-toggle ${isOpen ? "open" : ""}`} onClick={() => toggleSkill(skill.skill_id)} aria-label={isOpen ? `Close ${skill.skill_name} details` : `Open ${skill.skill_name} details`} >
                                                             {isOpen ? "⌃" : "⌄"}
-                                                        </button>
+                                                        </button>)}
                                                     </div>
                                                 </div>
 
-                                                {isOpen && (
+                                                {isCareerPath && isOpen && (
                                                     <div className="roadmap-details">
                                                         {/* Description */}
                                                         <div className="roadmap-detail-section">
@@ -212,9 +388,214 @@ function CareerRoadmap({ careerId }: CareerRoadmapProps) {
                                                             </div>
                                                         )}
 
+
+                                                        {/* Skill Verification */}
+                                                        <div className="skill-verification">
+                                                            {skill.status === "verified" ? (
+                                                                <div className="verification-completed">
+                                                                    <div className="verification-completed-header">
+                                                                        <div>
+                                                                            <h4>Skill Verified</h4>
+
+                                                                            <p>
+                                                                                This skill has been verified through your GitHub repository.
+                                                                            </p>
+                                                                        </div>
+
+                                                                        <span className="verified-label">
+                                                                            ✓ Verified
+                                                                        </span>
+                                                                    </div>
+
+                                                                    {skill.verification_repository && (
+                                                                        <div className="verification-repository">
+
+                                                                            <span className="verification-info-label">
+                                                                                Repository
+                                                                            </span>
+
+                                                                            <a
+                                                                                href={skill.verification_repository}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                            >
+                                                                                {skill.verification_repository}
+                                                                                <ExternalLink
+                                                                                    size={13}
+                                                                                    strokeWidth={1.8}
+                                                                                />
+                                                                            </a>
+
+                                                                        </div>
+                                                                    )}
+
+                                                                    <div className="verification-meta">
+                                                                        {skill.verification_confidence !== undefined && (
+                                                                            <div className="verification-confidence">
+                                                                                <span className="verification-info-label">
+                                                                                    Confidence
+                                                                                </span>
+
+                                                                                <strong>
+                                                                                    {skill.verification_confidence}%
+                                                                                </strong>
+                                                                            </div>
+                                                                        )}
+
+                                                                        {skill.verification_evidence && (
+                                                                            <div className="verification-evidence">
+
+                                                                                <span className="verification-info-label">
+                                                                                    Verification Evidence
+                                                                                </span>
+
+                                                                                <p>
+                                                                                    {skill.verification_evidence}
+                                                                                </p>
+
+                                                                            </div>
+                                                                        )}
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                            ) : (
+
+                                                                <>
+                                                                    <div className="skill-verification-content">
+
+                                                                        <h4>
+                                                                            Verify this skill
+                                                                        </h4>
+
+                                                                        <p>
+                                                                            Show a GitHub repository where you have
+                                                                            implemented {skill.skill_name}.
+                                                                        </p>
+
+                                                                    </div>
+
+                                                                    <button
+                                                                        type="button"
+                                                                        className="verify-skill-button"
+                                                                        onClick={() => openVerifyPopup(skill)}
+                                                                    >
+                                                                        Verify Skill
+                                                                    </button>
+                                                                </>
+
+                                                            )}
+
+                                                        </div>
                                                     </div>
                                                 )}
                                             </div>
+
+                                            {verifySkill && (
+                                                <div
+                                                    className="verification-overlay"
+                                                    onClick={closeVerifyPopup}
+                                                >
+                                                    <div
+                                                        className="verification-modal"
+                                                        onClick={(event) => event.stopPropagation()}
+                                                    >
+
+                                                        <div className="verification-modal-header">
+
+                                                            <div>
+                                                                <span className="verification-label">
+                                                                    SKILL VERIFICATION
+                                                                </span>
+
+                                                                <h3>
+                                                                    Verify {verifySkill.skill_name}
+                                                                </h3>
+                                                            </div>
+
+                                                            <button
+                                                                type="button"
+                                                                className="verification-close"
+                                                                onClick={closeVerifyPopup}
+                                                                aria-label="Close verification popup"
+                                                            >
+                                                                ×
+                                                            </button>
+
+                                                        </div>
+
+                                                        <div className="verification-modal-body">
+
+                                                            <p>
+                                                                Add a GitHub repository where you have
+                                                                actually implemented this skill.
+                                                            </p>
+
+                                                            <label htmlFor="repository-url">
+                                                                GitHub Repository URL
+                                                            </label>
+
+                                                            <input
+                                                                id="repository-url"
+                                                                type="url"
+                                                                placeholder="https://github.com/username/repository"
+                                                                value={repositoryUrl}
+                                                                onChange={(event) =>
+                                                                    setRepositoryUrl(event.target.value)
+                                                                }
+                                                            />
+
+                                                            <small>
+                                                                The repository will be analyzed to verify
+                                                                your use of {verifySkill.skill_name}.
+                                                            </small>
+
+                                                            {verificationResult && (
+                                                                <div className="verification-result verification-failed">
+                                                                    <div className="verification-result-icon">
+                                                                        !
+                                                                    </div>
+                                                                    <div className="verification-result-content">
+                                                                        <h4>
+                                                                            Skill Not Verified
+                                                                        </h4>
+
+                                                                        <p>
+                                                                            {verificationResult.evidence}
+                                                                        </p>
+
+                                                                    </div>
+
+                                                                </div>
+                                                            )}
+
+                                                        </div>
+
+                                                        <div className="verification-modal-actions">
+
+                                                            <button
+                                                                type="button"
+                                                                className="verification-cancel"
+                                                                onClick={closeVerifyPopup}
+                                                            >
+                                                                Cancel
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                className="verification-submit"
+                                                                onClick={handleVerifySkill}
+                                                                disabled={verifying}
+                                                            >
+                                                                {verifying ? "Verifying..." : "Verify Skill"}
+                                                            </button>
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     );
                                 })}

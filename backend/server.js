@@ -9,6 +9,7 @@ const skillRoutes = require("./routes/skillsRoute");
 const careerRoutes = require("./routes/careerRoutes");
 const quizRoutes = require("./routes/quizRoute");
 const githubRoutes = require("./routes/githubRoutes");
+const skillVerificationRoutes = require("./routes/skillVerificationRoutes");
 
 const streakRoutes = require("./routes/streakRoute");
 
@@ -25,6 +26,8 @@ app.use("/api/quiz", quizRoutes);
 app.use("/api/github", githubRoutes);
 
 app.use("/api/streak", streakRoutes);
+
+app.use("/api/skill-verification", skillVerificationRoutes);
 
 app.get("/", (req, res) => {
     res.json({

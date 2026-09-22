@@ -111,10 +111,18 @@ const getCareerRoadmap = (req, res) => {
             cs.priority,
 
             CASE
+                WHEN sv.verification_status = 'verified'
+                    THEN 'verified'
+
                 WHEN us.skill_id IS NOT NULL
-                THEN 'completed'
+                    THEN 'completed'
+
                 ELSE 'not_started'
-            END AS status
+            END AS status,
+
+            sv.repository_url AS verification_repository,
+            sv.confidence AS verification_confidence,
+            sv.evidence AS verification_evidence
 
         FROM career_skills cs
 
@@ -125,6 +133,31 @@ const getCareerRoadmap = (req, res) => {
             ON cs.skill_id = us.skill_id
             AND us.user_id = ?
 
+        LEFT JOIN (
+            SELECT
+                sv1.user_id,
+                sv1.skill_id,
+                sv1.repository_url,
+                sv1.verification_status,
+                sv1.confidence,
+                sv1.evidence
+            FROM skill_verifications sv1
+
+            INNER JOIN (
+                SELECT
+                    user_id,
+                    skill_id,
+                    MAX(verification_id) AS latest_verification_id
+                FROM skill_verifications
+                WHERE user_id = ?
+                GROUP BY user_id, skill_id
+            ) latest
+                ON sv1.verification_id = latest.latest_verification_id
+
+        ) sv
+            ON sv.user_id = ?
+            AND sv.skill_id = cs.skill_id
+
         WHERE cs.career_id = ?
 
         ORDER BY
@@ -134,11 +167,11 @@ const getCareerRoadmap = (req, res) => {
 
     db.query(
         sql,
-        [userId, careerId],
+        [userId, userId, userId, careerId],
         (err, results) => {
 
             if (err) {
-                console.error(err);
+                console.error("GET CAREER ROADMAP ERROR:", err);
 
                 return res.status(500).json({
                     message: "Failed to get career roadmap"
