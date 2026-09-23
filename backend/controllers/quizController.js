@@ -579,8 +579,8 @@ const submitQuiz = async (req, res) => {
     }
 };
 
-
 module.exports = {
     generateQuiz,
     submitQuiz
 };
+

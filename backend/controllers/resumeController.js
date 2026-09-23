@@ -448,7 +448,12 @@ const matchSkillsToDatabase = (
 // =====================================================
 
 const analyzeWithGroq = async (resumeText) => {
+    const MAX_RESUME_CHARS = 30000;
 
+    const trimmedResumeText =
+        resumeText.length > MAX_RESUME_CHARS
+            ? resumeText.substring(0, MAX_RESUME_CHARS)
+            : resumeText;
     const prompt = `
 Analyze this resume and extract only information explicitly present.
 
@@ -532,7 +537,7 @@ Important:
 
 Resume:
 
-${resumeText}
+${trimmedResumeText}
 `;
 
     const response =
@@ -556,7 +561,7 @@ ${resumeText}
 
             temperature: 0,
 
-            max_completion_tokens: 1800,
+            max_completion_tokens: 4800,
 
             response_format: {
                 type: "json_schema",
