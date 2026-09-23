@@ -233,17 +233,17 @@ function Account() {
     };
 
     return (
-        <div className="dashboard-layout">
+    <div className="dashboard-layout">
 
-            <Navbar />
+        <Navbar />
 
-            <main className="dashboard-content">
-                <div className="account-header">
-                    <h1>Profile</h1>
-                    <p>
-                        Manage your account and career information
-                    </p>
-                </div>
+        <main className="dashboard-content account-content">
+            <div className="account-header">
+                <h1>Profile</h1>
+                <p>
+                    Manage your account and career information
+                </p>
+            </div>
 
 
                 {/* PROFILE */}

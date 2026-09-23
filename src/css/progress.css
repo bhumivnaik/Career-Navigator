@@ -18,9 +18,12 @@
 .dashboard-content {
     margin-left: 260px;
     width: calc(100% - 260px);
+    min-width: 0;
+    max-width: calc(100% - 260px);
     min-height: 100vh;
     padding: 38px 48px 60px;
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .progress-header {
@@ -933,9 +936,13 @@
 /* =========================================================
    PERSONALIZED PATHWAY
 ========================================================= */
-
 .personalized-pathway-section {
+    width: 100%;
+    max-width: 1200px;
     margin-top: 34px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
 }
 
 .pathway-subtitle {
@@ -1073,15 +1080,31 @@
 /* Content */
 
 .pathway-skill-content {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 45px;
+    row-gap: 4px;
+
+    padding: 4px 30px 22px 70px;
+
+    border-top: 1px solid #eeeaf2;
+    background: #ffffff;
+
+    box-sizing: border-box;
+}
+.pathway-skill-content {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     padding: 0 20px 20px 70px;
     border-top: 1px solid #eeeaf2;
+    overflow: hidden;
 }
 
-
 /* Details */
-
 .pathway-detail {
     padding-top: 16px;
+    min-width: 0;
 }
 
 .pathway-detail h4 {
@@ -1351,8 +1374,9 @@
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .pathway-skill-content {
-        padding-left: 20px;
+   .pathway-skill-content {
+        grid-template-columns: 1fr !important;
+        padding-left: 20px !important;
     }
 
     .pathway-skill-header {
@@ -1466,18 +1490,6 @@
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 /*dropdown*/
 .career-path-selector {
     display: flex;
@@ -1537,4 +1549,59 @@
     color: #777;
     max-width: 800px;
     line-height: 1.6;
+}
+/* =========================================================
+   FIX PERSONALIZED PATHWAY WIDTH
+   Keep section width identical when skill expands
+========================================================= */
+
+.personalized-pathway-section {
+    width: 1200px !important;
+    max-width: 1200px !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+}
+
+.personalized-pathway-list {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.pathway-skill-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.pathway-skill-header {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.pathway-skill-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.pathway-detail {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+}
+
+@media (max-width: 1300px) {
+    .personalized-pathway-section {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
 }
