@@ -177,16 +177,16 @@ const verifySkill = async (req, res) => {
                 path: file.path,
                 content: truncate(
                     file.content,
-                    12000
+                    1200
                 )
             }))
         };
 
         // --------------------------------------------------
-        // 8. GEMINI VERIFICATION
+        // 8. GRoq VERIFICATION
         // --------------------------------------------------
 
-        const aiResult = await analyzeWithGemini(
+        const aiResult = await analyzeWithGroq(
             skillName,
             evidence
         );
@@ -376,10 +376,7 @@ async function getGithubFile(
 // SELECT RELEVANT FILES
 // ======================================================
 
-function selectRelevantFiles(
-    files,
-    skillName
-) {
+function selectRelevantFiles(files, skillName) {
 
     const ignored = [
         "node_modules/",
@@ -388,35 +385,554 @@ function selectRelevantFiles(
         "build/",
         ".next/",
         "coverage/",
-        "vendor/"
+        "vendor/",
+        "target/",
+        "bin/",
+        "obj/",
+        "__pycache__/",
+        ".venv/",
+        "venv/"
     ];
 
     const validFiles = files.filter(file => {
 
         const lower = file.toLowerCase();
 
-        return !ignored.some(
-            folder => lower.includes(folder)
+        return !ignored.some(folder =>
+            lower.includes(folder)
         );
 
     });
 
+    const lowerSkill = skillName.toLowerCase();
+
     const priority = [];
 
-    // Always check package.json
-    validFiles.forEach(file => {
+    // =========================================================
+    // ALWAYS INCLUDE IMPORTANT CONFIGURATION FILES
+    // =========================================================
 
-        if (
-            file === "package.json" ||
-            file.endsWith("/package.json")
-        ) {
-            priority.push(file);
-        }
+    const configFiles = validFiles.filter(file => {
+
+        const lower = file.toLowerCase();
+
+        return (
+            lower === "package.json" ||
+            lower.endsWith("/package.json") ||
+
+            lower === "tsconfig.json" ||
+            lower.endsWith("/tsconfig.json") ||
+
+            lower === "vite.config.js" ||
+            lower === "vite.config.ts" ||
+
+            lower === "next.config.js" ||
+            lower === "next.config.ts" ||
+
+            lower === "webpack.config.js" ||
+
+            lower === "requirements.txt" ||
+            lower.endsWith("/requirements.txt") ||
+
+            lower === "pubspec.yaml" ||
+            lower.endsWith("/pubspec.yaml") ||
+
+            lower === "composer.json" ||
+            lower.endsWith("/composer.json")
+        );
 
     });
 
-    // Common source files
-    const sourceFiles = validFiles.filter(file => {
+    priority.push(...configFiles);
+
+
+    // =========================================================
+    // HTML
+    // =========================================================
+
+    if (
+        lowerSkill.includes("html") ||
+        lowerSkill.includes("web development") ||
+        lowerSkill.includes("frontend")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".html") ||
+                    lower.endsWith(".htm") ||
+                    lower.endsWith(".jsx") ||
+                    lower.endsWith(".tsx")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // CSS
+    // =========================================================
+
+    if (
+        lowerSkill.includes("css") ||
+        lowerSkill.includes("frontend") ||
+        lowerSkill.includes("web development")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".css") ||
+                    lower.endsWith(".scss") ||
+                    lower.endsWith(".sass") ||
+                    lower.endsWith(".less") ||
+                    lower.endsWith(".jsx") ||
+                    lower.endsWith(".tsx") ||
+                    lower.endsWith(".html")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // JAVASCRIPT
+    // =========================================================
+
+    if (
+        lowerSkill.includes("javascript") ||
+        lowerSkill === "js"
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".js") ||
+                    lower.endsWith(".jsx") ||
+                    lower.endsWith(".mjs") ||
+                    lower.endsWith(".cjs")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // TYPESCRIPT
+    // =========================================================
+
+    if (
+        lowerSkill.includes("typescript") ||
+        lowerSkill === "ts"
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".ts") ||
+                    lower.endsWith(".tsx") ||
+                    lower.endsWith(".mts") ||
+                    lower.endsWith(".cts")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // REACT
+    // =========================================================
+
+    if (
+        lowerSkill === "react" ||
+        lowerSkill.includes("react.js") ||
+        lowerSkill.includes("reactjs")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".jsx") ||
+                    lower.endsWith(".tsx") ||
+                    lower.endsWith(".js") ||
+                    lower.endsWith(".ts")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // REACT NATIVE
+    // =========================================================
+
+    if (
+        lowerSkill.includes("react native") ||
+        lowerSkill.includes("reactnative")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".jsx") ||
+                    lower.endsWith(".tsx") ||
+                    lower.endsWith(".js") ||
+                    lower.endsWith(".ts")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // NEXT.JS
+    // =========================================================
+
+    if (
+        lowerSkill.includes("next.js") ||
+        lowerSkill.includes("nextjs") ||
+        lowerSkill === "next"
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".js") ||
+                    lower.endsWith(".jsx") ||
+                    lower.endsWith(".ts") ||
+                    lower.endsWith(".tsx")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // NODE.JS
+    // =========================================================
+
+    if (
+        lowerSkill.includes("node.js") ||
+        lowerSkill.includes("nodejs") ||
+        lowerSkill === "node"
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".js") ||
+                    lower.endsWith(".mjs") ||
+                    lower.endsWith(".cjs") ||
+                    lower.endsWith(".ts")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // EXPRESS.JS
+    // =========================================================
+
+    if (
+        lowerSkill.includes("express")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".js") ||
+                    lower.endsWith(".ts") ||
+                    lower.endsWith(".mjs") ||
+                    lower.endsWith(".cjs")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // PYTHON
+    // =========================================================
+
+    if (
+        lowerSkill.includes("python")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file =>
+                file.toLowerCase().endsWith(".py")
+            )
+        );
+
+    }
+
+
+    // =========================================================
+    // JAVA
+    // =========================================================
+
+    if (
+        lowerSkill === "java" ||
+        lowerSkill.includes("java development") ||
+        lowerSkill.includes("spring")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".java") ||
+                    lower.endsWith(".xml") ||
+                    lower.endsWith(".properties")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // C
+    // =========================================================
+
+    if (
+        lowerSkill === "c" ||
+        lowerSkill.includes("c programming")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".c") ||
+                    lower.endsWith(".h")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // C++
+    // =========================================================
+
+    if (
+        lowerSkill.includes("c++") ||
+        lowerSkill.includes("cpp")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".cpp") ||
+                    lower.endsWith(".cc") ||
+                    lower.endsWith(".cxx") ||
+                    lower.endsWith(".hpp") ||
+                    lower.endsWith(".h")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // PHP
+    // =========================================================
+
+    if (
+        lowerSkill.includes("php")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".php") ||
+                    lower.endsWith(".phtml")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // DART / FLUTTER
+    // =========================================================
+
+    if (
+        lowerSkill.includes("flutter") ||
+        lowerSkill.includes("dart")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".dart") ||
+                    lower.endsWith("pubspec.yaml")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // SQL / MYSQL / DATABASE
+    // =========================================================
+
+    if (
+        lowerSkill.includes("sql") ||
+        lowerSkill.includes("mysql") ||
+        lowerSkill.includes("database")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".sql") ||
+                    lower.endsWith(".mysql") ||
+                    lower.endsWith(".js") ||
+                    lower.endsWith(".ts") ||
+                    lower.endsWith(".php") ||
+                    lower.endsWith(".py")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // MONGODB
+    // =========================================================
+
+    if (
+        lowerSkill.includes("mongodb") ||
+        lowerSkill.includes("mongo")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".js") ||
+                    lower.endsWith(".ts") ||
+                    lower.endsWith(".jsx") ||
+                    lower.endsWith(".tsx") ||
+                    lower.endsWith(".py")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // REDUX
+    // =========================================================
+
+    if (
+        lowerSkill.includes("redux")
+    ) {
+
+        priority.push(
+            ...validFiles.filter(file => {
+
+                const lower = file.toLowerCase();
+
+                return (
+                    lower.endsWith(".js") ||
+                    lower.endsWith(".jsx") ||
+                    lower.endsWith(".ts") ||
+                    lower.endsWith(".tsx")
+                );
+
+            })
+        );
+
+    }
+
+
+    // =========================================================
+    // GENERIC FALLBACK
+    // =========================================================
+    // If the database contains a skill that does not have
+    // a specific rule above, still inspect common source files.
+
+    const genericSourceFiles = validFiles.filter(file => {
 
         const lower = file.toLowerCase();
 
@@ -425,43 +941,64 @@ function selectRelevantFiles(
             lower.endsWith(".jsx") ||
             lower.endsWith(".ts") ||
             lower.endsWith(".tsx") ||
+            lower.endsWith(".html") ||
+            lower.endsWith(".htm") ||
+            lower.endsWith(".css") ||
+            lower.endsWith(".scss") ||
+            lower.endsWith(".sass") ||
             lower.endsWith(".py") ||
             lower.endsWith(".java") ||
             lower.endsWith(".cpp") ||
+            lower.endsWith(".cc") ||
+            lower.endsWith(".cxx") ||
             lower.endsWith(".c") ||
-            lower.endsWith(".php")
+            lower.endsWith(".h") ||
+            lower.endsWith(".hpp") ||
+            lower.endsWith(".php") ||
+            lower.endsWith(".dart") ||
+            lower.endsWith(".sql") ||
+            lower.endsWith(".xml") ||
+            lower.endsWith(".json")
         );
 
     });
 
-    priority.push(...sourceFiles);
+    priority.push(...genericSourceFiles);
 
-    // Remove duplicates
+
+    // =========================================================
+    // REMOVE DUPLICATES
+    // =========================================================
+
     const unique = [
         ...new Set(priority)
     ];
 
-    // Maximum 25 files
-    return unique.slice(0, 25);
+
+    // =========================================================
+    // MAXIMUM FILES
+    // =========================================================
+
+    return unique.slice(0, 15);
 }
 
 
+
+
+
 // ======================================================
-// GEMINI
+// GROQ
 // ======================================================
 
-async function analyzeWithGemini(
+async function analyzeWithGroq(
     skillName,
     evidence
 ) {
 
-    // Dynamic import works with CommonJS backend
-    const {
-        GoogleGenAI
-    } = await import("@google/genai");
+    const Groq = require("groq-sdk");
 
-    const ai = new GoogleGenAI({
-        apiKey: process.env.GEMINI_API_KEY
+    const groq = new Groq({
+        apiKey: process.env.GROQ_API_KEY
     });
 
     const prompt = `
@@ -504,7 +1041,7 @@ IMPORTANT RULES:
 1. Do NOT verify the skill merely because its name appears
    in a README, comment, filename or documentation.
 
-2. Dependencies alone are not enough.
+2. Dependencies alone are NOT enough.
 
 3. Look for actual implementation and usage in source code.
 
@@ -517,49 +1054,85 @@ IMPORTANT RULES:
 
 7. Be conservative. False verification is worse than rejection.
 
-Return:
-- verified: true or false
-- confidence: number from 0 to 100
-- evidence: short explanation of the actual code evidence.
+8. Base the decision only on the repository evidence provided.
+
+Return ONLY valid JSON in this exact format:
+
+{
+    "verified": true,
+    "confidence": 95,
+    "evidence": "Short explanation of the actual code evidence."
+}
+
+The confidence must be a number from 0 to 100.
 `;
 
     const response =
-        await ai.models.generateContent({
-            model: "gemini-3.6-flash",
-            contents: prompt,
-            config: {
-                responseMimeType:
-                    "application/json",
+        await groq.chat.completions.create({
 
-                responseSchema: {
-                    type: "object",
+            model: "openai/gpt-oss-20b",
 
-                    properties: {
+            messages: [
+                {
+                    role: "system",
+                    content:
+                        "You are a strict technical skill verification system."
+                },
+                {
+                    role: "user",
+                    content: prompt
+                }
+            ],
 
-                        verified: {
-                            type: "boolean"
+            temperature: 0,
+
+            response_format: {
+                type: "json_schema",
+                json_schema: {
+                    name: "skill_verification",
+                    strict: true,
+
+                    schema: {
+                        type: "object",
+
+                        properties: {
+
+                            verified: {
+                                type: "boolean"
+                            },
+
+                            confidence: {
+                                type: "number"
+                            },
+
+                            evidence: {
+                                type: "string"
+                            }
+
                         },
 
-                        confidence: {
-                            type: "number"
-                        },
+                        required: [
+                            "verified",
+                            "confidence",
+                            "evidence"
+                        ],
 
-                        evidence: {
-                            type: "string"
-                        }
-
-                    },
-
-                    required: [
-                        "verified",
-                        "confidence",
-                        "evidence"
-                    ]
+                        additionalProperties: false
+                    }
                 }
             }
         });
 
-    return JSON.parse(response.text);
+    const content =
+        response.choices[0]?.message?.content;
+
+    if (!content) {
+        throw new Error(
+            "Groq returned an empty response"
+        );
+    }
+
+    return JSON.parse(content);
 }
 
 

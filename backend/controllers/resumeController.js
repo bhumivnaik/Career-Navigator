@@ -1,96 +1,160 @@
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
-const { CanvasFactory } = require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
 const mammoth = require("mammoth");
-const { GoogleGenAI } = require("@google/genai");
+const Groq = require("groq-sdk");
 
-const db = require("../config/db");
+const db = require("../config/db").promise();
 
-const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY
+
+// =====================================================
+// GROQ
+// =====================================================
+
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY
 });
 
-const MODEL = "gemini-3.6-flash";
+const MODEL = "openai/gpt-oss-20b";
 
-/* =========================================================
-   UPLOAD CONFIGURATION
-========================================================= */
+// Keep enough headroom under the ~8000 token limit
+const MAX_RESUME_CHARS = 10000;
 
-const uploadDir = path.join(__dirname, "../uploads/resumes");
+
+// =====================================================
+// RESUME DIRECTORY
+// =====================================================
+
+const uploadDir = path.join(
+    __dirname,
+    "../uploads/resumes"
+);
 
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+
+// =====================================================
+// MULTER
+// =====================================================
+
 const storage = multer.diskStorage({
+
     destination: (req, file, cb) => {
         cb(null, uploadDir);
     },
 
     filename: (req, file, cb) => {
-        const extension = path.extname(file.originalname);
-        const filename = `resume_${req.user.user_id}_${Date.now()}${extension}`;
+
+        const extension =
+            path.extname(file.originalname).toLowerCase();
+
+        const filename =
+            `resume_${req.user.user_id}_${Date.now()}${extension}`;
 
         cb(null, filename);
     }
 });
 
+
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = [
-        "application/pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+    const extension =
+        path.extname(file.originalname).toLowerCase();
+
+    const allowedExtensions = [
+        ".pdf",
+        ".docx"
     ];
 
-    if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(
-            new Error("Only PDF and DOCX resume files are allowed."),
-            false
+    if (!allowedExtensions.includes(extension)) {
+
+        return cb(
+            new Error(
+                "Only PDF and DOCX files are allowed"
+            )
         );
     }
+
+    cb(null, true);
 };
 
+
 const upload = multer({
+
     storage,
+
     fileFilter,
+
     limits: {
         fileSize: 5 * 1024 * 1024
     }
 });
 
-/* =========================================================
-   DATABASE PROMISE HELPER
-========================================================= */
 
-const query = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-        db.query(sql, params, (error, results) => {
-            if (error) {
-                reject(error);
-                return;
+// =====================================================
+// UPLOAD MIDDLEWARE
+// =====================================================
+
+const uploadResume = (req, res, next) => {
+
+    upload.single("resume")(
+        req,
+        res,
+        (err) => {
+
+            if (err instanceof multer.MulterError) {
+
+                if (err.code === "LIMIT_FILE_SIZE") {
+
+                    return res.status(400).json({
+                        message:
+                            "Resume must be smaller than 5 MB"
+                    });
+                }
+
+                return res.status(400).json({
+                    message: err.message
+                });
             }
 
-            resolve(results);
-        });
-    });
+
+            if (err) {
+
+                return res.status(400).json({
+                    message: err.message
+                });
+            }
+
+
+            next();
+        }
+    );
 };
 
-/* =========================================================
-   RESUME TEXT EXTRACTION
-========================================================= */
 
-const extractResumeText = async (filePath, mimetype) => {
+// =====================================================
+// EXTRACT TEXT
+// =====================================================
 
-    if (mimetype === "application/pdf") {
+async function extractResumeText(filePath, mimetype) {
+    const extension = path.extname(filePath).toLowerCase();
 
-        const dataBuffer = fs.readFileSync(filePath);
+    console.log("Resume file path:", filePath);
+    console.log("Resume MIME type:", mimetype);
+    console.log("Resume extension:", extension);
+
+    // PDF
+    if (
+        mimetype === "application/pdf" ||
+        extension === ".pdf"
+    ) {
+        const buffer = fs.readFileSync(filePath);
 
         const parser = new PDFParse({
-            data: dataBuffer,
-            CanvasFactory
+            data: buffer
         });
 
         try {
@@ -102,11 +166,12 @@ const extractResumeText = async (filePath, mimetype) => {
         }
     }
 
+    // DOCX
     if (
         mimetype ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        extension === ".docx"
     ) {
-
         const result = await mammoth.extractRawText({
             path: filePath
         });
@@ -114,186 +179,258 @@ const extractResumeText = async (filePath, mimetype) => {
         return result.value;
     }
 
-    throw new Error("Unsupported resume file type.");
+    throw new Error(
+        `Unsupported resume file type. MIME: ${mimetype}, Extension: ${extension}`
+    );
+}
+
+
+// =====================================================
+// CLEAN TEXT
+// =====================================================
+
+const cleanResumeText = (text) => {
+
+    return text
+        .replace(/\r/g, "")
+        .replace(/[ \t]+/g, " ")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
 };
 
-/* =========================================================
-   SKILL NORMALIZATION
-========================================================= */
 
-const normalizeSkillText = (value) => {
-    if (!value) {
+// =====================================================
+// SKILL ALIASES
+// =====================================================
+
+const skillAliases = {
+
+    javascript: [
+        "javascript",
+        "js",
+        "ecmascript"
+    ],
+
+    typescript: [
+        "typescript",
+        "ts"
+    ],
+
+    react: [
+        "react",
+        "react.js",
+        "reactjs"
+    ],
+
+    "react native": [
+        "react native",
+        "react-native"
+    ],
+
+    nodejs: [
+        "node",
+        "node.js",
+        "nodejs"
+    ],
+
+    express: [
+        "express",
+        "express.js",
+        "expressjs"
+    ],
+
+    mongodb: [
+        "mongodb",
+        "mongo",
+        "mongo db"
+    ],
+
+    mysql: [
+        "mysql",
+        "my sql"
+    ],
+
+    postgresql: [
+        "postgresql",
+        "postgres",
+        "postgre sql"
+    ],
+
+    python: [
+        "python"
+    ],
+
+    java: [
+        "java"
+    ],
+
+    "c++": [
+        "c++",
+        "cpp"
+    ],
+
+    "c#": [
+        "c#",
+        "c sharp"
+    ],
+
+    php: [
+        "php"
+    ],
+
+    flutter: [
+        "flutter"
+    ],
+
+    dart: [
+        "dart"
+    ],
+
+    html: [
+        "html",
+        "html5"
+    ],
+
+    css: [
+        "css",
+        "css3"
+    ],
+
+    "next.js": [
+        "next.js",
+        "nextjs",
+        "next js"
+    ],
+
+    redux: [
+        "redux",
+        "redux toolkit",
+        "rtk"
+    ],
+
+    git: [
+        "git"
+    ],
+
+    github: [
+        "github"
+    ],
+
+    docker: [
+        "docker"
+    ],
+
+    sql: [
+        "sql"
+    ]
+};
+
+
+// =====================================================
+// NORMALIZE SKILL
+// =====================================================
+
+const normalizeSkillName = (name) => {
+
+    if (!name) {
         return "";
     }
 
-    return String(value)
-        .toLowerCase()
-        .replace(/\.js\b/g, "js")
-        .replace(/\.ts\b/g, "ts")
-        .replace(/\.net\b/g, "net")
-        .replace(/c\+\+/g, "cpp")
-        .replace(/c#/g, "csharp")
-        .replace(/react\s*router\s*dom/g, "reactrouter")
-        .replace(/react\s*router/g, "reactrouter")
-        .replace(/react\s*js/g, "reactjs")
-        .replace(/node\s*js/g, "nodejs")
-        .replace(/express\s*js/g, "express")
-        .replace(/next\s*js/g, "nextjs")
-        .replace(/vue\s*js/g, "vuejs")
-        .replace(/angular\s*js/g, "angular")
-        .replace(/tailwind\s*css/g, "tailwindcss")
-        .replace(/restful\s*api/g, "restapi")
-        .replace(/rest\s*api/g, "restapi")
-        .replace(/mysql\s*database/g, "mysql")
-        .replace(/mongodb\s*database/g, "mongodb")
-        .replace(/postgresql\s*database/g, "postgresql")
-        .replace(/amazon\s*web\s*services/g, "aws")
-        .replace(/google\s*cloud\s*platform/g, "gcp")
-        .replace(/microsoft\s*azure/g, "azure")
-        .replace(/hugging\s*face\s*transformers/g, "huggingfacetransformers")
-        .replace(/machine\s*learning/g, "machinelearning")
-        .replace(/deep\s*learning/g, "deeplearning")
-        .replace(/natural\s*language\s*processing/g, "nlp")
-        .replace(/artificial\s*intelligence/g, "ai")
-        .replace(/large\s*language\s*models/g, "llms")
-        .replace(/vector\s*database/g, "vectordatabases")
-        .replace(/vector\s*databases/g, "vectordatabases")
-        .replace(/visual\s*studio\s*code/g, "vscode")
-        .replace(/visual\s*studio/g, "visualstudio")
-        .replace(/source\s*control/g, "git")
-        .replace(/version\s*control/g, "git")
-        .replace(/[^a-z0-9]/g, "");
+    const normalized =
+        String(name)
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, " ");
+
+
+    for (const canonical in skillAliases) {
+
+        if (
+            skillAliases[canonical]
+                .includes(normalized)
+        ) {
+            return canonical;
+        }
+    }
+
+
+    return normalized;
 };
 
-/* =========================================================
-   EXPLICIT SKILL ALIASES
-========================================================= */
 
-const skillAliases = {
-    "react.js": "ReactJS",
-    "reactjs": "ReactJS",
-    "react js": "ReactJS",
+// =====================================================
+// MATCH SKILLS
+// =====================================================
 
-    "react router dom": "React Router",
-    "react-router-dom": "React Router",
-    "react router": "React Router",
-
-    "node.js": "Node.js",
-    "nodejs": "Node.js",
-    "node js": "Node.js",
-
-    "express.js": "Express.js",
-    "expressjs": "Express.js",
-    "express js": "Express.js",
-
-    "next.js": "Next.js",
-    "nextjs": "Next.js",
-
-    "vue.js": "Vue.js",
-    "vuejs": "Vue.js",
-
-    "tailwind css": "Tailwind CSS",
-    "tailwindcss": "Tailwind CSS",
-
-    "rest api": "REST API",
-    "restful api": "REST API",
-
-    "machine learning": "Machine Learning",
-    "deep learning": "Deep Learning",
-
-    "artificial intelligence": "Artificial Intelligence",
-    "ai": "Artificial Intelligence",
-
-    "large language models": "LLMs",
-    "large language model": "LLMs",
-    "llm": "LLMs",
-    "llms": "LLMs",
-
-    "vector database": "Vector Databases",
-    "vector databases": "Vector Databases",
-
-    "hugging face transformers": "Hugging Face Transformers",
-
-    "amazon web services": "AWS",
-    "amazon aws": "AWS",
-
-    "google cloud platform": "GCP",
-
-    "natural language processing": "NLP",
-
-    "visual studio code": "VS Code",
-
-    "source control": "Git",
-    "version control": "Git"
-};
-
-/* =========================================================
-   MATCH AI SKILLS TO CANONICAL DATABASE SKILLS
-========================================================= */
-
-const matchSkillsToDatabase = (aiSkills, databaseSkills) => {
+const matchSkillsToDatabase = (
+    aiSkills,
+    databaseSkills
+) => {
 
     const matched = [];
     const unmatched = [];
 
-    const databaseByNormalizedName = new Map();
 
-    for (const skill of databaseSkills) {
+    for (const aiSkill of aiSkills || []) {
 
-        const normalized = normalizeSkillText(skill.skill_name);
+        const detectedName =
+            typeof aiSkill === "string"
+                ? aiSkill
+                : aiSkill?.name ||
+                aiSkill?.skill ||
+                "";
 
-        if (normalized) {
-            databaseByNormalizedName.set(
-                normalized,
-                skill
-            );
-        }
-    }
 
-    for (const rawSkill of aiSkills) {
-
-        if (!rawSkill) {
+        if (!detectedName) {
             continue;
         }
 
-        const originalName = String(rawSkill).trim();
 
-        if (!originalName) {
-            continue;
-        }
-
-        const aliasName =
-            skillAliases[originalName.toLowerCase()] ||
-            originalName;
-
-        const normalized =
-            normalizeSkillText(aliasName);
-
-        const matchedSkill =
-            databaseByNormalizedName.get(normalized);
-
-        if (matchedSkill) {
-
-            const alreadyAdded = matched.some(
-                (item) => item.skill_id === matchedSkill.skill_id
+        const normalizedAI =
+            normalizeSkillName(
+                detectedName
             );
 
-            if (!alreadyAdded) {
 
-                matched.push({
-                    skill_id: matchedSkill.skill_id,
-                    skill_name: matchedSkill.skill_name,
-                    detected_as: originalName
-                });
-            }
+        const databaseSkill =
+            databaseSkills.find(
+                dbSkill => {
+
+                    const normalizedDB =
+                        normalizeSkillName(
+                            dbSkill.skill_name
+                        );
+
+                    return (
+                        normalizedDB ===
+                        normalizedAI
+                    );
+                }
+            );
+
+
+        if (databaseSkill) {
+
+            matched.push({
+
+                skill_id:
+                    databaseSkill.skill_id,
+
+                skill_name:
+                    databaseSkill.skill_name,
+
+                detected_as:
+                    detectedName
+            });
 
         } else {
 
-            unmatched.push({
-                skill_name: originalName
-            });
+            unmatched.push(
+                detectedName
+            );
         }
     }
+
 
     return {
         matched,
@@ -301,840 +438,933 @@ const matchSkillsToDatabase = (aiSkills, databaseSkills) => {
     };
 };
 
-/* =========================================================
-   DATE HELPERS
-========================================================= */
 
-const normalizeDate = (value) => {
+// =====================================================
+// GROQ ANALYSIS
+// =====================================================
 
-    if (!value) {
-        return null;
+// =====================================================
+// GROQ ANALYSIS
+// =====================================================
+
+const analyzeWithGroq = async (resumeText) => {
+
+    const prompt = `
+Analyze this resume and extract only information explicitly present.
+
+Do not invent information.
+
+Return only JSON.
+
+Structure:
+
+{
+  "skills": [],
+  "education": [],
+  "projects": [],
+  "experience": [],
+  "internships": [],
+  "courses": [],
+  "certifications": []
+}
+
+Education objects:
+{
+  "degree": "",
+  "field_of_study": "",
+  "institution": "",
+  "start_year": "",
+  "end_year": ""
+}
+
+Project objects:
+{
+  "project_name": "",
+  "description": "",
+  "technologies_used": "",
+  "start_date": "",
+  "end_date": "",
+  "github_repo_url": ""
+}
+
+Experience objects:
+{
+  "company_name": "",
+  "job_title": "",
+  "description": "",
+  "start_date": "",
+  "end_date": ""
+}
+
+Internship objects:
+{
+  "company_name": "",
+  "job_title": "",
+  "description": "",
+  "start_date": "",
+  "end_date": ""
+}
+
+Course objects:
+{
+  "course_name": "",
+  "provider": "",
+  "description": "",
+  "completion_date": "",
+  "certificate_url": ""
+}
+
+Certification objects:
+{
+  "name": "",
+  "issuer": "",
+  "issue_date": "",
+  "credential_id": ""
+}
+
+Important:
+- Only extract information explicitly present in the resume.
+- Do not guess missing dates.
+- If a value is not present, return an empty string.
+- If a section does not exist, return [].
+- For technologies_used, return a comma-separated string.
+- Keep dates in the format they appear in the resume where possible.
+
+Resume:
+
+${resumeText}
+`;
+
+    const response =
+        await groq.chat.completions.create({
+
+            model: MODEL,
+
+            messages: [
+
+                {
+                    role: "system",
+                    content:
+                        "You are a strict resume extraction system. Return only JSON."
+                },
+
+                {
+                    role: "user",
+                    content: prompt
+                }
+            ],
+
+            temperature: 0,
+
+            max_completion_tokens: 1800,
+
+            response_format: {
+                type: "json_schema",
+
+                json_schema: {
+
+                    name: "resume_analysis",
+
+                    strict: true,
+
+                    schema: {
+
+                        type: "object",
+
+                        properties: {
+
+                            skills: {
+                                type: "array",
+                                items: {
+                                    type: "string"
+                                }
+                            },
+
+                            education: {
+                                type: "array",
+
+                                items: {
+
+                                    type: "object",
+
+                                    properties: {
+
+                                        degree: {
+                                            type: "string"
+                                        },
+
+                                        field_of_study: {
+                                            type: "string"
+                                        },
+
+                                        institution: {
+                                            type: "string"
+                                        },
+
+                                        start_year: {
+                                            type: "string"
+                                        },
+
+                                        end_year: {
+                                            type: "string"
+                                        }
+                                    },
+
+                                    required: [
+                                        "degree",
+                                        "field_of_study",
+                                        "institution",
+                                        "start_year",
+                                        "end_year"
+                                    ],
+
+                                    additionalProperties: false
+                                }
+                            },
+
+                            projects: {
+                                type: "array",
+
+                                items: {
+
+                                    type: "object",
+
+                                    properties: {
+
+                                        project_name: {
+                                            type: "string"
+                                        },
+
+                                        description: {
+                                            type: "string"
+                                        },
+
+                                        technologies_used: {
+                                            type: "string"
+                                        },
+
+                                        start_date: {
+                                            type: "string"
+                                        },
+
+                                        end_date: {
+                                            type: "string"
+                                        },
+
+                                        github_repo_url: {
+                                            type: "string"
+                                        }
+                                    },
+
+                                    required: [
+                                        "project_name",
+                                        "description",
+                                        "technologies_used",
+                                        "start_date",
+                                        "end_date",
+                                        "github_repo_url"
+                                    ],
+
+                                    additionalProperties: false
+                                }
+                            },
+
+                            experience: {
+                                type: "array",
+
+                                items: {
+
+                                    type: "object",
+
+                                    properties: {
+
+                                        company_name: {
+                                            type: "string"
+                                        },
+
+                                        job_title: {
+                                            type: "string"
+                                        },
+
+                                        description: {
+                                            type: "string"
+                                        },
+
+                                        start_date: {
+                                            type: "string"
+                                        },
+
+                                        end_date: {
+                                            type: "string"
+                                        }
+                                    },
+
+                                    required: [
+                                        "company_name",
+                                        "job_title",
+                                        "description",
+                                        "start_date",
+                                        "end_date"
+                                    ],
+
+                                    additionalProperties: false
+                                }
+                            },
+
+                            internships: {
+                                type: "array",
+
+                                items: {
+
+                                    type: "object",
+
+                                    properties: {
+
+                                        company_name: {
+                                            type: "string"
+                                        },
+
+                                        job_title: {
+                                            type: "string"
+                                        },
+
+                                        description: {
+                                            type: "string"
+                                        },
+
+                                        start_date: {
+                                            type: "string"
+                                        },
+
+                                        end_date: {
+                                            type: "string"
+                                        }
+                                    },
+
+                                    required: [
+                                        "company_name",
+                                        "job_title",
+                                        "description",
+                                        "start_date",
+                                        "end_date"
+                                    ],
+
+                                    additionalProperties: false
+                                }
+                            },
+
+                            courses: {
+                                type: "array",
+
+                                items: {
+
+                                    type: "object",
+
+                                    properties: {
+
+                                        course_name: {
+                                            type: "string"
+                                        },
+
+                                        provider: {
+                                            type: "string"
+                                        },
+
+                                        description: {
+                                            type: "string"
+                                        },
+
+                                        completion_date: {
+                                            type: "string"
+                                        },
+
+                                        certificate_url: {
+                                            type: "string"
+                                        }
+                                    },
+
+                                    required: [
+                                        "course_name",
+                                        "provider",
+                                        "description",
+                                        "completion_date",
+                                        "certificate_url"
+                                    ],
+
+                                    additionalProperties: false
+                                }
+                            },
+
+                            certifications: {
+                                type: "array",
+
+                                items: {
+
+                                    type: "object",
+
+                                    properties: {
+
+                                        name: {
+                                            type: "string"
+                                        },
+
+                                        issuer: {
+                                            type: "string"
+                                        },
+
+                                        issue_date: {
+                                            type: "string"
+                                        },
+
+                                        credential_id: {
+                                            type: "string"
+                                        }
+                                    },
+
+                                    required: [
+                                        "name",
+                                        "issuer",
+                                        "issue_date",
+                                        "credential_id"
+                                    ],
+
+                                    additionalProperties: false
+                                }
+                            }
+                        },
+
+                        required: [
+                            "skills",
+                            "education",
+                            "projects",
+                            "experience",
+                            "internships",
+                            "courses",
+                            "certifications"
+                        ],
+
+                        additionalProperties: false
+                    }
+                }
+            }
+        });
+
+    const content =
+        response.choices?.[0]?.message?.content;
+
+    if (!content) {
+        throw new Error(
+            "Groq returned an empty response"
+        );
     }
 
-    const text = String(value).trim();
-
-    if (!text) {
-        return null;
-    }
-
-    // YYYY-MM-DD
-    const fullDate = text.match(
-        /^(\d{4})-(\d{1,2})-(\d{1,2})$/
-    );
-
-    if (fullDate) {
-
-        const year = Number(fullDate[1]);
-        const month = Number(fullDate[2]);
-        const day = Number(fullDate[3]);
-
-        if (
-            month >= 1 &&
-            month <= 12 &&
-            day >= 1 &&
-            day <= 31
-        ) {
-            return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        }
-    }
-
-    // DD/MM/YYYY
-    const slashDate = text.match(
-        /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
-    );
-
-    if (slashDate) {
-
-        const day = Number(slashDate[1]);
-        const month = Number(slashDate[2]);
-        const year = Number(slashDate[3]);
-
-        if (
-            month >= 1 &&
-            month <= 12 &&
-            day >= 1 &&
-            day <= 31
-        ) {
-            return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        }
-    }
-
-    // MM/YYYY
-    const monthYear = text.match(
-        /^(\d{1,2})\/(\d{4})$/
-    );
-
-    if (monthYear) {
-
-        const month = Number(monthYear[1]);
-        const year = Number(monthYear[2]);
-
-        if (
-            month >= 1 &&
-            month <= 12
-        ) {
-            return `${year}-${String(month).padStart(2, "0")}-01`;
-        }
-    }
-
-    // YYYY-MM
-    const yearMonth = text.match(
-        /^(\d{4})-(\d{1,2})$/
-    );
-
-    if (yearMonth) {
-
-        const year = Number(yearMonth[1]);
-        const month = Number(yearMonth[2]);
-
-        if (
-            month >= 1 &&
-            month <= 12
-        ) {
-            return `${year}-${String(month).padStart(2, "0")}-01`;
-        }
-    }
-
-    return null;
+    return JSON.parse(content);
 };
 
-const normalizeYear = (value) => {
 
-    if (!value) {
-        return null;
-    }
+// =====================================================
+// DELETE OLD RESUME
+// =====================================================
 
-    const match = String(value).match(/\b(19|20)\d{2}\b/);
+const deleteOldResume = async (userId) => {
 
-    if (!match) {
-        return null;
-    }
+    const [users] =
+        await db.query(
+            `
+            SELECT resume_file
+            FROM users
+            WHERE user_id = ?
+            `,
+            [userId]
+        );
 
-    return Number(match[0]);
-};
-
-/* =========================================================
-   CLEAN AI OBJECT
-========================================================= */
-
-const cleanString = (value) => {
 
     if (
-        value === null ||
-        value === undefined
+        users.length === 0 ||
+        !users[0].resume_file
     ) {
-        return "";
+        return;
     }
 
-    return String(value).trim();
-};
 
-const cleanObject = (object) => {
+    const oldFilename =
+        users[0].resume_file;
 
-    if (!object || typeof object !== "object") {
-        return {};
-    }
 
-    const cleaned = {};
+    const oldPath =
+        path.join(
+            uploadDir,
+            oldFilename
+        );
 
-    for (const [key, value] of Object.entries(object)) {
 
-        if (
-            value !== null &&
-            value !== undefined &&
-            String(value).trim() !== ""
-        ) {
-            cleaned[key] = value;
+    if (fs.existsSync(oldPath)) {
+
+        try {
+
+            fs.unlinkSync(oldPath);
+
+            console.log(
+                "Old resume deleted:",
+                oldFilename
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Failed to delete old resume:",
+                error.message
+            );
         }
     }
 
-    return cleaned;
+
+    await db.query(
+        `
+        UPDATE users
+        SET resume_file = NULL
+        WHERE user_id = ?
+        `,
+        [userId]
+    );
 };
 
-/* =========================================================
-   ANALYZE RESUME
-   NO DATABASE PROFILE CHANGES HERE
-========================================================= */
 
-const analyzeResume = async (req, res) => {
+// =====================================================
+// SAVE NEW RESUME REFERENCE
+// =====================================================
 
-    let uploadedFilePath = null;
+const saveResumeReference = async (
+    userId,
+    filename
+) => {
+
+    await db.query(
+        `
+        UPDATE users
+        SET resume_file = ?
+        WHERE user_id = ?
+        `,
+        [
+            filename,
+            userId
+        ]
+    );
+};
+
+
+// =====================================================
+// ANALYZE RESUME
+// =====================================================
+
+const analyzeResume = async (
+    req,
+    res
+) => {
 
     try {
 
         if (!req.file) {
 
             return res.status(400).json({
-                message: "Please upload a PDF or DOCX resume."
+                message:
+                    "Please upload a resume"
             });
         }
 
-        uploadedFilePath = req.file.path;
 
-        /* ---------------------------------------------
-           Extract resume text
-        --------------------------------------------- */
+        const userId =
+            req.user.user_id;
 
-        const resumeText = await extractResumeText(
-            req.file.path,
-            req.file.mimetype
+
+        const uploadedFilePath =
+            req.file.path;
+
+
+        console.log(
+            "New resume:",
+            req.file.filename
         );
+
+
+        // =================================================
+        // 1. DELETE PREVIOUS RESUME
+        // =================================================
+
+        await deleteOldResume(userId);
+
+
+        // =================================================
+        // 2. SAVE NEW RESUME
+        // =================================================
+
+        await saveResumeReference(
+            userId,
+            req.file.filename
+        );
+
+
+        // =================================================
+        // 3. EXTRACT TEXT
+        // =================================================
+
+        let resumeText =
+            await extractResumeText(
+                uploadedFilePath
+            );
+
+
+        resumeText =
+            cleanResumeText(
+                resumeText
+            );
+
 
         if (
             !resumeText ||
-            resumeText.trim().length < 50
+            resumeText.length < 50
         ) {
 
             return res.status(400).json({
                 message:
-                    "Could not extract enough text from the resume. Please upload a text-based PDF or DOCX file."
+                    "Could not extract enough text from resume"
             });
         }
 
-        const cleanedResumeText = resumeText
-            .replace(/\r/g, "")
-            .replace(/\n{3,}/g, "\n\n")
-            .trim()
-            .slice(0, 30000);
 
-        /* ---------------------------------------------
-           Gemini extraction
-        --------------------------------------------- */
+        console.log(
+            "Original characters:",
+            resumeText.length
+        );
 
-        const prompt = `
-You are a resume information extraction system for a Career Navigator application.
 
-Extract information ONLY if it is explicitly present in the resume.
+        // =================================================
+        // 4. LIMIT TEXT
+        // =================================================
 
-NEVER invent or assume:
-- skills
-- companies
-- job titles
-- dates
-- education
-- projects
-- courses
-- certifications
-- internships
-- technologies
-- achievements
+        if (
+            resumeText.length >
+            MAX_RESUME_CHARS
+        ) {
 
-Return ONLY valid JSON.
-
-Use exactly this structure:
-
-{
-    "skills": [],
-    "education": [],
-    "projects": [],
-    "experience": [],
-    "internships": [],
-    "courses": [],
-    "certifications": []
-}
-
-Rules:
-
-1. skills:
-Extract technical and professional skills explicitly mentioned.
-
-Return skills as strings.
-
-2. education:
-Extract education as objects using these possible fields:
-
-{
-    "degree": "",
-    "field_of_study": "",
-    "institution": "",
-    "start_year": "",
-    "end_year": ""
-}
-
-Only include values explicitly present.
-
-3. projects:
-Extract projects using:
-
-{
-    "project_name": "",
-    "description": "",
-    "technologies_used": "",
-    "start_date": "",
-    "end_date": ""
-}
-
-4. experience:
-Extract full-time/job/work experience using:
-
-{
-    "job_title": "",
-    "company_name": "",
-    "description": "",
-    "start_date": "",
-    "end_date": ""
-}
-
-5. internships:
-Extract internships separately using the same structure as experience:
-
-{
-    "job_title": "",
-    "company_name": "",
-    "description": "",
-    "start_date": "",
-    "end_date": ""
-}
-
-6. courses:
-Extract completed courses, training programs, or learning programs using:
-
-{
-    "course_name": "",
-    "provider": "",
-    "description": "",
-    "completion_date": "",
-    "certificate_url": ""
-}
-
-7. certifications:
-Extract professional or technical certifications using:
-
-{
-    "course_name": "",
-    "provider": "",
-    "description": "",
-    "completion_date": "",
-    "certificate_url": ""
-}
-
-8. Do not duplicate the same item unnecessarily.
-
-9. If a category has no information, return an empty array.
-
-10. Do not infer information that is not explicitly written.
-
-11. Keep descriptions concise.
-
-Resume text:
-
-${cleanedResumeText}
-`;
-
-        const response = await ai.models.generateContent({
-            model: MODEL,
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json"
-            }
-        });
-
-        const responseText = response.text;
-
-        if (!responseText) {
-            throw new Error(
-                "Gemini returned an empty response."
-            );
+            resumeText =
+                resumeText.substring(
+                    0,
+                    MAX_RESUME_CHARS
+                );
         }
 
-        let extractedData;
 
-        try {
+        console.log(
+            "Characters sent to Groq:",
+            resumeText.length
+        );
 
-            extractedData = JSON.parse(responseText);
 
-        } catch (error) {
+        // =================================================
+        // 5. GROQ
+        // =================================================
 
-            console.error(
-                "Gemini returned invalid JSON:",
-                responseText
+        const aiResult =
+            await analyzeWithGroq(
+                resumeText
             );
 
-            throw new Error(
-                "AI could not properly analyze the resume."
+
+        // =================================================
+        // 6. GET MASTER SKILLS
+        // =================================================
+
+        const [databaseSkills] =
+            await db.query(
+                `
+                SELECT
+                    skill_id,
+                    skill_name
+                FROM skills
+                ORDER BY skill_name
+                `
             );
-        }
 
-        /* ---------------------------------------------
-           Load canonical skills
-        --------------------------------------------- */
 
-        const databaseSkills = await query(`
-            SELECT
-                skill_id,
-                skill_name,
-                category
-            FROM skills
-            ORDER BY skill_id
-        `);
-
-        const aiSkills =
-            Array.isArray(extractedData.skills)
-                ? extractedData.skills
-                : [];
+        // =================================================
+        // 7. MATCH SKILLS
+        // =================================================
 
         const skillMatch =
             matchSkillsToDatabase(
-                aiSkills,
+                aiResult.skills,
                 databaseSkills
             );
 
-        /* ---------------------------------------------
-           Existing user skills
-        --------------------------------------------- */
 
-        const existingUserSkills = await query(
-            `
-            SELECT
-                us.skill_id,
-                s.skill_name
-            FROM user_skills us
-            INNER JOIN skills s
-                ON s.skill_id = us.skill_id
-            WHERE us.user_id = ?
-            `,
-            [req.user.user_id]
-        );
+        // =================================================
+        // 8. EXISTING USER SKILLS
+        // =================================================
 
-        const existingSkillIds = new Set(
-            existingUserSkills.map(
-                (item) => Number(item.skill_id)
-            )
-        );
+        const [existingSkills] =
+            await db.query(
+                `
+                SELECT skill_id
+                FROM user_skills
+                WHERE user_id = ?
+                `,
+                [userId]
+            );
 
-        const matchedSkills =
-            skillMatch.matched.map((skill) => ({
-                ...skill,
-                status: existingSkillIds.has(
-                    Number(skill.skill_id)
+
+        const existingSkillIds =
+            new Set(
+                existingSkills.map(
+                    item => item.skill_id
                 )
-                    ? "existing"
-                    : "new"
-            }));
+            );
 
-        /* ---------------------------------------------
-           Normalize extracted sections
-        --------------------------------------------- */
 
-        const education =
-            Array.isArray(extractedData.education)
-                ? extractedData.education
-                    .map(cleanObject)
-                    .map((item) => ({
-                        degree: cleanString(item.degree),
-                        field_of_study: cleanString(
-                            item.field_of_study
-                        ),
-                        institution: cleanString(
-                            item.institution
-                        ),
-                        start_year:
-                            normalizeYear(item.start_year),
-                        end_year:
-                            normalizeYear(item.end_year)
-                    }))
-                    .filter(
-                        (item) => item.degree
-                    )
-                : [];
+        const skills =
+            skillMatch.matched.map(
+                skill => ({
+                    ...skill,
 
-        const projects =
-            Array.isArray(extractedData.projects)
-                ? extractedData.projects
-                    .map(cleanObject)
-                    .map((item) => ({
-                        project_name:
-                            cleanString(
-                                item.project_name ||
-                                item.name
-                            ),
-                        description:
-                            cleanString(
-                                item.description
-                            ),
-                        technologies_used:
-                            cleanString(
-                                item.technologies_used ||
-                                item.technologies
-                            ),
-                        start_date:
-                            normalizeDate(
-                                item.start_date
-                            ),
-                        end_date:
-                            normalizeDate(
-                                item.end_date
-                            )
-                    }))
-                    .filter(
-                        (item) => item.project_name
-                    )
-                : [];
+                    existing:
+                        existingSkillIds.has(
+                            skill.skill_id
+                        )
+                })
+            );
 
-        const experience =
-            Array.isArray(extractedData.experience)
-                ? extractedData.experience
-                    .map(cleanObject)
-                    .map((item) => ({
-                        experience_type: "Job",
-                        job_title:
-                            cleanString(
-                                item.job_title ||
-                                item.title
-                            ),
-                        company_name:
-                            cleanString(
-                                item.company_name ||
-                                item.company
-                            ),
-                        description:
-                            cleanString(
-                                item.description
-                            ),
-                        start_date:
-                            normalizeDate(
-                                item.start_date
-                            ),
-                        end_date:
-                            normalizeDate(
-                                item.end_date
-                            )
-                    }))
-                    .filter(
-                        (item) => item.job_title
-                    )
-                : [];
 
-        const internships =
-            Array.isArray(extractedData.internships)
-                ? extractedData.internships
-                    .map(cleanObject)
-                    .map((item) => ({
-                        experience_type:
-                            "Internship",
-                        job_title:
-                            cleanString(
-                                item.job_title ||
-                                item.title
-                            ),
-                        company_name:
-                            cleanString(
-                                item.company_name ||
-                                item.company
-                            ),
-                        description:
-                            cleanString(
-                                item.description
-                            ),
-                        start_date:
-                            normalizeDate(
-                                item.start_date
-                            ),
-                        end_date:
-                            normalizeDate(
-                                item.end_date
-                            )
-                    }))
-                    .filter(
-                        (item) => item.job_title
-                    )
-                : [];
+        // =================================================
+        // 9. RETURN ANALYSIS ONLY
+        // =================================================
 
-        const courses =
-            Array.isArray(extractedData.courses)
-                ? extractedData.courses
-                    .map(cleanObject)
-                    .map((item) => ({
-                        course_name:
-                            cleanString(
-                                item.course_name ||
-                                item.name
-                            ),
-                        provider:
-                            cleanString(
-                                item.provider
-                            ),
-                        description:
-                            cleanString(
-                                item.description
-                            ),
-                        completion_date:
-                            normalizeDate(
-                                item.completion_date
-                            ),
-                        certificate_url:
-                            cleanString(
-                                item.certificate_url
-                            )
-                    }))
-                    .filter(
-                        (item) => item.course_name
-                    )
-                : [];
-
-        const certifications =
-            Array.isArray(
-                extractedData.certifications
-            )
-                ? extractedData.certifications
-                    .map(cleanObject)
-                    .map((item) => ({
-                        course_name:
-                            cleanString(
-                                item.course_name ||
-                                item.name
-                            ),
-                        provider:
-                            cleanString(
-                                item.provider ||
-                                item.issuing_organization
-                            ),
-                        description:
-                            cleanString(
-                                item.description
-                            ),
-                        completion_date:
-                            normalizeDate(
-                                item.completion_date
-                            ),
-                        certificate_url:
-                            cleanString(
-                                item.certificate_url
-                            )
-                    }))
-                    .filter(
-                        (item) => item.course_name
-                    )
-                : [];
-
-        /* ---------------------------------------------
-           Final review data
-        --------------------------------------------- */
-
-        return res.status(200).json({
+        return res.json({
 
             message:
-                "Resume analyzed successfully.",
+                "Resume analyzed successfully",
 
-            filename:
-                req.file.originalname,
+            resume_file:
+                req.file.filename,
 
-            data: {
+            skills,
 
-                skills: matchedSkills,
+            unmatched_skills:
+                skillMatch.unmatched,
 
-                unmatched_skills:
-                    skillMatch.unmatched,
+            education:
+                aiResult.education || [],
 
-                education,
+            projects:
+                aiResult.projects || [],
 
-                projects,
+            experience:
+                aiResult.experience || [],
 
-                experience,
+            internships:
+                aiResult.internships || [],
 
-                internships,
+            courses:
+                aiResult.courses || [],
 
-                courses,
-
-                certifications
-            }
+            certifications:
+                aiResult.certifications || []
         });
+
 
     } catch (error) {
 
         console.error(
-            "Resume analysis error:",
+            "RESUME ANALYSIS ERROR:",
             error
         );
+
 
         return res.status(500).json({
             message:
                 error.message ||
-                "Failed to analyze resume."
+                "Failed to analyze resume"
         });
-
-    } finally {
-
-        if (
-            uploadedFilePath &&
-            fs.existsSync(uploadedFilePath)
-        ) {
-
-            try {
-                fs.unlinkSync(uploadedFilePath);
-            } catch (deleteError) {
-
-                console.error(
-                    "Could not delete temporary resume:",
-                    deleteError
-                );
-            }
-        }
     }
 };
 
-/* =========================================================
-   DUPLICATE CHECK HELPERS
-========================================================= */
 
-const normalizeCompareText = (value) => {
-    return String(value || "")
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, " ");
+// =====================================================
+// GET STORED RESUME
+// =====================================================
+
+const getResume = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const [users] =
+            await db.query(
+                `
+                SELECT resume_file
+                FROM users
+                WHERE user_id = ?
+                `,
+                [req.user.user_id]
+            );
+
+
+        if (
+            users.length === 0 ||
+            !users[0].resume_file
+        ) {
+
+            return res.status(404).json({
+                message:
+                    "No resume found"
+            });
+        }
+
+
+        const filePath =
+            path.join(
+                uploadDir,
+                users[0].resume_file
+            );
+
+
+        if (!fs.existsSync(filePath)) {
+
+            return res.status(404).json({
+                message:
+                    "Resume file not found"
+            });
+        }
+
+
+        return res.sendFile(
+            filePath
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "GET RESUME ERROR:",
+            error
+        );
+
+
+        return res.status(500).json({
+            message:
+                "Failed to retrieve resume"
+        });
+    }
 };
 
-/* =========================================================
-   IMPORT RESUME DATA
-   DATABASE CHANGES HAPPEN ONLY HERE
-========================================================= */
+
+// =====================================================
+// DELETE RESUME
+// =====================================================
+
+const deleteResume = async (
+    req,
+    res
+) => {
+
+    try {
+
+        await deleteOldResume(
+            req.user.user_id
+        );
+
+
+        return res.json({
+            message:
+                "Resume deleted successfully"
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "DELETE RESUME ERROR:",
+            error
+        );
+
+
+        return res.status(500).json({
+            message:
+                "Failed to delete resume"
+        });
+    }
+};
+
+
+// =====================================================
+// IMPORT ANALYZED DATA TO PROFILE
+// =====================================================
+const safeYear = (value) => {
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+        return null;
+    }
+
+    const year = Number(value);
+
+    return Number.isInteger(year) ? year : null;
+};
+// =====================================================
+// IMPORT ANALYZED DATA TO PROFILE
+// =====================================================
 
 const importResume = async (req, res) => {
 
     const userId = req.user.user_id;
 
-    const data = req.body || {};
+    const {
+        skills = [],
+        education = [],
+        projects = [],
+        experience = [],
+        internships = [],
+        courses = [],
+        certifications = []
+    } = req.body;
 
-    const skills =
-        Array.isArray(data.skills)
-            ? data.skills
-            : [];
-
-    const education =
-        Array.isArray(data.education)
-            ? data.education
-            : [];
-
-    const projects =
-        Array.isArray(data.projects)
-            ? data.projects
-            : [];
-
-    const experience =
-        Array.isArray(data.experience)
-            ? data.experience
-            : [];
-
-    const internships =
-        Array.isArray(data.internships)
-            ? data.internships
-            : [];
-
-    const courses =
-        Array.isArray(data.courses)
-            ? data.courses
-            : [];
-
-    const certifications =
-        Array.isArray(data.certifications)
-            ? data.certifications
-            : [];
-
-    const importedResults = {
-        skills: [],
-        education: [],
-        projects: [],
-        experience: [],
-        internships: [],
-        courses: [],
-        certifications: []
-    };
-
-    const skippedResults = {
-        skills: [],
-        education: [],
-        projects: [],
-        experience: [],
-        internships: [],
-        courses: [],
-        certifications: []
-    };
+    const connection = db;
 
     try {
 
-        /* ---------------------------------------------
-           Validate skills against canonical DB
-        --------------------------------------------- */
+        await connection.beginTransaction();
 
-        const validSkillIds = new Set();
 
-        const allSkills = await query(`
-            SELECT skill_id, skill_name
-            FROM skills
-        `);
-
-        for (const skill of allSkills) {
-            validSkillIds.add(
-                Number(skill.skill_id)
-            );
-        }
-
-        const validSkills = [];
+        // =================================================
+        // SKILLS
+        // =================================================
 
         for (const skill of skills) {
 
-            const skillId =
-                Number(skill.skill_id);
-
-            if (!validSkillIds.has(skillId)) {
+            if (!skill.skill_id) {
                 continue;
             }
 
-            if (
-                !validSkills.some(
-                    (item) =>
-                        Number(item.skill_id) === skillId
-                )
-            ) {
-                validSkills.push({
-                    skill_id: skillId,
-                    skill_name:
-                        cleanString(
-                            skill.skill_name
-                        )
-                });
-            }
-        }
+            const [exists] =
+                await connection.query(
+                    `
+                    SELECT skill_id
+                    FROM skills
+                    WHERE skill_id = ?
+                    `,
+                    [skill.skill_id]
+                );
 
-        /* ---------------------------------------------
-           Start transaction
-        --------------------------------------------- */
-
-        await query("START TRANSACTION");
-
-        /* ---------------------------------------------
-           1. SKILLS
-        --------------------------------------------- */
-
-        for (const skill of validSkills) {
-
-            const existing = await query(
-                `
-                SELECT user_skill_id
-                FROM user_skills
-                WHERE user_id = ?
-                  AND skill_id = ?
-                LIMIT 1
-                `,
-                [
-                    userId,
-                    skill.skill_id
-                ]
-            );
-
-            if (existing.length > 0) {
-
-                skippedResults.skills.push({
-                    ...skill,
-                    reason: "Already in profile"
-                });
-
+            if (exists.length === 0) {
                 continue;
             }
 
-            await query(
+            await connection.query(
                 `
-                INSERT INTO user_skills
+                INSERT IGNORE INTO user_skills
                 (
                     user_id,
                     skill_id
@@ -1146,137 +1376,103 @@ const importResume = async (req, res) => {
                     skill.skill_id
                 ]
             );
-
-            importedResults.skills.push(skill);
         }
 
-        /* ---------------------------------------------
-           2. EDUCATION
-        --------------------------------------------- */
+
+        // =================================================
+        // EDUCATION
+        // =================================================
 
         for (const item of education) {
 
-            const degree =
-                cleanString(item.degree);
-
-            if (!degree) {
+            if (
+                !item.degree &&
+                !item.institution
+            ) {
                 continue;
             }
 
-            const institution =
-                cleanString(item.institution);
-
-            const startYear =
-                normalizeYear(item.start_year);
-
-            const endYear =
-                normalizeYear(item.end_year);
-
-            const existing = await query(
+            const [existing] = await connection.query(
                 `
-                SELECT education_id
-                FROM user_education
-                WHERE user_id = ?
-                  AND LOWER(degree) = LOWER(?)
-                  AND LOWER(COALESCE(institution, '')) =
-                      LOWER(COALESCE(?, ''))
-                  AND COALESCE(start_year, 0) =
-                      COALESCE(?, 0)
-                  AND COALESCE(end_year, 0) =
-                      COALESCE(?, 0)
-                LIMIT 1
-                `,
+        SELECT education_id
+        FROM user_education
+        WHERE user_id = ?
+          AND degree = ?
+          AND field_of_study = ?
+          AND institution = ?
+        LIMIT 1
+        `,
                 [
                     userId,
-                    degree,
-                    institution,
-                    startYear,
-                    endYear
+                    item.degree || null,
+                    item.field_of_study || null,
+                    item.institution || null
                 ]
             );
 
             if (existing.length > 0) {
-
-                skippedResults.education.push({
-                    ...item,
-                    reason: "Already in profile"
-                });
-
                 continue;
             }
 
-            const result = await query(
+            await connection.query(
                 `
-                INSERT INTO user_education
-                (
-                    user_id,
-                    degree,
-                    field_of_study,
-                    institution,
-                    start_year,
-                    end_year
-                )
-                VALUES (?, ?, ?, ?, ?, ?)
-                `,
+        INSERT INTO user_education
+        (
+            user_id,
+            degree,
+            field_of_study,
+            institution,
+            start_year,
+            end_year
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        `,
                 [
                     userId,
-                    degree,
-                    cleanString(
-                        item.field_of_study
-                    ) || null,
-                    institution || null,
-                    startYear,
-                    endYear
+                    item.degree || null,
+                    item.field_of_study || null,
+                    item.institution || null,
+                    safeYear(item.start_year),
+                    safeYear(item.end_year)
                 ]
             );
-
-            importedResults.education.push({
-                ...item,
-                education_id:
-                    result.insertId
-            });
         }
 
-        /* ---------------------------------------------
-           3. PROJECTS
-        --------------------------------------------- */
 
-        for (const item of projects) {
+        // =================================================
+        // PROJECTS
+        // =================================================
 
-            const projectName =
-                cleanString(
-                    item.project_name
-                );
+        for (const project of projects) {
 
-            if (!projectName) {
-                continue;
-            }
-
-            const existing = await query(
+            const [existing] = await connection.query(
                 `
-                SELECT project_id
-                FROM user_projects
-                WHERE user_id = ?
-                  AND LOWER(project_name) = LOWER(?)
-                LIMIT 1
-                `,
+    SELECT project_id
+    FROM user_projects
+    WHERE user_id = ?
+      AND project_name = ?
+      AND (
+          github_repo_url = ?
+          OR (
+              github_repo_url IS NULL
+              AND ? IS NULL
+          )
+      )
+    LIMIT 1
+    `,
                 [
                     userId,
-                    projectName
+                    project.project_name,
+                    project.github_repo_url || null,
+                    project.github_repo_url || null
                 ]
             );
 
             if (existing.length > 0) {
-
-                skippedResults.projects.push({
-                    ...item,
-                    reason: "Already in profile"
-                });
-
                 continue;
             }
 
-            const result = await query(
+            await connection.query(
                 `
                 INSERT INTO user_projects
                 (
@@ -1285,121 +1481,59 @@ const importResume = async (req, res) => {
                     description,
                     technologies_used,
                     start_date,
-                    end_date
+                    end_date,
+                    github_repo_url,
+                    project_source
                 )
-                VALUES (?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 `,
                 [
                     userId,
-                    projectName,
-                    cleanString(
-                        item.description
-                    ) || null,
-                    cleanString(
-                        item.technologies_used
-                    ) || null,
-                    normalizeDate(
-                        item.start_date
-                    ),
-                    normalizeDate(
-                        item.end_date
-                    )
+                    project.project_name,
+                    project.description || null,
+                    project.technologies_used || null,
+                    project.start_date || null,
+                    project.end_date || null,
+                    project.github_repo_url || null,
+                    project.github_repo_url
+                        ? "GitHub"
+                        : "Manual"
                 ]
             );
-
-            importedResults.projects.push({
-                ...item,
-                project_id:
-                    result.insertId
-            });
         }
 
-        /* ---------------------------------------------
-           4. EXPERIENCE
-        --------------------------------------------- */
 
-        const allExperience = [
-            ...experience,
-            ...internships.map((item) => ({
-                ...item,
-                experience_type: "Internship"
-            }))
-        ];
+        // =================================================
+        // EXPERIENCE
+        // =================================================
 
-        for (const item of allExperience) {
+        for (const item of experience) {
 
-            const experienceType =
-                item.experience_type === "Internship"
-                    ? "Internship"
-                    : "Job";
-
-            const jobTitle =
-                cleanString(
-                    item.job_title
-                );
-
-            if (!jobTitle) {
-                continue;
-            }
-
-            const companyName =
-                cleanString(
-                    item.company_name
-                );
-
-            const startDate =
-                normalizeDate(
-                    item.start_date
-                );
-
-            const endDate =
-                normalizeDate(
-                    item.end_date
-                );
-
-            const existing = await query(
+            const [existing] = await connection.query(
                 `
-                SELECT experience_id
-                FROM user_experience
-                WHERE user_id = ?
-                  AND experience_type = ?
-                  AND LOWER(job_title) = LOWER(?)
-                  AND LOWER(COALESCE(company_name, '')) =
-                      LOWER(COALESCE(?, ''))
-                  AND COALESCE(start_date, '0000-00-00') =
-                      COALESCE(?, '0000-00-00')
-                LIMIT 1
-                `,
+    SELECT experience_id
+    FROM user_experience
+    WHERE user_id = ?
+      AND experience_type = ?
+      AND job_title = ?
+      AND company_name = ?
+      AND start_date <=> ?
+    LIMIT 1
+    `,
                 [
                     userId,
-                    experienceType,
-                    jobTitle,
-                    companyName,
-                    startDate
+                    "Job",
+                    item.job_title || null,
+                    item.company_name || null,
+                    item.start_date || null
                 ]
             );
 
             if (existing.length > 0) {
-
-                const skippedItem = {
-                    ...item,
-                    reason: "Already in profile"
-                };
-
-                if (experienceType === "Internship") {
-                    skippedResults.internships.push(
-                        skippedItem
-                    );
-                } else {
-                    skippedResults.experience.push(
-                        skippedItem
-                    );
-                }
-
                 continue;
             }
 
-            const result = await query(
+            await connection.query(
                 `
                 INSERT INTO user_experience
                 (
@@ -1415,83 +1549,101 @@ const importResume = async (req, res) => {
                 `,
                 [
                     userId,
-                    experienceType,
-                    jobTitle,
-                    companyName || null,
-                    cleanString(
-                        item.description
-                    ) || null,
-                    startDate,
-                    endDate
+                    "Job",
+                    item.job_title || null,
+                    item.company_name || null,
+                    item.description || null,
+                    item.start_date || null,
+                    item.end_date || null
+                ]
+            );
+        }
+
+
+        // =================================================
+        // INTERNSHIPS
+        // =================================================
+
+        for (const item of internships) {
+
+            const [existing] = await connection.query(
+                `
+    SELECT experience_id
+    FROM user_experience
+    WHERE user_id = ?
+      AND experience_type = ?
+      AND job_title = ?
+      AND company_name = ?
+      AND start_date <=> ?
+    LIMIT 1
+    `,
+                [
+                    userId,
+                    "Internship",
+                    item.job_title || null,
+                    item.company_name || null,
+                    item.start_date || null
                 ]
             );
 
-            const importedItem = {
-                ...item,
-                experience_type: experienceType,
-                experience_id:
-                    result.insertId
-            };
-
-            if (experienceType === "Internship") {
-                importedResults.internships.push(
-                    importedItem
-                );
-            } else {
-                importedResults.experience.push(
-                    importedItem
-                );
+            if (existing.length > 0) {
+                continue;
             }
+
+            await connection.query(
+                `
+                INSERT INTO user_experience
+                (
+                    user_id,
+                    experience_type,
+                    job_title,
+                    company_name,
+                    description,
+                    start_date,
+                    end_date
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                `,
+                [
+                    userId,
+                    "Internship",
+                    item.job_title || null,
+                    item.company_name || null,
+                    item.description || null,
+                    item.start_date || null,
+                    item.end_date || null
+                ]
+            );
         }
 
-        /* ---------------------------------------------
-           5. COURSES
-        --------------------------------------------- */
+
+        // =================================================
+        // COURSES
+        // =================================================
 
         for (const item of courses) {
 
-            const courseName =
-                cleanString(
-                    item.course_name
-                );
-
-            if (!courseName) {
-                continue;
-            }
-
-            const provider =
-                cleanString(
-                    item.provider
-                );
-
-            const existing = await query(
+            const [existing] = await connection.query(
                 `
-                SELECT course_id
-                FROM user_courses
-                WHERE user_id = ?
-                  AND LOWER(course_name) = LOWER(?)
-                  AND LOWER(COALESCE(provider, '')) =
-                      LOWER(COALESCE(?, ''))
-                LIMIT 1
-                `,
+    SELECT course_id
+    FROM user_courses
+    WHERE user_id = ?
+      AND course_name = ?
+      AND provider <=> ?
+    LIMIT 1
+    `,
                 [
                     userId,
-                    courseName,
-                    provider
+                    item.course_name,
+                    item.provider || null
                 ]
             );
 
             if (existing.length > 0) {
-
-                skippedResults.courses.push({
-                    ...item,
-                    reason: "Already in profile"
-                });
-
                 continue;
             }
 
-            const result = await query(
+            await connection.query(
                 `
                 INSERT INTO user_courses
                 (
@@ -1506,203 +1658,110 @@ const importResume = async (req, res) => {
                 `,
                 [
                     userId,
-                    courseName,
-                    provider || null,
-                    cleanString(
-                        item.description
-                    ) || null,
-                    normalizeDate(
-                        item.completion_date
-                    ),
-                    cleanString(
-                        item.certificate_url
-                    ) || null
+                    item.course_name,
+                    item.provider || null,
+                    item.description || null,
+                    item.completion_date || null,
+                    item.certificate_url || null
                 ]
             );
-
-            importedResults.courses.push({
-                ...item,
-                course_id:
-                    result.insertId
-            });
         }
 
-        /* ---------------------------------------------
-           6. CERTIFICATIONS
-           Stored inside user_courses
-        --------------------------------------------- */
 
-        for (const item of certifications) {
+        // =================================================
+        // CERTIFICATIONS
+        // =================================================
 
-            const courseName =
-                cleanString(
-                    item.course_name
-                );
+        //     for (const item of courses) {
 
-            if (!courseName) {
-                continue;
-            }
+        //         const [existing] = await connection.query(
+        //             `
+        // SELECT course_id
+        // FROM user_courses
+        // WHERE user_id = ?
+        //   AND course_name = ?
+        //   AND provider <=> ?
+        // LIMIT 1
+        // `,
+        //             [
+        //                 userId,
+        //                 item.course_name,
+        //                 item.provider || null
+        //             ]
+        //         );
 
-            const provider =
-                cleanString(
-                    item.provider
-                );
+        //         if (existing.length > 0) {
+        //             continue;
+        //         }
 
-            const existing = await query(
-                `
-                SELECT course_id
-                FROM user_courses
-                WHERE user_id = ?
-                  AND LOWER(course_name) = LOWER(?)
-                  AND LOWER(COALESCE(provider, '')) =
-                      LOWER(COALESCE(?, ''))
-                LIMIT 1
-                `,
-                [
-                    userId,
-                    courseName,
-                    provider
-                ]
-            );
+        //         await connection.query(
+        //             `
+        //             INSERT INTO user_courses
+        //             (
+        //                 user_id,
+        //                 course_name,
+        //                 provider,
+        //                 description,
+        //                 completion_date,
+        //                 certificate_url
+        //             )
+        //             VALUES (?, ?, ?, ?, ?, ?)
+        //             `,
+        //             [
+        //                 userId,
+        //                 item.course_name,
+        //                 item.provider || null,
+        //                 item.description || null,
+        //                 item.completion_date || null,
+        //                 item.certificate_url || null
+        //             ]
+        //         );
+        //     }
 
-            if (existing.length > 0) {
 
-                skippedResults.certifications.push({
-                    ...item,
-                    reason: "Already in profile"
-                });
+        // =================================================
+        // COMMIT
+        // =================================================
 
-                continue;
-            }
+        await connection.commit();
 
-            const result = await query(
-                `
-                INSERT INTO user_courses
-                (
-                    user_id,
-                    course_name,
-                    provider,
-                    description,
-                    completion_date,
-                    certificate_url
-                )
-                VALUES (?, ?, ?, ?, ?, ?)
-                `,
-                [
-                    userId,
-                    courseName,
-                    provider || null,
-                    cleanString(
-                        item.description
-                    ) || null,
-                    normalizeDate(
-                        item.completion_date
-                    ),
-                    cleanString(
-                        item.certificate_url
-                    ) || null
-                ]
-            );
-
-            importedResults.certifications.push({
-                ...item,
-                course_id:
-                    result.insertId
-            });
-        }
-
-        /* ---------------------------------------------
-           COMMIT
-        --------------------------------------------- */
-
-        await query("COMMIT");
-
-        return res.status(200).json({
-
+        return res.json({
             message:
-                "Resume data imported successfully.",
-
-            imported: importedResults,
-
-            skipped: skippedResults
+                "Resume data added to profile successfully"
         });
+
 
     } catch (error) {
 
+        await connection.rollback();
+
         console.error(
-            "Resume import error:",
+            "IMPORT RESUME ERROR:",
             error
         );
 
-        try {
-            await query("ROLLBACK");
-        } catch (rollbackError) {
-            console.error(
-                "Rollback failed:",
-                rollbackError
-            );
-        }
-
         return res.status(500).json({
             message:
-                error.message ||
-                "Failed to import resume data."
+                "Failed to add resume data to profile"
         });
+
     }
 };
 
-/* =========================================================
-   MULTER MIDDLEWARE
-========================================================= */
 
-const uploadResume = (req, res, next) => {
-
-    upload.single("resume")(
-        req,
-        res,
-        (error) => {
-
-            if (error) {
-
-                if (
-                    error instanceof
-                    multer.MulterError
-                ) {
-
-                    if (
-                        error.code ===
-                        "LIMIT_FILE_SIZE"
-                    ) {
-
-                        return res.status(400).json({
-                            message:
-                                "Resume file is too large. Maximum size is 5 MB."
-                        });
-                    }
-
-                    return res.status(400).json({
-                        message: error.message
-                    });
-                }
-
-                return res.status(400).json({
-                    message:
-                        error.message ||
-                        "Failed to upload resume."
-                });
-            }
-
-            next();
-        }
-    );
-};
-
-/* =========================================================
-   EXPORTS
-========================================================= */
+// =====================================================
+// EXPORTS
+// =====================================================
 
 module.exports = {
+
     uploadResume,
+
     analyzeResume,
+
+    getResume,
+
+    deleteResume,
+
     importResume
 };

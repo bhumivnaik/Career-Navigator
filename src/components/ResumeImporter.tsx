@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import "../css/resumeImporter.css";
 
@@ -6,53 +6,58 @@ type ResumeSkill = {
     skill_id: number;
     skill_name: string;
     detected_as?: string;
-    status: "new" | "existing";
+    existing?: boolean;
 };
 
 type ResumeEducation = {
     degree: string;
     field_of_study: string;
     institution: string;
-    start_year: number | null;
-    end_year: number | null;
+    start_year: string;
+    end_year: string;
 };
 
 type ResumeProject = {
     project_name: string;
     description: string;
     technologies_used: string;
-    start_date: string | null;
-    end_date: string | null;
+    start_date: string;
+    end_date: string;
+    github_repo_url: string;
 };
 
 type ResumeExperience = {
-    experience_type?: "Job" | "Internship";
-    job_title: string;
     company_name: string;
+    job_title: string;
     description: string;
-    start_date: string | null;
-    end_date: string | null;
+    start_date: string;
+    end_date: string;
 };
 
 type ResumeCourse = {
     course_name: string;
     provider: string;
     description: string;
-    completion_date: string | null;
+    completion_date: string;
     certificate_url: string;
+};
+
+type ResumeCertification = {
+    name: string;
+    issuer: string;
+    issue_date: string;
+    credential_id: string;
 };
 
 type ResumeData = {
     skills: ResumeSkill[];
-    unmatched_skills: {
-        skill_name: string;
-    }[];
+    unmatched_skills: string[];
     education: ResumeEducation[];
     projects: ResumeProject[];
     experience: ResumeExperience[];
     internships: ResumeExperience[];
     courses: ResumeCourse[];
-    certifications: ResumeCourse[];
+    certifications: ResumeCertification[];
 };
 
 type ResumeImporterProps = {
@@ -63,8 +68,9 @@ function ResumeImporter({
     onImported
 }: ResumeImporterProps) {
 
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+    const fileInputRef =
+        useRef<HTMLInputElement | null>(null);
+    const [existingResume, setExistingResume] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] =
         useState<File | null>(null);
 
@@ -93,9 +99,29 @@ function ResumeImporter({
         Authorization: `Bearer ${token}`
     };
 
-    /* =====================================================
-       FILE SELECTION
-    ===================================================== */
+    useEffect(() => {
+        const fetchExistingResume = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:5000/api/resume/file",
+                    { headers }
+                );
+
+                console.log("EXISTING RESUME RESPONSE:", response.data);
+
+                if (response.data?.filename) {
+                    setExistingResume(response.data.filename);
+                }
+            } catch (error) {
+                console.log("NO EXISTING RESUME:", error);
+            }
+        };
+
+        fetchExistingResume();
+    }, []);
+    // =====================================================
+    // FILE SELECTION
+    // =====================================================
 
     const handleFileChange = (
         event: React.ChangeEvent<HTMLInputElement>
@@ -144,9 +170,10 @@ function ResumeImporter({
         setSelectedFile(file);
     };
 
-    /* =====================================================
-       ANALYZE RESUME
-    ===================================================== */
+
+    // =====================================================
+    // ANALYZE RESUME
+    // =====================================================
 
     const handleAnalyze = async () => {
 
@@ -175,7 +202,7 @@ function ResumeImporter({
 
             const response =
                 await axios.post(
-                    "http://localhost:5000/api/resume/analyze",
+                    "http://localhost:5000/api/resume/upload",
                     formData,
                     {
                         headers: {
@@ -186,9 +213,31 @@ function ResumeImporter({
                     }
                 );
 
-            setResumeData(
-                response.data.data
-            );
+            setResumeData({
+                skills:
+                    response.data.skills || [],
+
+                unmatched_skills:
+                    response.data.unmatched_skills || [],
+
+                education:
+                    response.data.education || [],
+
+                projects:
+                    response.data.projects || [],
+
+                experience:
+                    response.data.experience || [],
+
+                internships:
+                    response.data.internships || [],
+
+                courses:
+                    response.data.courses || [],
+
+                certifications:
+                    response.data.certifications || []
+            });
 
             setShowReview(true);
 
@@ -210,9 +259,10 @@ function ResumeImporter({
         }
     };
 
-    /* =====================================================
-       IMPORT TO PROFILE
-    ===================================================== */
+
+    // =====================================================
+    // IMPORT TO PROFILE
+    // =====================================================
 
     const handleImport = async () => {
 
@@ -248,10 +298,6 @@ function ResumeImporter({
                 fileInputRef.current.value = "";
             }
 
-            /*
-                Reload Account page data so the newly
-                imported information appears immediately.
-            */
             onImported();
 
         } catch (error: any) {
@@ -272,9 +318,10 @@ function ResumeImporter({
         }
     };
 
-    /* =====================================================
-       RESET
-    ===================================================== */
+
+    // =====================================================
+    // RESET / DISCARD ANALYSIS
+    // =====================================================
 
     const handleReset = () => {
 
@@ -289,9 +336,10 @@ function ResumeImporter({
         }
     };
 
-    /* =====================================================
-       DATE DISPLAY
-    ===================================================== */
+
+    // =====================================================
+    // DATE DISPLAY
+    // =====================================================
 
     const formatDate = (
         value: string | null | undefined
@@ -304,9 +352,10 @@ function ResumeImporter({
         return value.slice(0, 10);
     };
 
-    /* =====================================================
-       RENDER
-    ===================================================== */
+
+    // =====================================================
+    // RENDER
+    // =====================================================
 
     return (
         <section className="resume-import-section">
@@ -314,7 +363,9 @@ function ResumeImporter({
             <div className="resume-import-header">
 
                 <div>
-                    <h2>Import From Resume</h2>
+                    <h2>
+                        Import From Resume
+                    </h2>
 
                     <p>
                         Let AI detect your skills, education,
@@ -322,28 +373,7 @@ function ResumeImporter({
                     </p>
                 </div>
 
-            </div>
-
-            {/* =================================================
-                UPLOAD AREA
-            ================================================= */}
-
-            {!showReview && (
-
-                <div className="resume-upload-area">
-
-                    <div className="resume-upload-icon">
-                        📄
-                    </div>
-
-                    <h3>
-                        Upload your resume
-                    </h3>
-
-                    <p>
-                        Supported formats: PDF and DOCX
-                    </p>
-
+                <div>
                     <input
                         ref={fileInputRef}
                         type="file"
@@ -361,42 +391,96 @@ function ResumeImporter({
                     >
                         Choose Resume
                     </button>
+                </div>
 
-                    {selectedFile && (
+            </div>
 
-                        <div className="selected-resume">
 
-                            <span>
-                                📄 {selectedFile.name}
-                            </span>
+            {/* =================================================
+    UPLOAD AREA
+================================================= */}
 
-                            <small>
-                                {(
-                                    selectedFile.size /
-                                    1024 /
-                                    1024
-                                ).toFixed(2)} MB
-                            </small>
+            {!showReview && (
 
-                        </div>
+                <div className="resume-upload-area">
+
+                    {!selectedFile && !existingResume ? (
+
+                        <>
+                            <h3>
+                                No resume selected
+                            </h3>
+
+                            <p>
+                                Choose a PDF or DOCX resume to begin.
+                            </p>
+                        </>
+
+                    ) : (
+
+                        <>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "15px",
+                                    width: "100%",
+                                }}
+                            >
+                                <h3 style={{ margin: 0, whiteSpace: "nowrap" }}>
+                                    {selectedFile
+                                        ? "Selected Resume"
+                                        : "Current Resume"}
+                                </h3>
+
+                                <div
+                                    className="selected-resume"
+                                    style={{
+                                        margin: 0,
+                                        flex: 1,
+                                        minWidth: 0,
+                                    }}
+                                >
+                                    <span>
+                                        📄{" "}
+                                        {selectedFile
+                                            ? selectedFile.name
+                                            : existingResume}
+                                    </span>
+
+                                    <small>
+                                        {selectedFile
+                                            ? `${(
+                                                selectedFile.size /
+                                                1024 /
+                                                1024
+                                            ).toFixed(2)} MB`
+                                            : "Current Resume"}
+                                    </small>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="resume-analyze-button"
+                                    style={{
+                                        margin: 0,
+                                        flexShrink: 0,
+                                    }}
+                                    disabled={!selectedFile || analyzing}
+                                    onClick={handleAnalyze}
+                                >
+                                    {analyzing
+                                        ? "Analyzing Resume..."
+                                        : "Analyze Resume"}
+                                </button>
+                            </div>
+                        </>
+
                     )}
-
-                    <button
-                        type="button"
-                        className="resume-analyze-button"
-                        disabled={
-                            !selectedFile ||
-                            analyzing
-                        }
-                        onClick={handleAnalyze}
-                    >
-                        {analyzing
-                            ? "Analyzing Resume..."
-                            : "Analyze Resume"}
-                    </button>
 
                 </div>
             )}
+
 
             {/* =================================================
                 ERROR / SUCCESS
@@ -414,17 +498,18 @@ function ResumeImporter({
                 </div>
             )}
 
+
             {/* =================================================
                 REVIEW SCREEN
             ================================================= */}
 
             {showReview && resumeData && (
-
                 <div className="resume-review">
 
                     <div className="resume-review-top">
 
                         <div>
+
                             <h3>
                                 Review Detected Information
                             </h3>
@@ -433,6 +518,7 @@ function ResumeImporter({
                                 Check what AI detected before
                                 adding it to your profile.
                             </p>
+
                         </div>
 
                         <button
@@ -446,564 +532,546 @@ function ResumeImporter({
 
                     </div>
 
-                    {/* =================================================
+                    <div className="scrollable">
+                        {/* =================================================
                         SKILLS
                     ================================================= */}
 
-                    <div className="resume-review-block">
+                        <div className="resume-review-block">
 
-                        <div className="resume-block-title">
+                            <div className="resume-block-title">
 
-                            <h4>
-                                Skills
-                            </h4>
+                                <h4>
+                                    Skills
+                                </h4>
 
-                            <span>
-                                {resumeData.skills.length}
-                            </span>
+                                <span>
+                                    {resumeData.skills.length}
+                                </span>
 
-                        </div>
+                            </div>
 
-                        {resumeData.skills.length > 0 ? (
+                            {resumeData.skills.length > 0 ? (
 
-                            <div className="resume-skill-list">
+                                <div className="resume-skill-list">
 
-                                {resumeData.skills.map(
-                                    (skill) => (
+                                    {resumeData.skills.map(
+                                        (skill) => (
 
-                                        <div
-                                            className={`resume-skill-item ${
-                                                skill.status === "existing"
+                                            <div
+                                                className={`resume-skill-item ${skill.existing
                                                     ? "existing"
                                                     : "new"
-                                            }`}
-                                            key={skill.skill_id}
-                                        >
+                                                    }`}
+                                                key={skill.skill_id}
+                                            >
 
-                                            <span>
-                                                {skill.skill_name}
-                                            </span>
+                                                <span>
+                                                    {skill.skill_name}
+                                                </span>
 
-                                            <small>
-                                                {skill.status ===
-                                                "existing"
-                                                    ? "Already in profile"
-                                                    : "New"}
-                                            </small>
+                                                {/* <small>
+                                                    {skill.existing
+                                                        ? "Already in profile"
+                                                        : "New"}
+                                                </small> */}
 
-                                        </div>
-                                    )
-                                )}
+                                            </div>
+                                        )
+                                    )}
 
-                            </div>
+                                </div>
 
-                        ) : (
+                            ) : (
 
-                            <p className="resume-empty">
-                                No matching skills detected.
-                            </p>
-                        )}
+                                <p className="resume-empty">
+                                    No matching skills detected.
+                                </p>
+                            )}
 
-                       {resumeData.unmatched_skills.length > 0 && (
 
-    <div className="resume-additional-skills">
+                            {resumeData.unmatched_skills.length > 0 && (
 
-        <strong>
-            Additional skills detected
-        </strong>
+                                <div className="resume-additional-skills">
+                                    <div>
+                                        <strong style={{ marginTop: "5px" }}>
+                                            Additional skills detected
+                                        </strong>
+                                        {resumeData.unmatched_skills.map(
+                                            (skill, index) => (
 
-        <div>
-            {resumeData.unmatched_skills.map(
-                (skill, index) => (
-                    <span key={index}>
-                        {skill.skill_name}
-                    </span>
-                )
-            )}
-        </div>
+                                                <span key={index}>
+                                                    {skill}
+                                                </span>
+                                            )
+                                        )}
 
-    </div>
-)}
+                                    </div>
 
-</div>
-
-{/*
-    EDUCATION
-*/}
-
-                    <div className="resume-review-block">
-
-                        <div className="resume-block-title">
-
-                            <h4>
-                                Education
-                            </h4>
-
-                            <span>
-                                {resumeData.education.length}
-                            </span>
+                                </div>
+                            )}
 
                         </div>
 
-                        {resumeData.education.length > 0 ? (
 
-                            <div className="resume-detail-list">
+                        {/* =================================================
+                        EDUCATION
+                    ================================================= */}
 
-                                {resumeData.education.map(
-                                    (item, index) => (
+                        <div className="resume-review-block">
 
-                                        <div
-                                            className="resume-detail-item"
-                                            key={index}
-                                        >
+                            <div className="resume-block-title">
 
-                                            <strong>
-                                                {item.degree}
-                                            </strong>
+                                <h4>
+                                    Education
+                                </h4>
 
-                                            {item.field_of_study && (
-                                                <span>
-                                                    {item.field_of_study}
-                                                </span>
-                                            )}
-
-                                            {item.institution && (
-                                                <span>
-                                                    {item.institution}
-                                                </span>
-                                            )}
-
-                                            {(item.start_year ||
-                                                item.end_year) && (
-
-                                                <small>
-                                                    {item.start_year || ""}
-                                                    {item.start_year &&
-                                                        item.end_year &&
-                                                        " - "}
-                                                    {item.end_year || ""}
-                                                </small>
-                                            )}
-
-                                        </div>
-                                    )
-                                )}
+                                <span>
+                                    {resumeData.education.length}
+                                </span>
 
                             </div>
 
-                        ) : (
+                            {resumeData.education.length > 0 ? (
 
-                            <p className="resume-empty">
-                                No education detected.
-                            </p>
-                        )}
+                                <div className="resume-detail-list">
 
-                    </div>
+                                    {resumeData.education.map(
+                                        (item, index) => (
 
-                    {/* =================================================
+                                            <div
+                                                className="resume-detail-item"
+                                                key={index}
+                                            >
+
+                                                <strong>
+                                                    {item.degree}
+                                                </strong>
+
+                                                {item.field_of_study && (
+                                                    <span>
+                                                        {item.field_of_study}
+                                                    </span>
+                                                )}
+
+                                                {item.institution && (
+                                                    <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                                        {item.institution}
+                                                    </span>
+                                                )}
+
+                                                {(item.start_year ||
+                                                    item.end_year) && (
+
+                                                        <small>
+
+                                                            {item.start_year || ""}
+
+                                                            {item.start_year &&
+                                                                item.end_year &&
+                                                                " - "}
+
+                                                            {item.end_year || ""}
+
+                                                        </small>
+                                                    )}
+
+                                            </div>
+                                        )
+                                    )}
+
+                                </div>
+
+                            ) : (
+
+                                <p className="resume-empty">
+                                    No education detected.
+                                </p>
+                            )}
+
+                        </div>
+
+
+                        {/* =================================================
                         PROJECTS
                     ================================================= */}
 
-                    <div className="resume-review-block">
+                        <div className="resume-review-block">
 
-                        <div className="resume-block-title">
+                            <div className="resume-block-title">
 
-                            <h4>
-                                Projects
-                            </h4>
+                                <h4>
+                                    Projects
+                                </h4>
 
-                            <span>
-                                {resumeData.projects.length}
-                            </span>
-
-                        </div>
-
-                        {resumeData.projects.length > 0 ? (
-
-                            <div className="resume-detail-list">
-
-                                {resumeData.projects.map(
-                                    (item, index) => (
-
-                                        <div
-                                            className="resume-detail-item"
-                                            key={index}
-                                        >
-
-                                            <strong>
-                                                {item.project_name}
-                                            </strong>
-
-                                            {item.description && (
-                                                <p>
-                                                    {item.description}
-                                                </p>
-                                            )}
-
-                                            {item.technologies_used && (
-                                                <span>
-                                                    Technologies:{" "}
-                                                    {item.technologies_used}
-                                                </span>
-                                            )}
-
-                                            {(item.start_date ||
-                                                item.end_date) && (
-
-                                                <small>
-                                                    {formatDate(
-                                                        item.start_date
-                                                    )}
-
-                                                    {item.start_date &&
-                                                        item.end_date &&
-                                                        " - "}
-
-                                                    {formatDate(
-                                                        item.end_date
-                                                    )}
-                                                </small>
-                                            )}
-
-                                        </div>
-                                    )
-                                )}
+                                <span>
+                                    {resumeData.projects.length}
+                                </span>
 
                             </div>
 
-                        ) : (
+                            {resumeData.projects.length > 0 ? (
 
-                            <p className="resume-empty">
-                                No projects detected.
-                            </p>
-                        )}
+                                <div className="resume-detail-list">
 
-                    </div>
+                                    {resumeData.projects.map(
+                                        (item, index) => (
 
-                    {/* =================================================
+                                            <div
+                                                className="resume-detail-item"
+                                                key={index}
+                                            >
+
+                                                <strong>
+                                                    {item.project_name}
+                                                </strong>
+
+                                                {item.description && (
+                                                    <p
+                                                        style={{
+                                                            display: "-webkit-box",
+                                                            WebkitLineClamp: 2,
+                                                            WebkitBoxOrient: "vertical",
+                                                            overflow: "hidden",
+                                                        }}
+                                                    >
+                                                        {item.description}
+                                                    </p>
+                                                )}
+
+                                                {item.technologies_used && (
+
+                                                    <span>
+
+                                                        {item.technologies_used}
+                                                    </span>
+                                                )}
+
+                                                {(item.start_date ||
+                                                    item.end_date) && (
+
+                                                        <small>
+
+                                                            {formatDate(
+                                                                item.start_date
+                                                            )}
+
+                                                            {item.start_date &&
+                                                                item.end_date &&
+                                                                " - "}
+
+                                                            {formatDate(
+                                                                item.end_date
+                                                            )}
+
+                                                        </small>
+                                                    )}
+
+                                                {item.github_repo_url && (
+                                                    <a
+                                                        href={
+                                                            item.github_repo_url
+                                                        }
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        GitHub Repository
+                                                    </a>
+                                                )}
+
+                                            </div>
+                                        )
+                                    )}
+
+                                </div>
+
+                            ) : (
+
+                                <p className="resume-empty">
+                                    No projects detected.
+                                </p>
+                            )}
+
+                        </div>
+
+
+                        {/* =================================================
                         EXPERIENCE
                     ================================================= */}
 
-                    <div className="resume-review-block">
+                        <div className="resume-review-block">
 
-                        <div className="resume-block-title">
+                            <div className="resume-block-title">
 
-                            <h4>
-                                Experience
-                            </h4>
+                                <h4>
+                                    Experience
+                                </h4>
 
-                            <span>
-                                {resumeData.experience.length}
-                            </span>
-
-                        </div>
-
-                        {resumeData.experience.length > 0 ? (
-
-                            <div className="resume-detail-list">
-
-                                {resumeData.experience.map(
-                                    (item, index) => (
-
-                                        <div
-                                            className="resume-detail-item"
-                                            key={index}
-                                        >
-
-                                            <strong>
-                                                {item.job_title}
-                                            </strong>
-
-                                            {item.company_name && (
-                                                <span>
-                                                    {item.company_name}
-                                                </span>
-                                            )}
-
-                                            {item.description && (
-                                                <p>
-                                                    {item.description}
-                                                </p>
-                                            )}
-
-                                            {(item.start_date ||
-                                                item.end_date) && (
-
-                                                <small>
-                                                    {formatDate(
-                                                        item.start_date
-                                                    )}
-
-                                                    {item.start_date &&
-                                                        item.end_date &&
-                                                        " - "}
-
-                                                    {formatDate(
-                                                        item.end_date
-                                                    )}
-                                                </small>
-                                            )}
-
-                                        </div>
-                                    )
-                                )}
+                                <span>
+                                    {resumeData.experience.length}
+                                </span>
 
                             </div>
 
-                        ) : (
+                            {resumeData.experience.length > 0 ? (
 
-                            <p className="resume-empty">
-                                No work experience detected.
-                            </p>
-                        )}
+                                <div className="resume-detail-list">
 
-                    </div>
+                                    {resumeData.experience.map(
+                                        (item, index) => (
 
-                    {/* =================================================
+                                            <div
+                                                className="resume-detail-item"
+                                                key={index}
+                                            >
+
+                                                <strong>
+                                                    {item.job_title}
+                                                </strong>
+
+                                                {item.company_name && (
+                                                    <span>
+                                                        {item.company_name}
+                                                    </span>
+                                                )}
+
+                                                {item.description && (
+                                                    <p>
+                                                        {item.description}
+                                                    </p>
+                                                )}
+
+                                                {(item.start_date ||
+                                                    item.end_date) && (
+
+                                                        <small>
+
+                                                            {formatDate(
+                                                                item.start_date
+                                                            )}
+
+                                                            {item.start_date &&
+                                                                item.end_date &&
+                                                                " - "}
+
+                                                            {formatDate(
+                                                                item.end_date
+                                                            )}
+
+                                                        </small>
+                                                    )}
+
+                                            </div>
+                                        )
+                                    )}
+
+                                </div>
+
+                            ) : (
+
+                                <p className="resume-empty">
+                                    No work experience detected.
+                                </p>
+                            )}
+
+                        </div>
+
+
+                        {/* =================================================
                         INTERNSHIPS
                     ================================================= */}
 
-                    <div className="resume-review-block">
+                        <div className="resume-review-block">
 
-                        <div className="resume-block-title">
+                            <div className="resume-block-title">
 
-                            <h4>
-                                Internships
-                            </h4>
+                                <h4>
+                                    Internships
+                                </h4>
 
-                            <span>
-                                {resumeData.internships.length}
-                            </span>
-
-                        </div>
-
-                        {resumeData.internships.length > 0 ? (
-
-                            <div className="resume-detail-list">
-
-                                {resumeData.internships.map(
-                                    (item, index) => (
-
-                                        <div
-                                            className="resume-detail-item"
-                                            key={index}
-                                        >
-
-                                            <strong>
-                                                {item.job_title}
-                                            </strong>
-
-                                            {item.company_name && (
-                                                <span>
-                                                    {item.company_name}
-                                                </span>
-                                            )}
-
-                                            {item.description && (
-                                                <p>
-                                                    {item.description}
-                                                </p>
-                                            )}
-
-                                            {(item.start_date ||
-                                                item.end_date) && (
-
-                                                <small>
-                                                    {formatDate(
-                                                        item.start_date
-                                                    )}
-
-                                                    {item.start_date &&
-                                                        item.end_date &&
-                                                        " - "}
-
-                                                    {formatDate(
-                                                        item.end_date
-                                                    )}
-                                                </small>
-                                            )}
-
-                                        </div>
-                                    )
-                                )}
+                                <span>
+                                    {resumeData.internships.length}
+                                </span>
 
                             </div>
 
-                        ) : (
+                            {resumeData.internships.length > 0 ? (
 
-                            <p className="resume-empty">
-                                No internships detected.
-                            </p>
-                        )}
+                                <div className="resume-detail-list">
 
-                    </div>
+                                    {resumeData.internships.map(
+                                        (item, index) => (
 
-                    {/* =================================================
+                                            <div
+                                                className="resume-detail-item"
+                                                key={index}
+                                            >
+
+                                                <strong>
+                                                    {item.job_title}
+                                                </strong>
+
+                                                {item.company_name && (
+                                                    <span>
+                                                        {item.company_name}
+                                                    </span>
+                                                )}
+
+                                                {item.description && (
+                                                    <p>
+                                                        {item.description}
+                                                    </p>
+                                                )}
+
+                                                {(item.start_date ||
+                                                    item.end_date) && (
+
+                                                        <small>
+
+                                                            {formatDate(
+                                                                item.start_date
+                                                            )}
+
+                                                            {item.start_date &&
+                                                                item.end_date &&
+                                                                " - "}
+
+                                                            {formatDate(
+                                                                item.end_date
+                                                            )}
+
+                                                        </small>
+                                                    )}
+
+                                            </div>
+                                        )
+                                    )}
+
+                                </div>
+
+                            ) : (
+
+                                <p className="resume-empty">
+                                    No internships detected.
+                                </p>
+                            )}
+
+                        </div>
+
+
+                        {/* =================================================
                         COURSES
                     ================================================= */}
 
-                    <div className="resume-review-block">
+                        <div className="resume-review-block">
 
-                        <div className="resume-block-title">
+                            <div className="resume-block-title">
 
-                            <h4>
-                                Courses
-                            </h4>
+                                <h4>
+                                    Courses
+                                </h4>
 
-                            <span>
-                                {resumeData.courses.length}
-                            </span>
-
-                        </div>
-
-                        {resumeData.courses.length > 0 ? (
-
-                            <div className="resume-detail-list">
-
-                                {resumeData.courses.map(
-                                    (item, index) => (
-
-                                        <div
-                                            className="resume-detail-item"
-                                            key={index}
-                                        >
-
-                                            <strong>
-                                                {item.course_name}
-                                            </strong>
-
-                                            {item.provider && (
-                                                <span>
-                                                    {item.provider}
-                                                </span>
-                                            )}
-
-                                            {item.description && (
-                                                <p>
-                                                    {item.description}
-                                                </p>
-                                            )}
-
-                                            {item.completion_date && (
-                                                <small>
-                                                    Completed{" "}
-                                                    {formatDate(
-                                                        item.completion_date
-                                                    )}
-                                                </small>
-                                            )}
-
-                                        </div>
-                                    )
-                                )}
+                                <span>
+                                    {resumeData.courses.length}
+                                </span>
 
                             </div>
 
-                        ) : (
+                            {resumeData.courses.length > 0 ? (
 
-                            <p className="resume-empty">
-                                No courses detected.
-                            </p>
-                        )}
+                                <div className="resume-detail-list">
 
-                    </div>
+                                    {resumeData.courses.map(
+                                        (item, index) => (
 
-                    {/* =================================================
-                        CERTIFICATIONS
-                    ================================================= */}
+                                            <div
+                                                className="resume-detail-item"
+                                                key={index}
+                                            >
 
-                    <div className="resume-review-block">
+                                                <strong>
+                                                    {item.course_name}
+                                                </strong>
 
-                        <div className="resume-block-title">
+                                                {item.provider && (
+                                                    <span>
+                                                        {item.provider}
+                                                    </span>
+                                                )}
 
-                            <h4>
-                                Certifications
-                            </h4>
+                                                {item.description && (
+                                                    <p>
+                                                        {item.description}
+                                                    </p>
+                                                )}
 
-                            <span>
-                                {resumeData.certifications.length}
-                            </span>
+                                                {item.completion_date && (
+                                                    <small>
+                                                        Completed{" "}
+                                                        {formatDate(
+                                                            item.completion_date
+                                                        )}
+                                                    </small>
+                                                )}
+
+                                                {item.certificate_url && (
+                                                    <a
+                                                        href={
+                                                            item.certificate_url
+                                                        }
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        View Certificate
+                                                    </a>
+                                                )}
+
+                                            </div>
+                                        )
+                                    )}
+
+                                </div>
+
+                            ) : (
+
+                                <p className="resume-empty">
+                                    No courses detected.
+                                </p>
+                            )}
 
                         </div>
 
-                        {resumeData.certifications.length > 0 ? (
 
-                            <div className="resume-detail-list">
 
-                                {resumeData.certifications.map(
-                                    (item, index) => (
 
-                                        <div
-                                            className="resume-detail-item"
-                                            key={index}
-                                        >
 
-                                            <strong>
-                                                {item.course_name}
-                                            </strong>
-
-                                            {item.provider && (
-                                                <span>
-                                                    {item.provider}
-                                                </span>
-                                            )}
-
-                                            {item.description && (
-                                                <p>
-                                                    {item.description}
-                                                </p>
-                                            )}
-
-                                            {item.completion_date && (
-                                                <small>
-                                                    Completed{" "}
-                                                    {formatDate(
-                                                        item.completion_date
-                                                    )}
-                                                </small>
-                                            )}
-
-                                        </div>
-                                    )
-                                )}
-
-                            </div>
-
-                        ) : (
-
-                            <p className="resume-empty">
-                                No certifications detected.
-                            </p>
-                        )}
-
-                    </div>
-
-                    {/* =================================================
-                        IMPORT BUTTON
+                        {/* =================================================
+                        IMPORT BUTTONS
                     ================================================= */}
 
-                    <div className="resume-import-actions">
+                        <div className="resume-import-actions">
 
-                        <button
-                            type="button"
-                            className="resume-cancel-button"
-                            onClick={handleReset}
-                            disabled={importing}
-                        >
-                            Cancel
-                        </button>
+                            <button
+                                type="button"
+                                className="resume-cancel-button"
+                                onClick={handleReset}
+                                disabled={importing}
+                            >
+                                Discard Analysis
+                            </button>
 
-                        <button
-                            type="button"
-                            className="resume-import-button"
-                            onClick={handleImport}
-                            disabled={importing}
-                        >
-                            {importing
-                                ? "Importing..."
-                                : "Import to Profile"}
-                        </button>
+                            <button
+                                type="button"
+                                className="resume-import-button"
+                                onClick={handleImport}
+                                disabled={importing}
+                            >
+                                {importing
+                                    ? "Adding to Profile..."
+                                    : "Add to Profile"}
+                            </button>
 
+                        </div>
                     </div>
 
                 </div>

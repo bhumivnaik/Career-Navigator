@@ -28,10 +28,7 @@
     font-size: 14px;
 }
 
-/* ================================
-   UPLOAD
-================================ */
-
+/* ================================ UPLOAD ================================ */
 .resume-upload-area {
     border: 2px dashed var(--primary-light2);
     background: #faf8ff;
@@ -130,10 +127,7 @@
     cursor: not-allowed;
 }
 
-/* ================================
-   MESSAGES
-================================ */
-
+/* ================================ MESSAGES ================================ */
 .resume-message {
     margin-top: 16px;
     padding: 12px 15px;
@@ -153,24 +147,40 @@
     color: #15803d;
 }
 
-/* ================================
-   REVIEW
-================================ */
+/* =========================
+   RESUME REVIEW
+========================= */
 
 .resume-review {
     margin-top: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 20px;
 }
 
+/* Left side - similar to upload area */
 .resume-review-top {
+    width: 280px;
+    flex-shrink: 0;
+
+    border: 2px dashed var(--primary-light2);
+    background: #faf8ff;
+    border-radius: 12px;
+
+    padding: 35px 30px;
+
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: 20px;
-    margin-bottom: 20px;
+    align-items: stretch;
+
+    box-sizing: border-box;
 }
 
 .resume-review-top h3 {
-    margin: 0 0 5px;
+    margin: 0 0 8px;
     color: var(--text-primary);
     font-size: 18px;
 }
@@ -179,27 +189,123 @@
     margin: 0;
     color: var(--text-secondary);
     font-size: 13px;
+    line-height: 1.5;
 }
 
+/* Choose another resume button */
 .resume-reset-button {
-    padding: 9px 13px;
-    background: var(--primary-light);
-    color: var(--primary-dark);
-    flex-shrink: 0;
+    width: 100%;
+    margin-top: 25px;
+
+    padding: 10px 15px;
+
+    background: var(--primary);
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: 0.2s ease;
 }
 
 .resume-reset-button:hover {
-    background: var(--primary-light2);
+    background: var(--primary-dark);
 }
 
-/* ================================
-   REVIEW BLOCKS
-================================ */
+/* Right side - large scrolling area */
+.scrollable {
+    flex: 1;
+    min-width: 0;
+    height: 350px;
 
-.resume-review-block {
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: var(--primary-light2);
     padding: 18px;
+    border-radius: 10px;
+    border: 2px solid grey;
+    box-sizing: border-box;
+}
+
+/* Scrollbar */
+.scrollable::-webkit-scrollbar {
+    width: 7px;
+}
+
+.scrollable::-webkit-scrollbar-track {
+    background: #f5f3f8;
+    border-radius: 10px;
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+    background: var(--primary-light2);
+    border-radius: 10px;
+}
+
+.scrollable::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 900px) {
+
+    .resume-review {
+        flex-direction: column;
+    }
+
+    .resume-review-top {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .resume-reset-button {
+        width: auto;
+        align-self: flex-start;
+    }
+
+    .scrollable {
+        width: 100%;
+        height: 500px;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .resume-review-top {
+        padding: 18px;
+    }
+
+    .resume-reset-button {
+        width: 100%;
+    }
+
+    .scrollable {
+        height: 450px;
+    }
+
+    .resume-import-actions {
+        flex-direction: column;
+    }
+
+    .resume-cancel-button,
+    .resume-import-button {
+        width: 100%;
+    }
+}
+
+/* ================================ REVIEW BLOCKS ================================ */
+.resume-review-block {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 12px;
     margin-bottom: 14px;
     background: white;
 }
@@ -208,13 +314,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
 }
 
 .resume-block-title h4 {
     margin: 0;
-    color: var(--text-primary);
-    font-size: 16px;
+    color: var(--primary-dark2);
+    font-size: 14px;
 }
 
 .resume-block-title span {
@@ -227,18 +333,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 700;
 }
 
-/* ================================
-   SKILLS
-================================ */
-
+/* ================================ SKILLS ================================ */
 .resume-skill-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 5px;
 }
 
 .resume-skill-item {
@@ -247,7 +350,7 @@
     gap: 7px;
     padding: 8px 10px;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 11px;
 }
 
 .resume-skill-item.new {
@@ -279,11 +382,11 @@
     display: block;
     margin-bottom: 12px;
     color: #63368f;
-    font-size: 15px;
+    font-size: 12px;
     font-weight: 700;
 }
 
-.resume-additional-skills > div {
+.resume-additional-skills>div {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
@@ -297,17 +400,14 @@
     background: #ffffff;
     border: 1px solid #d4cef3;
     color: #63368f;
-    font-size: 13px;
+    font-size: 10px;
     font-weight: 600;
 }
 
-/* ================================
-   DETAIL ITEMS
-================================ */
-
+/* ================================ DETAIL ITEMS ================================ */
 .resume-detail-list {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
 }
 
@@ -350,10 +450,7 @@
     font-size: 13px;
 }
 
-/* ================================
-   ACTIONS
-================================ */
-
+/* ================================ ACTIONS ================================ */
 .resume-import-actions {
     display: flex;
     justify-content: flex-end;
@@ -381,12 +478,8 @@
     background: var(--primary-dark2);
 }
 
-/* ================================
-   RESPONSIVE
-================================ */
-
+/* ================================ RESPONSIVE ================================ */
 @media (max-width: 700px) {
-
     .resume-import-section {
         padding: 16px;
     }
@@ -407,4 +500,75 @@
     .resume-import-button {
         width: 100%;
     }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.resume-import-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.resume-import-header h2 {
+    margin: 0 0 5px;
+    color: var(--text-primary);
+    font-size: 21px;
+}
+
+.resume-import-header p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.resume-select-button {
+    padding: 9px 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.resume-select-button:hover {
+    background: var(--primary-dark);
+}
+
+.resume-upload-area {
+    border: 2px dashed var(--primary-light2);
+    background: #faf8ff;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+}
+
+.resume-upload-area h3 {
+    margin: 0 0 5px;
+    color: var(--text-primary);
+    font-size: 16px;
+}
+
+.resume-upload-area p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
 }

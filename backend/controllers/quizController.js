@@ -1,17 +1,18 @@
 const db = require("../config/db");
 const crypto = require("crypto");
-const { GoogleGenAI } = require("@google/genai");
+const Groq = require("groq-sdk");
 
-const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY
 });
 
-// Gemini model used for AI quiz generation.
+
+// Groq models used for AI quiz generation.
 const MODELS = [
-    "gemini-3.6-flash",
-    "gemini-3.7-flash",
-    "gemini-3.8-flash"
+    "openai/gpt-oss-20b",
+    "openai/gpt-oss-120b"
 ];
+
 
 // Temporary in-memory storage for active quizzes.
 // Correct answers stay on the backend.
@@ -26,93 +27,56 @@ const generateWithModel = async (prompt) => {
 
         try {
 
-            console.log(`Trying Gemini model: ${model}`);
+            console.log(
+                `Trying Groq model: ${model}`
+            );
 
-            const response =
-                await ai.models.generateContent({
+            const completion =
+                await groq.chat.completions.create({
 
                     model,
 
-                    contents: prompt,
-
-                    config: {
-
-                        responseMimeType:
-                            "application/json",
-
-                        responseSchema: {
-
-                            type: "array",
-
-                            minItems: 5,
-                            maxItems: 5,
-
-                            items: {
-
-                                type: "object",
-
-                                properties: {
-
-                                    question: {
-                                        type: "string"
-                                    },
-
-                                    option_a: {
-                                        type: "string"
-                                    },
-
-                                    option_b: {
-                                        type: "string"
-                                    },
-
-                                    option_c: {
-                                        type: "string"
-                                    },
-
-                                    option_d: {
-                                        type: "string"
-                                    },
-
-                                    correct_option: {
-                                        type: "string"
-                                    },
-
-                                    difficulty: {
-                                        type: "string"
-                                    }
-
-                                },
-
-                                required: [
-                                    "question",
-                                    "option_a",
-                                    "option_b",
-                                    "option_c",
-                                    "option_d",
-                                    "correct_option",
-                                    "difficulty"
-                                ]
-
-                            }
-
+                    messages: [
+                        {
+                            role: "system",
+                            content:
+                                "You generate structured multiple-choice skill assessment questions. Always follow the requested JSON format exactly."
+                        },
+                        {
+                            role: "user",
+                            content: prompt
                         }
+                    ],
 
+                    temperature: 0.7,
+
+                    response_format: {
+                        type: "json_object"
                     }
 
                 });
 
             console.log(
-                `Gemini model succeeded: ${model}`
+                `Groq model succeeded: ${model}`
             );
 
-            return response;
+            const content =
+                completion.choices?.[0]?.message?.content;
+
+            if (!content) {
+                throw new Error(
+                    "Groq returned an empty response"
+                );
+            }
+
+            return content;
 
         } catch (error) {
 
             lastError = error;
 
             console.error(
-                `Gemini model failed: ${model}`,
+                `Groq model failed: ${model}`,
                 error.status || error.message
             );
 
@@ -124,36 +88,51 @@ const generateWithModel = async (prompt) => {
     throw lastError;
 };
 
+
 const generateQuiz = async (req, res) => {
+
     try {
+
         const { skill_id } = req.params;
 
+
         // Get the skill from MySQL.
-        const skills = await new Promise((resolve, reject) => {
-            db.query(
-                `
-                SELECT skill_id, skill_name, category
-                FROM skills
-                WHERE skill_id = ?
-                `,
-                [skill_id],
-                (error, results) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        resolve(results);
+        const skills = await new Promise(
+            (resolve, reject) => {
+
+                db.query(
+                    `
+                    SELECT skill_id, skill_name, category
+                    FROM skills
+                    WHERE skill_id = ?
+                    `,
+                    [skill_id],
+                    (error, results) => {
+
+                        if (error) {
+                            reject(error);
+                        } else {
+                            resolve(results);
+                        }
+
                     }
-                }
-            );
-        });
+                );
+
+            }
+        );
+
 
         if (skills.length === 0) {
+
             return res.status(404).json({
                 message: "Skill not found"
             });
+
         }
 
+
         const skill = skills[0];
+
 
         /*
          * The AI creates exactly 5 questions
@@ -188,29 +167,55 @@ Requirements:
 11. Questions should be appropriate for a college student.
 12. Keep the wording clear and understandable.
 13. Do not include explanations in the generated questions.
-14. Return only the requested JSON structure.
+
+Return ONLY a JSON object in this exact structure:
+
+{
+    "questions": [
+        {
+            "question": "Question text",
+            "option_a": "Option A",
+            "option_b": "Option B",
+            "option_c": "Option C",
+            "option_d": "Option D",
+            "correct_option": "A",
+            "difficulty": "Beginner"
+        }
+    ]
+}
+
+The "questions" array must contain exactly 5 objects.
 `;
 
-        const response = await generateWithModel(prompt);
 
-        if (!response || !response.text) {
-            throw new Error("Gemini returned an empty response");
-        }
+        const response =
+            await generateWithModel(prompt);
 
-        let generatedQuestions;
+
+        let generatedData;
 
         try {
-            generatedQuestions = JSON.parse(response.text);
+
+            generatedData =
+                JSON.parse(response);
+
         } catch (parseError) {
+
             console.error(
-                "Failed to parse Gemini JSON:",
-                response.text
+                "Failed to parse Groq JSON:",
+                response
             );
 
             throw new Error(
                 "AI returned an invalid quiz format"
             );
+
         }
+
+
+        const generatedQuestions =
+            generatedData?.questions;
+
 
         /*
          * Validate the complete AI response before
@@ -220,18 +225,28 @@ Requirements:
             !Array.isArray(generatedQuestions) ||
             generatedQuestions.length !== 5
         ) {
+
             throw new Error(
                 "AI did not generate exactly 5 questions"
             );
+
         }
 
-        const validOptions = ["A", "B", "C", "D"];
+
+        const validOptions = [
+            "A",
+            "B",
+            "C",
+            "D"
+        ];
+
 
         const validDifficulties = [
             "Beginner",
             "Intermediate",
             "Advanced"
         ];
+
 
         generatedQuestions.forEach(
             (question, index) => {
@@ -246,181 +261,284 @@ Requirements:
                     "difficulty"
                 ];
 
+
                 for (const field of requiredFields) {
+
                     if (
-                        typeof question[field] !== "string" ||
+                        typeof question[field] !==
+                        "string" ||
                         question[field].trim() === ""
                     ) {
+
                         throw new Error(
                             `Question ${index + 1} has an invalid ${field}`
                         );
+
                     }
+
                 }
+
 
                 if (
                     !validOptions.includes(
                         question.correct_option
                     )
                 ) {
+
                     throw new Error(
                         `Question ${index + 1} has an invalid correct option`
                     );
+
                 }
+
 
                 if (
                     !validDifficulties.includes(
                         question.difficulty
                     )
                 ) {
+
                     throw new Error(
                         `Question ${index + 1} has an invalid difficulty`
                     );
+
                 }
+
             }
         );
+
 
         /*
          * Create a unique quiz ID.
          */
-        const quizId = crypto.randomUUID();
+        const quizId =
+            crypto.randomUUID();
+
 
         /*
          * Store the complete quiz on the backend.
          * This includes the correct answers.
          */
-        activeQuizzes.set(quizId, {
-            user_id: req.user.user_id,
-            skill_id: Number(skill_id),
-            skill_name: skill.skill_name,
-            questions: generatedQuestions,
-            created_at: Date.now()
-        });
+        activeQuizzes.set(
+            quizId,
+            {
+                user_id:
+                    req.user.user_id,
+
+                skill_id:
+                    Number(skill_id),
+
+                skill_name:
+                    skill.skill_name,
+
+                questions:
+                    generatedQuestions,
+
+                created_at:
+                    Date.now()
+            }
+        );
+
 
         /*
          * Return only safe quiz information
          * to the frontend.
          */
         return res.json({
-            quiz_id: quizId,
-            skill_id: Number(skill_id),
-            skill_name: skill.skill_name,
 
-            questions: generatedQuestions.map(
-                (question, index) => ({
-                    question_id: index + 1,
-                    question_text: question.question,
-                    option_a: question.option_a,
-                    option_b: question.option_b,
-                    option_c: question.option_c,
-                    option_d: question.option_d,
-                    difficulty: question.difficulty
-                })
-            )
+            quiz_id:
+                quizId,
+
+            skill_id:
+                Number(skill_id),
+
+            skill_name:
+                skill.skill_name,
+
+            questions:
+                generatedQuestions.map(
+                    (question, index) => ({
+
+                        question_id:
+                            index + 1,
+
+                        question_text:
+                            question.question,
+
+                        option_a:
+                            question.option_a,
+
+                        option_b:
+                            question.option_b,
+
+                        option_c:
+                            question.option_c,
+
+                        option_d:
+                            question.option_d,
+
+                        difficulty:
+                            question.difficulty
+
+                    })
+                )
+
         });
 
     } catch (error) {
+
         console.error(
             "AI quiz generation failed:",
             error
         );
 
         return res.status(500).json({
-            message: "Failed to generate AI quiz"
+            message:
+                "Failed to generate AI quiz"
         });
+
     }
 };
 
 
 const submitQuiz = async (req, res) => {
+
     try {
-        const { quiz_id, answers } = req.body;
+
+        const {
+            quiz_id,
+            answers
+        } = req.body;
+
 
         if (!quiz_id) {
+
             return res.status(400).json({
-                message: "Quiz ID is required"
+                message:
+                    "Quiz ID is required"
             });
+
         }
+
 
         if (!Array.isArray(answers)) {
+
             return res.status(400).json({
-                message: "Answers must be an array"
+                message:
+                    "Answers must be an array"
             });
+
         }
 
-        const quiz = activeQuizzes.get(quiz_id);
+
+        const quiz =
+            activeQuizzes.get(quiz_id);
+
 
         if (!quiz) {
+
             return res.status(404).json({
+
                 message:
                     "Quiz not found or has already been submitted"
+
             });
+
         }
+
 
         /*
          * Make sure the quiz belongs to the
          * logged-in user.
          */
         if (
-            quiz.user_id !== req.user.user_id
+            quiz.user_id !==
+            req.user.user_id
         ) {
+
             return res.status(403).json({
+
                 message:
                     "You are not allowed to submit this quiz"
+
             });
+
         }
 
+
         let score = 0;
+
 
         quiz.questions.forEach(
             (question, index) => {
 
-                const submittedAnswer = answers.find(
-                    (answer) =>
-                        Number(answer.question_id) ===
-                        index + 1
-                );
+                const submittedAnswer =
+                    answers.find(
+                        (answer) =>
+                            Number(
+                                answer.question_id
+                            ) === index + 1
+                    );
+
 
                 if (
                     submittedAnswer &&
                     submittedAnswer.selected_option ===
                     question.correct_option
                 ) {
+
                     score++;
+
                 }
+
             }
         );
+
 
         const totalQuestions =
             quiz.questions.length;
 
+
         const percentage =
             totalQuestions > 0
                 ? Math.round(
-                    (score / totalQuestions) * 100
+                    (score /
+                        totalQuestions) *
+                    100
                 )
                 : 0;
+
 
         let level;
         let recommendation;
 
+
         if (percentage >= 70) {
-            level = "Proficient";
+
+            level =
+                "Proficient";
 
             recommendation =
                 "You have a strong understanding of this skill. Continue with advanced concepts, real-world projects and more challenging problems.";
 
         } else if (percentage >= 40) {
-            level = "Developing";
+
+            level =
+                "Developing";
 
             recommendation =
                 "You have a developing understanding of this skill. Continue learning the core concepts and practice through small projects.";
 
         } else {
-            level = "Beginner";
+
+            level =
+                "Beginner";
 
             recommendation =
                 "Focus on the fundamentals of this skill and build your understanding through basic examples and practice.";
+
         }
+
 
         /*
          * Remove the quiz after submission so the
@@ -428,23 +546,36 @@ const submitQuiz = async (req, res) => {
          */
         activeQuizzes.delete(quiz_id);
 
+
         return res.json({
+
             score,
-            total_questions: totalQuestions,
+
+            total_questions:
+                totalQuestions,
+
             percentage,
+
             level,
+
             recommendation
+
         });
 
     } catch (error) {
+
         console.error(
             "Quiz submission failed:",
             error
         );
 
         return res.status(500).json({
-            message: "Failed to submit quiz"
+
+            message:
+                "Failed to submit quiz"
+
         });
+
     }
 };
 

@@ -2,36 +2,49 @@ const express = require("express");
 
 const router = express.Router();
 
-const authMiddleware =
-    require("../middleware/authMiddleware");
-
 const {
     uploadResume,
     analyzeResume,
+    getResume,
+    deleteResume,
     importResume
 } = require("../controllers/resumeController");
 
-/*
-    Step 1:
-    Upload resume → extract text → Gemini analysis
-    Nothing is saved to the user's profile.
-*/
+const authMiddleware =
+    require("../middleware/authMiddleware");
+
+
+// Upload + save + analyze
 router.post(
-    "/analyze",
+    "/upload",
     authMiddleware,
     uploadResume,
     analyzeResume
 );
 
-/*
-    Step 2:
-    Save the reviewed resume information
-    into the user's profile.
-*/
+
+// View/download current resume
+router.get(
+    "/file",
+    authMiddleware,
+    getResume
+);
+
+
+// Delete current resume
+router.delete(
+    "/file",
+    authMiddleware,
+    deleteResume
+);
+
+
+// Add analyzed data to profile
 router.post(
     "/import",
     authMiddleware,
     importResume
 );
+
 
 module.exports = router;
