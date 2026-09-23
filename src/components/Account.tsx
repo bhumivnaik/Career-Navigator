@@ -675,11 +675,7 @@ function Account() {
                                             {item.provider}
                                         </p>
 
-                                        <span>
-                                            Completed
-                                            {" "}
-                                            {item.completion_date}
-                                        </span>
+                                    
 
                                     </div>
 

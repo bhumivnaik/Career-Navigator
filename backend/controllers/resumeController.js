@@ -1445,67 +1445,52 @@ const importResume = async (req, res) => {
 
 
         // =================================================
-        // PROJECTS
-        // =================================================
+// PROJECTS
+// =================================================
 
-        for (const project of projects) {
+for (const project of projects) {
 
-            const [existing] = await connection.query(
-                `
-    SELECT project_id
-    FROM user_projects
-    WHERE user_id = ?
-      AND project_name = ?
-      AND (
-          github_repo_url = ?
-          OR (
-              github_repo_url IS NULL
-              AND ? IS NULL
-          )
-      )
-    LIMIT 1
-    `,
-                [
-                    userId,
-                    project.project_name,
-                    project.github_repo_url || null,
-                    project.github_repo_url || null
-                ]
-            );
+    const [existing] = await connection.query(
+        `
+        SELECT project_id
+        FROM user_projects
+        WHERE user_id = ?
+          AND project_name = ?
+        LIMIT 1
+        `,
+        [
+            userId,
+            project.project_name
+        ]
+    );
 
-            if (existing.length > 0) {
-                continue;
-            }
+    if (existing.length > 0) {
+        continue;
+    }
 
-            await connection.query(
-                `
-                INSERT INTO user_projects
-                (
-                    user_id,
-                    project_name,
-                    description,
-                    technologies_used,
-                    start_date,
-                    end_date,
-                    github_repo_url,
-                    project_source
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                `,
-                [
-                    userId,
-                    project.project_name,
-                    project.description || null,
-                    project.technologies_used || null,
-                    project.start_date || null,
-                    project.end_date || null,
-                    project.github_repo_url || null,
-                    project.github_repo_url
-                        ? "GitHub"
-                        : "Manual"
-                ]
-            );
-        }
+    await connection.query(
+        `
+        INSERT INTO user_projects
+        (
+            user_id,
+            project_name,
+            description,
+            technologies_used,
+            start_date,
+            end_date
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        `,
+        [
+            userId,
+            project.project_name,
+            project.description || null,
+            project.technologies_used || null,
+            project.start_date || null,
+            project.end_date || null
+        ]
+    );
+}
 
 
         // =================================================
@@ -1674,54 +1659,56 @@ const importResume = async (req, res) => {
 
 
         // =================================================
-        // CERTIFICATIONS
-        // =================================================
+// CERTIFICATIONS
+// =================================================
 
-        //     for (const item of courses) {
+for (const item of certifications) {
 
-        //         const [existing] = await connection.query(
-        //             `
-        // SELECT course_id
-        // FROM user_courses
-        // WHERE user_id = ?
-        //   AND course_name = ?
-        //   AND provider <=> ?
-        // LIMIT 1
-        // `,
-        //             [
-        //                 userId,
-        //                 item.course_name,
-        //                 item.provider || null
-        //             ]
-        //         );
+    const [existing] = await connection.query(
+        `
+        SELECT course_id
+        FROM user_courses
+        WHERE user_id = ?
+          AND course_name = ?
+          AND provider <=> ?
+        LIMIT 1
+        `,
+        [
+            userId,
+            item.name,
+            item.issuer || null
+        ]
+    );
 
-        //         if (existing.length > 0) {
-        //             continue;
-        //         }
+    if (existing.length > 0) {
+        continue;
+    }
 
-        //         await connection.query(
-        //             `
-        //             INSERT INTO user_courses
-        //             (
-        //                 user_id,
-        //                 course_name,
-        //                 provider,
-        //                 description,
-        //                 completion_date,
-        //                 certificate_url
-        //             )
-        //             VALUES (?, ?, ?, ?, ?, ?)
-        //             `,
-        //             [
-        //                 userId,
-        //                 item.course_name,
-        //                 item.provider || null,
-        //                 item.description || null,
-        //                 item.completion_date || null,
-        //                 item.certificate_url || null
-        //             ]
-        //         );
-        //     }
+    await connection.query(
+        `
+        INSERT INTO user_courses
+        (
+            user_id,
+            course_name,
+            provider,
+            description,
+            completion_date,
+            certificate_url
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        `,
+        [
+            userId,
+            item.name,
+            item.issuer || null,
+            item.credential_id
+                ? `Credential ID: ${item.credential_id}`
+                : null,
+            item.issue_date || null,
+            null
+        ]
+    );
+}
 
 
         // =================================================
