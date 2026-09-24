@@ -468,10 +468,13 @@ const getCareerPaths = (req, res) => {
             c.career_id,
             c.career_name,
             c.description,
-            c.category
+            c.category,
+            (u.career_goal_id = c.career_id) AS is_goal
         FROM user_careers uc
         JOIN careers c
             ON uc.career_id = c.career_id
+        JOIN users u
+            ON uc.user_id = u.user_id
         WHERE uc.user_id = ?
         ORDER BY uc.user_career_id DESC
     `;
@@ -509,4 +512,3 @@ module.exports = {
     addCareerPath,
     getCareerPaths
 };
-

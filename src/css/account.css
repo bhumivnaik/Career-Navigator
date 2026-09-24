@@ -1,6 +1,22 @@
 /* =========================================================
    ACCOUNT PAGE
 ========================================================= */
+
+/* ---------------------------------------------------------
+   FULL-WIDTH FIX
+   profile.css makes <body> a centering flex container (used
+   to center the Login / Register / Profile-setup cards).
+   That turns #root into a flex item that shrinks to fit its
+   content, so pages using the sidebar layout were only as
+   wide as their content: narrow before a resume was imported,
+   wide after. Force #root to fill the screen whenever the
+   sidebar layout is on the page.
+--------------------------------------------------------- */
+#root:has(> .dashboard-layout) {
+    width: 100%;
+    min-width: 0;
+}
+
 .account-page {
     width: 100%;
     max-width: none;

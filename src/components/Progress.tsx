@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom"; import Navbar from "./ui/Navbar";
 import "../css/progress.css";
 import PersonalizedPathway from "./PersonalizedPathway";
+import { useAuth } from "../context/authContext";
 
 type CareerPath = {
     user_career_id: number;
@@ -10,6 +11,7 @@ type CareerPath = {
     career_name: string;
     description: string;
     category: string;
+    is_goal?: number | null;
 };
 
 type RoadmapSkill = {
@@ -48,6 +50,38 @@ function Progress() {
 
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const { login } = useAuth();
+
+    /*
+     * Save the selected career as the user's active career goal,
+     * then refresh the logged-in user so the Profile page (and
+     * anything else using career_goal_name) updates automatically.
+     */
+    async function saveCareerGoal(careerId: number) {
+
+        try {
+
+            const token = localStorage.getItem("token");
+            const headers = { Authorization: `Bearer ${token}` };
+
+            await axios.put(
+                "http://localhost:5000/api/careers/goal",
+                { career_id: careerId },
+                { headers }
+            );
+
+            const me = await axios.get(
+                "http://localhost:5000/api/auth/me",
+                { headers }
+            );
+
+            login(me.data);
+
+        } catch (error) {
+
+            console.error("SAVE CAREER GOAL ERROR:", error);
+        }
+    }
 
     const [careerPaths, setCareerPaths] = useState<CareerPath[]>([]);
     const [selectedCareerId, setSelectedCareerId] = useState<number | null>(
@@ -94,6 +128,19 @@ function Progress() {
 
                     const careerIdFromUrl = searchParams.get("careerId");
 
+                    const currentGoal: CareerPath | undefined =
+                        response.data.find(
+                            (path: CareerPath) => Number(path.is_goal) === 1
+                        );
+
+                    /*
+                     * Priority: career in the URL, then the saved
+                     * career goal, then the first career path.
+                     */
+                    let initialCareerId = Number(
+                        (currentGoal ?? response.data[0]).career_id
+                    );
+
                     if (careerIdFromUrl) {
 
                         const requestedCareerExists =
@@ -104,21 +151,21 @@ function Progress() {
                             );
 
                         if (requestedCareerExists) {
-                            setSelectedCareerId(
-                                Number(careerIdFromUrl)
-                            );
-                        } else {
-                            setSelectedCareerId(
-                                Number(response.data[0].career_id)
-                            );
+                            initialCareerId = Number(careerIdFromUrl);
                         }
+                    }
 
-                    } else {
+                    setSelectedCareerId(initialCareerId);
 
-                        setSelectedCareerId(
-                            Number(response.data[0].career_id)
-                        );
-
+                    /*
+                     * Keep the profile's career goal in sync with
+                     * the career being shown.
+                     */
+                    if (
+                        !currentGoal ||
+                        Number(currentGoal.career_id) !== initialCareerId
+                    ) {
+                        saveCareerGoal(initialCareerId);
                     }
                 }
 
@@ -550,11 +597,12 @@ function Progress() {
                             value={
                                 selectedCareerId ?? ""
                             }
-                            onChange={e =>
-                                setSelectedCareerId(
-                                    Number(e.target.value)
-                                )
-                            }
+                            onChange={e => {
+                                const newCareerId = Number(e.target.value);
+
+                                setSelectedCareerId(newCareerId);
+                                saveCareerGoal(newCareerId);
+                            }}
                         >
 
                             {careerPaths.map(

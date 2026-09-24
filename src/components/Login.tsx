@@ -57,9 +57,6 @@ function Login() {
     return (
         <>
             <div className="container">
-                <div className="logobox">
-
-                </div>
                 <div className="login">
                     <form onSubmit={handleSubmit}>
                         <h1>Sign In</h1>
@@ -91,6 +88,9 @@ function Login() {
                         <button type="submit" className="button">Login</button>
                         <p>Don't have an account? <Link to="/register"> Register</Link></p>
                     </form>
+                </div>
+                <div className="logobox">
+
                 </div>
             </div>
         </>

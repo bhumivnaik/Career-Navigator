@@ -70,25 +70,32 @@ body {
     color: var(--text-primary);
 }
 
+/* Login / Register fill the whole page (no centered card).
+   profile.css turns <body> into a centering flex container, which
+   would shrink #root to its content, so make #root full width here. */
+#root:has(> .container) {
+    width: 100%;
+    min-width: 0;
+}
+
 .container {
-    width: 900px;
-    height: 580px;
+    width: 100%;
+    min-height: 100vh;
     background-color: white;
-    margin: auto;
-    margin-top: 110px;
-    border-radius: 20px;
+    margin: 0;
+    border-radius: 0;
     display: flex;
-    box-shadow: 10px 5px 55px rgba(182, 148, 251, 0.847);
+    box-shadow: none;
 }
 
 .logobox {
     background-color: var(--primary);
-    box-shadow: 10px 5px 55px rgba(182, 148, 251, 0.847);
+    box-shadow: none;
     background-image: url("../assets/ChatGPT Image Sep 3, 2026, 09_10_09 PM.png");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 20px;
+    border-radius: 0;
     padding: 50px;
     flex: 1;
     display: flex;
@@ -101,9 +108,9 @@ body {
 
 .login,
 .register {
-    border-radius: 20px;
+    border-radius: 0;
     padding: 30px;
-    margin: 10px auto;
+    margin: 0;
     flex: 1.2;
     display: flex;
     justify-content: center;
@@ -202,17 +209,20 @@ label {
     }
 
     .logobox {
+        order: -1;
         width: 100%;
         min-height: 35vh;
         padding: 30px;
     }
 
-    .login {
+    .login,
+    .register {
         width: 100%;
         min-height: 65vh;
     }
 
-    .login form {
+    .login form,
+    .register form {
         padding: 30px;
     }
 }
