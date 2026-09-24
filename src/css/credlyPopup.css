@@ -145,3 +145,297 @@
 
     cursor: not-allowed;
 }
+
+
+
+/* =========================================================
+   RESPONSIVE — CREDLY POPUP
+========================================================= */
+
+@media (max-width: 650px) {
+
+    /* ================================
+       OVERLAY
+    ================================= */
+
+    .popup-overlay {
+        padding: 15px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* ================================
+       POPUP
+    ================================= */
+
+    .credly-popup {
+        width: 100%;
+        max-width: 100%;
+
+        max-height: 90vh;
+
+        padding: 22px 20px;
+
+        border-radius: 13px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* ================================
+       BADGE IMAGE
+    ================================= */
+
+    .credly-badge-image {
+        width: 100%;
+        max-width: 100%;
+
+        height: auto;
+        max-height: 190px;
+
+        object-fit: contain;
+
+        margin: 0 auto 5px;
+    }
+
+
+    /* ================================
+       HEADING
+    ================================= */
+
+    .credly-popup h2 {
+        margin: 0 0 7px;
+
+        font-size: 20px;
+        line-height: 1.35;
+
+        overflow-wrap: break-word;
+    }
+
+
+    /* ================================
+       DESCRIPTION
+    ================================= */
+
+    .credly-popup p {
+        margin: 0 0 18px;
+
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+
+    /* ================================
+       LABEL
+    ================================= */
+
+    .credly-popup label {
+        margin-bottom: 7px;
+
+        font-size: 12px;
+    }
+
+
+    /* ================================
+       INPUT
+    ================================= */
+
+    .credly-popup input {
+        width: 100%;
+
+        padding: 11px 12px;
+
+        font-size: 12px;
+
+        border-radius: 8px;
+    }
+
+
+    /* ================================
+       CLOSE BUTTON
+    ================================= */
+
+    .popup-close {
+        top: 9px;
+        right: 11px;
+
+        width: 30px;
+        height: 30px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 0;
+
+        font-size: 21px;
+    }
+
+
+    /* ================================
+       ACTIONS
+    ================================= */
+
+    .popup-actions {
+        width: 100%;
+
+        margin-top: 20px;
+
+        gap: 8px;
+
+        box-sizing: border-box;
+    }
+
+
+    .popup-cancel,
+    .popup-submit {
+        padding: 9px 14px;
+
+        font-size: 12px;
+
+        border-radius: 7px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 450px) {
+
+    .popup-overlay {
+        padding: 12px;
+    }
+
+
+    .credly-popup {
+        padding: 20px 16px;
+
+        max-height: 92vh;
+
+        border-radius: 12px;
+    }
+
+
+    .credly-badge-image {
+        max-height: 155px;
+
+        margin-bottom: 3px;
+    }
+
+
+    .credly-popup h2 {
+        font-size: 18px;
+    }
+
+
+    .credly-popup p {
+        margin-bottom: 16px;
+
+        font-size: 11px;
+        line-height: 1.55;
+    }
+
+
+    .credly-popup label {
+        font-size: 11px;
+    }
+
+
+    .credly-popup input {
+        padding: 10px 11px;
+
+        font-size: 11px;
+    }
+
+
+    .popup-close {
+        top: 8px;
+        right: 9px;
+
+        width: 28px;
+        height: 28px;
+
+        font-size: 19px;
+    }
+
+
+    .popup-actions {
+        margin-top: 17px;
+    }
+
+
+    .popup-cancel,
+    .popup-submit {
+        flex: 1;
+
+        padding: 9px 10px;
+
+        font-size: 11px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .popup-overlay {
+        padding: 8px;
+    }
+
+
+    .credly-popup {
+        padding: 18px 13px;
+
+        max-height: 94vh;
+    }
+
+
+    .credly-badge-image {
+        max-height: 125px;
+    }
+
+
+    .credly-popup h2 {
+        font-size: 17px;
+    }
+
+
+    .credly-popup p {
+        font-size: 10px;
+    }
+
+
+    .credly-popup label {
+        font-size: 10px;
+    }
+
+
+    .credly-popup input {
+        padding: 9px 10px;
+
+        font-size: 10px;
+    }
+
+
+    .popup-actions {
+        flex-direction: column;
+
+        gap: 7px;
+    }
+
+
+    .popup-cancel,
+    .popup-submit {
+        width: 100%;
+
+        padding: 10px;
+
+        font-size: 10px;
+    }
+}

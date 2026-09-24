@@ -573,3 +573,448 @@
     color: var(--text-secondary);
     font-size: 10px;
 }
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   RESUME IMPORT — MOBILE RESPONSIVE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    /* -----------------------------------------------------
+       MAIN RESUME SECTION
+    ----------------------------------------------------- */
+
+    .resume-import-section {
+        width: 100%;
+        padding: 16px;
+        margin-bottom: 18px;
+        border-radius: 13px;
+    }
+
+
+    /* -----------------------------------------------------
+       HEADER
+    ----------------------------------------------------- */
+
+    .resume-import-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .resume-import-header h2 {
+        font-size: 15px;
+        line-height: 1.35;
+    }
+
+    .resume-import-header p {
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+
+    /* -----------------------------------------------------
+       SELECT RESUME BUTTON
+    ----------------------------------------------------- */
+
+    .resume-select-button {
+        width: 100%;
+        padding: 9px 12px;
+        font-size: 10px;
+        border-radius: 8px;
+    }
+
+
+    /* -----------------------------------------------------
+       UPLOAD AREA
+    ----------------------------------------------------- */
+
+    .resume-upload-area {
+        padding: 25px 14px;
+        border-radius: 11px;
+    }
+
+    .resume-upload-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 10px;
+        border-radius: 12px;
+        font-size: 21px;
+    }
+
+    .resume-upload-area h3 {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .resume-upload-area p {
+        margin-bottom: 14px;
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+
+    /* -----------------------------------------------------
+       SELECTED RESUME
+    ----------------------------------------------------- */
+
+    .selected-resume {
+        width: 100%;
+        margin: 14px auto;
+        padding: 10px 11px;
+        gap: 8px;
+        border-radius: 8px;
+    }
+
+    .selected-resume span {
+        min-width: 0;
+        font-size: 10px;
+    }
+
+    .selected-resume small {
+        font-size: 9px;
+    }
+
+
+    /* -----------------------------------------------------
+       ANALYZE BUTTON
+    ----------------------------------------------------- */
+
+    .resume-analyze-button {
+        width: 100%;
+        margin-top: 8px;
+        padding: 10px 14px;
+        font-size: 10px;
+        border-radius: 8px;
+    }
+
+
+    /* -----------------------------------------------------
+       MESSAGES
+    ----------------------------------------------------- */
+
+    .resume-message {
+        margin-top: 12px;
+        padding: 10px 12px;
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+
+    /* =====================================================
+       RESUME REVIEW
+    ===================================================== */
+
+    .resume-review {
+        width: 100%;
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 8px;
+    }
+
+
+    /* -----------------------------------------------------
+       REVIEW LEFT CARD
+    ----------------------------------------------------- */
+
+    .resume-review-top {
+        width: 100%;
+        min-height: auto;
+
+        padding: 18px;
+
+        border-radius: 11px;
+
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+    }
+
+    .resume-review-top h3 {
+        margin-bottom: 6px;
+        font-size: 13px;
+    }
+
+    .resume-review-top p {
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+
+    /* -----------------------------------------------------
+       RESET BUTTON
+    ----------------------------------------------------- */
+
+    .resume-reset-button {
+        width: 100%;
+        margin-top: 15px;
+        padding: 9px 12px;
+        font-size: 10px;
+        border-radius: 8px;
+    }
+
+
+    /* -----------------------------------------------------
+       SCROLLABLE RESUME PREVIEW
+    ----------------------------------------------------- */
+
+    .scrollable {
+        width: 100%;
+        height: 400px;
+
+        padding: 12px;
+
+        border-width: 1px;
+        border-radius: 10px;
+
+        box-sizing: border-box;
+    }
+
+    .scrollable::-webkit-scrollbar {
+        width: 5px;
+    }
+
+
+    /* -----------------------------------------------------
+       REVIEW BLOCKS
+    ----------------------------------------------------- */
+
+    .resume-review-block {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-width: 1px;
+        border-radius: 9px;
+    }
+
+    .resume-block-title {
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .resume-block-title h4 {
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .resume-block-title span {
+        min-width: 18px;
+        height: 18px;
+        padding: 0 6px;
+        font-size: 8px;
+    }
+
+
+    /* -----------------------------------------------------
+       SKILLS
+    ----------------------------------------------------- */
+
+    .resume-skill-list {
+        gap: 4px;
+    }
+
+    .resume-skill-item {
+        gap: 5px;
+        padding: 3px 7px;
+        border-radius: 7px;
+        font-size: 8px;
+    }
+
+    .resume-skill-item small {
+        font-size: 8px;
+    }
+
+
+    /* -----------------------------------------------------
+       ADDITIONAL SKILLS
+    ----------------------------------------------------- */
+
+    .resume-additional-skills {
+        margin-top: 12px;
+        padding: 7px 9px;
+        border-radius: 10px;
+    }
+
+    .resume-additional-skills strong {
+        margin-bottom: 8px;
+        font-size: 9px;
+    }
+
+    .resume-additional-skills>div {
+        gap: 5px;
+    }
+
+    .resume-additional-skills span {
+        padding: 4px 8px;
+        font-size: 8px;
+    }
+
+
+    /* -----------------------------------------------------
+       DETAIL ITEMS
+    ----------------------------------------------------- */
+
+    .resume-detail-list {
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .resume-detail-item {
+        padding: 9px;
+        gap: 3px;
+        border-radius: 7px;
+    }
+
+    .resume-detail-item strong {
+        font-size: 10px;
+    }
+
+    .resume-detail-item span {
+        font-size: 9px;
+    }
+
+    .resume-detail-item p {
+        margin: 3px 0;
+        font-size: 8px;
+        line-height: 1.5;
+    }
+
+    .resume-detail-item small {
+        font-size: 8px;
+    }
+
+    .resume-empty {
+        font-size: 9px;
+    }
+
+
+    /* -----------------------------------------------------
+       IMPORT / CANCEL ACTIONS
+    ----------------------------------------------------- */
+
+    .resume-import-actions {
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+
+        gap: 7px;
+
+        margin-top: 14px;
+    }
+
+    .resume-cancel-button,
+    .resume-import-button {
+        width: 100%;
+        padding: 9px 12px;
+        font-size: 10px;
+        border-radius: 8px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .resume-import-section {
+        padding: 13px;
+        border-radius: 12px;
+    }
+
+
+    /* HEADER */
+
+    .resume-import-header {
+        gap: 8px;
+    }
+
+    .resume-import-header h2 {
+        font-size: 14px;
+    }
+
+    .resume-import-header p {
+        font-size: 9px;
+    }
+
+
+    /* UPLOAD */
+
+    .resume-upload-area {
+        padding: 20px 10px;
+    }
+
+    .resume-upload-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 19px;
+    }
+
+    .resume-upload-area h3 {
+        font-size: 11px;
+    }
+
+    .resume-upload-area p {
+        font-size: 9px;
+    }
+
+
+    /* REVIEW */
+
+    .resume-review {
+        gap: 10px;
+    }
+
+    .resume-review-top {
+        padding: 15px;
+    }
+
+    .resume-review-top h3 {
+        font-size: 12px;
+    }
+
+    .resume-review-top p {
+        font-size: 9px;
+    }
+
+    .scrollable {
+        height: 360px;
+        padding: 9px;
+    }
+
+
+    /* REVIEW BLOCK */
+
+    .resume-review-block {
+        padding: 9px;
+        margin-bottom: 8px;
+    }
+
+    .resume-block-title h4 {
+        font-size: 10px;
+    }
+
+
+    /* BUTTONS */
+
+    .resume-select-button,
+    .resume-analyze-button,
+    .resume-reset-button,
+    .resume-cancel-button,
+    .resume-import-button {
+        font-size: 9px;
+        padding: 8px 10px;
+    }
+}

@@ -1286,3 +1286,1131 @@ h4 {
     font-size: 10px;
     line-height: 1.6;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   RESPONSIVE — CAREER ROADMAP
+========================================================= */
+
+/* ---------------------------------------------------------
+   TABLET
+--------------------------------------------------------- */
+
+@media (max-width: 900px) {
+
+    .roadmap-level-group {
+        width: calc(100% - 40px);
+        max-width: none;
+        margin-left: 40px;
+        box-sizing: border-box;
+    }
+
+    .roadmap-card {
+        min-width: 0;
+    }
+
+    .roadmap-card-header {
+        gap: 14px;
+    }
+
+    .roadmap-card h3 {
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+
+    .roadmap-resources {
+        gap: 10px;
+    }
+
+    .roadmap-resource {
+        min-width: 0;
+    }
+
+    .skill-verification {
+        gap: 15px;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   MOBILE
+--------------------------------------------------------- */
+
+@media (max-width: 650px) {
+
+    /* ================================
+       MAIN ROADMAP
+    ================================= */
+
+    .career-roadmap {
+        width: 100%;
+        max-width: 100%;
+        padding: 10px 12px 30px;
+        box-sizing: border-box;
+    }
+
+
+    /* ================================
+       START / END
+    ================================= */
+
+    .roadmap-start,
+    .roadmap-end {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+
+        box-sizing: border-box;
+
+        padding: 12px 15px;
+
+        gap: 11px;
+    }
+
+    .roadmap-start {
+        margin-bottom: 25px;
+    }
+
+    .roadmap-end {
+        margin-top: 25px;
+    }
+
+
+    /* ================================
+       START / END ICON
+    ================================= */
+
+    .roadmap-goal-icon {
+        width: 38px;
+        height: 38px;
+
+        flex-shrink: 0;
+
+        border-radius: 10px;
+
+        font-size: 18px;
+    }
+
+
+    /* ================================
+       START / END TEXT
+    ================================= */
+
+    .roadmap-start span,
+    .roadmap-end span {
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
+
+    .roadmap-start strong,
+    .roadmap-end strong {
+        font-size: 13px;
+
+        overflow-wrap: anywhere;
+    }
+
+
+    /* ================================
+       LEVEL GROUP
+    ================================= */
+
+    .roadmap-level-group {
+        width: 100%;
+        max-width: 100%;
+
+        margin-left: 0;
+        margin-bottom: 28px;
+
+        padding: 30px 10px 14px;
+
+        box-sizing: border-box;
+
+        border-radius: 14px;
+    }
+
+
+    /* ================================
+       LEVEL TITLE
+    ================================= */
+
+    .roadmap-level-title {
+        top: -10px;
+        left: 15px;
+
+        padding: 4px 10px;
+
+        font-size: 9px;
+        letter-spacing: 0.6px;
+    }
+
+
+    /* ================================
+       ROADMAP ITEMS
+    ================================= */
+
+    .roadmap-level-group .roadmap-item {
+        display: flex;
+
+        align-items: center;
+
+        gap: 14px;
+
+        width: 100%;
+        min-width: 0;
+    }
+
+
+    /* ================================
+       ROADMAP LINE
+    ================================= */
+
+    .roadmap-line {
+        padding-left: 25px;
+        gap: 14px;
+    }
+
+    .roadmap-line::before {
+        left: 10px;
+    }
+
+
+    /* ================================
+       NODE
+    ================================= */
+
+    .roadmap-node {
+        width: 26px;
+        height: 26px;
+
+        flex-shrink: 0;
+
+        margin-left: -25px;
+
+        font-size: 10px;
+
+        box-shadow: 0 0 0 4px #f8fafb;
+    }
+
+
+    /* ================================
+       ROADMAP CARD
+    ================================= */
+
+    .roadmap-card {
+        width: 100%;
+        min-width: 0;
+
+        padding: 15px;
+
+        margin: 2px 0;
+
+        border-radius: 12px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* ================================
+       CARD HEADER
+    ================================= */
+
+    .roadmap-card-header {
+        width: 100%;
+
+        align-items: flex-start;
+
+        gap: 10px;
+    }
+
+    .roadmap-card-header>div:first-child {
+        min-width: 0;
+        flex: 1;
+    }
+
+
+    /* ================================
+       STAGE
+    ================================= */
+
+    .roadmap-stage {
+        margin-bottom: 7px;
+
+        padding: 4px 7px;
+
+        font-size: 8px;
+        letter-spacing: 0.5px;
+    }
+
+
+    /* ================================
+       SKILL NAME
+    ================================= */
+
+    .roadmap-card h3 {
+        margin: 0 0 5px;
+
+        font-size: 15px;
+        line-height: 1.35;
+
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+
+    /* ================================
+       SKILL LEVEL
+    ================================= */
+
+    .roadmap-card p {
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+
+    /* ================================
+       CARD ACTIONS
+    ================================= */
+
+    .roadmap-card-actions {
+        flex-shrink: 0;
+
+        gap: 6px;
+    }
+
+
+    /* ================================
+       STATUS
+    ================================= */
+
+    .roadmap-status {
+        padding: 5px 8px;
+
+        font-size: 9px;
+    }
+
+
+    /* ================================
+       TOGGLE
+    ================================= */
+
+    .roadmap-toggle {
+        width: 28px;
+        height: 28px;
+
+        flex-shrink: 0;
+
+        font-size: 16px;
+    }
+
+
+    /* ================================
+       DETAILS
+    ================================= */
+
+    .roadmap-details {
+        width: 100%;
+        max-width: 100%;
+
+        margin-top: 14px;
+        padding-top: 15px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* ================================
+       DETAIL SECTION
+    ================================= */
+
+    .roadmap-detail-section {
+        margin-bottom: 18px;
+    }
+
+    .roadmap-detail-section h4,
+    .roadmap-learning-topics h4,
+    h4 {
+        margin-bottom: 7px;
+
+        font-size: 10px;
+        letter-spacing: 0.7px;
+    }
+
+    .roadmap-detail-section p {
+        width: 100%;
+        max-width: 100%;
+
+        font-size: 11px;
+        line-height: 1.7;
+
+        overflow-wrap: anywhere;
+    }
+
+
+    /* ================================
+       LEARNING TOPICS
+    ================================= */
+
+    .roadmap-learning-topics {
+        margin-bottom: 18px;
+    }
+
+    .roadmap-learning-topics ul {
+        gap: 6px;
+    }
+
+    .roadmap-learning-topics li {
+        max-width: 100%;
+
+        padding: 6px 8px;
+
+        font-size: 9px;
+
+        overflow-wrap: anywhere;
+    }
+
+
+    /* ================================
+       RESOURCES
+    ================================= */
+
+    .roadmap-resources {
+        width: 100%;
+
+        flex-direction: column;
+
+        gap: 8px;
+    }
+
+    .roadmap-resource {
+        width: 100%;
+        min-width: 0;
+        min-height: 58px;
+
+        flex: none;
+
+        padding: 10px 12px;
+
+        gap: 10px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* ================================
+       RESOURCE ICON
+    ================================= */
+
+    .resource-icon {
+        width: 32px;
+        height: 32px;
+
+        flex-shrink: 0;
+
+        border-radius: 8px;
+    }
+
+
+    /* ================================
+       RESOURCE CONTENT
+    ================================= */
+
+    .resource-content {
+        min-width: 0;
+    }
+
+    .resource-title {
+        font-size: 11px;
+
+        overflow-wrap: anywhere;
+    }
+
+    .resource-description {
+        font-size: 9px;
+        line-height: 1.45;
+
+        overflow-wrap: anywhere;
+    }
+
+    .resource-arrow {
+        flex-shrink: 0;
+
+        font-size: 13px;
+    }
+
+
+    /* ================================
+       SKILL VERIFICATION
+    ================================= */
+
+    .skill-verification {
+        margin-top: 20px;
+        padding-top: 16px;
+
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 12px;
+    }
+
+    .skill-verification-content {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .skill-verification-content h4 {
+        font-size: 12px;
+    }
+
+    .skill-verification-content p {
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+
+    /* ================================
+       VERIFY BUTTON
+    ================================= */
+
+    .verify-skill-button {
+        width: 100%;
+
+        padding: 10px 14px;
+
+        font-size: 10px;
+    }
+
+    .verified-label {
+        align-self: flex-start;
+
+        font-size: 9px;
+        padding: 6px 10px;
+    }
+
+
+    /* ================================
+       COMPLETED VERIFICATION
+    ================================= */
+
+    .verification-completed-header {
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 10px;
+    }
+
+    .verification-completed-header h4 {
+        font-size: 12px;
+    }
+
+    .verification-completed-header p {
+        font-size: 9px;
+    }
+
+
+    /* ================================
+       VERIFICATION META
+    ================================= */
+
+    .verification-repository,
+    .verification-confidence {
+        flex-wrap: wrap;
+
+        gap: 6px;
+    }
+
+    .verification-repository a {
+        max-width: 100%;
+
+        font-size: 9px;
+
+        overflow-wrap: anywhere;
+        word-break: break-all;
+    }
+
+    .verification-info-label {
+        font-size: 8px;
+    }
+
+    .verification-meta strong {
+        font-size: 10px;
+    }
+
+    .verification-evidence p {
+        font-size: 9px;
+        line-height: 1.55;
+    }
+
+
+    /* ================================
+       LOADING
+    ================================= */
+
+    .roadmap-loading {
+        min-height: 140px;
+
+        font-size: 12px;
+    }
+
+
+    /* ================================
+       EMPTY
+    ================================= */
+
+    .roadmap-empty {
+        width: 100%;
+        max-width: 100%;
+
+        margin: 25px auto;
+        padding: 20px;
+
+        box-sizing: border-box;
+
+        font-size: 12px;
+    }
+
+
+    /* ================================
+       VERIFICATION MODAL
+    ================================= */
+
+    .verification-overlay {
+        padding: 14px;
+    }
+
+    .verification-modal {
+        width: 100%;
+        max-width: 100%;
+
+        max-height: calc(100vh - 28px);
+
+        overflow-y: auto;
+
+        border-radius: 15px;
+    }
+
+
+    /* ================================
+       MODAL HEADER
+    ================================= */
+
+    .verification-modal-header {
+        padding: 18px 18px 14px;
+
+        gap: 10px;
+    }
+
+    .verification-label {
+        margin-bottom: 5px;
+
+        font-size: 8px;
+    }
+
+    .verification-modal-header h3 {
+        font-size: 17px;
+
+        line-height: 1.35;
+    }
+
+    .verification-close {
+        width: 28px;
+        height: 28px;
+
+        flex-shrink: 0;
+
+        font-size: 18px;
+    }
+
+
+    /* ================================
+       MODAL BODY
+    ================================= */
+
+    .verification-modal-body {
+        padding: 18px;
+    }
+
+    .verification-modal-body>p {
+        margin-bottom: 16px;
+
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    .verification-modal-body label {
+        margin-bottom: 6px;
+
+        font-size: 10px;
+    }
+
+    .verification-modal-body input {
+        padding: 11px 12px;
+
+        font-size: 10px;
+    }
+
+    .verification-modal-body small {
+        margin-top: 7px;
+
+        font-size: 8px;
+    }
+
+
+    /* ================================
+       MODAL ACTIONS
+    ================================= */
+
+    .verification-modal-actions {
+        padding: 13px 18px 18px;
+
+        gap: 8px;
+    }
+
+    .verification-cancel,
+    .verification-submit {
+        flex: 1;
+
+        padding: 10px 12px;
+
+        font-size: 9px;
+    }
+
+
+    /* ================================
+       VERIFICATION RESULT
+    ================================= */
+
+    .verification-result {
+        margin-top: 15px;
+
+        padding: 11px 12px;
+
+        gap: 9px;
+    }
+
+    .verification-result-icon {
+        width: 22px;
+        height: 22px;
+
+        font-size: 11px;
+    }
+
+    .verification-result-content h4 {
+        font-size: 10px;
+    }
+
+    .verification-confidence {
+        font-size: 8px;
+    }
+
+    .verification-result-content p {
+        font-size: 8px;
+        line-height: 1.5;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   SMALL MOBILE
+--------------------------------------------------------- */
+
+@media (max-width: 450px) {
+
+    .career-roadmap {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .roadmap-level-group {
+        padding-left: 7px;
+        padding-right: 7px;
+    }
+
+    .roadmap-level-group .roadmap-item {
+        gap: 11px;
+    }
+
+    .roadmap-line {
+        padding-left: 22px;
+        gap: 11px;
+    }
+
+    .roadmap-line::before {
+        left: 9px;
+    }
+
+    .roadmap-node {
+        width: 24px;
+        height: 24px;
+
+        margin-left: -22px;
+
+        font-size: 9px;
+
+        box-shadow: 0 0 0 3px #f8fafb;
+    }
+
+    .roadmap-card {
+        padding: 13px;
+    }
+
+    .roadmap-card-header {
+        gap: 7px;
+    }
+
+    .roadmap-card h3 {
+        font-size: 14px;
+    }
+
+    .roadmap-card p {
+        font-size: 10px;
+    }
+
+    .roadmap-status {
+        padding: 4px 7px;
+
+        font-size: 8px;
+    }
+
+    .roadmap-toggle {
+        width: 26px;
+        height: 26px;
+
+        font-size: 15px;
+    }
+
+    .roadmap-start,
+    .roadmap-end {
+        padding: 11px 12px;
+    }
+
+    .roadmap-start strong,
+    .roadmap-end strong {
+        font-size: 12px;
+    }
+
+    .roadmap-goal-icon {
+        width: 34px;
+        height: 34px;
+
+        font-size: 16px;
+    }
+
+    .skill-verification-content h4 {
+        font-size: 11px;
+    }
+
+    .verification-modal-header h3 {
+        font-size: 16px;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   VERY SMALL DEVICES
+--------------------------------------------------------- */
+
+@media (max-width: 360px) {
+
+    .roadmap-level-group {
+        padding: 28px 5px 10px;
+    }
+
+    .roadmap-card {
+        padding: 11px;
+    }
+
+    .roadmap-card h3 {
+        font-size: 13px;
+    }
+
+    .roadmap-card p {
+        font-size: 9px;
+    }
+
+    .roadmap-stage {
+        font-size: 7px;
+    }
+
+    .roadmap-status {
+        padding: 4px 6px;
+
+        font-size: 7px;
+    }
+
+    .roadmap-card-actions {
+        gap: 3px;
+    }
+
+    .roadmap-toggle {
+        width: 24px;
+        height: 24px;
+
+        font-size: 14px;
+    }
+
+    .roadmap-resource {
+        min-height: 54px;
+
+        padding: 9px 10px;
+    }
+
+    .resource-icon {
+        width: 29px;
+        height: 29px;
+    }
+
+    .resource-title {
+        font-size: 10px;
+    }
+
+    .resource-description {
+        font-size: 8px;
+    }
+}
+
+
+
+
+
+/* =========================================================
+   MOBILE ROADMAP — CLEAN VERSION
+========================================================= */
+
+@media (max-width: 650px) {
+
+    /* -----------------------------------------
+       LEVEL GROUP
+    ----------------------------------------- */
+
+    .roadmap-level-group {
+        width: calc(100% - 10px);
+        margin-left: 0;
+        margin-right: 10px;
+        margin-bottom: 28px;
+
+        padding: 30px 10px 14px;
+
+        box-sizing: border-box;
+        border-radius: 14px;
+    }
+
+
+    /* -----------------------------------------
+       SKILLS CONTAINER
+    ----------------------------------------- */
+
+    .roadmap-level-skills {
+        gap: 12px;
+    }
+
+
+    /* -----------------------------------------
+       ROADMAP ITEM
+    ----------------------------------------- */
+
+    .roadmap-level-group .roadmap-item {
+        display: flex;
+        align-items: center;
+
+        gap: 8px;
+        margin-bottom: 0;
+
+        min-width: 0;
+    }
+
+
+    /* -----------------------------------------
+       NODE
+    ----------------------------------------- */
+
+    .roadmap-node {
+        width: 24px;
+        height: 24px;
+
+        min-width: 24px;
+
+        margin-left: -22px;
+
+        font-size: 9px;
+
+        box-shadow: 0 0 0 3px #f8fafb;
+    }
+
+
+    /* -----------------------------------------
+       ROADMAP CARD
+    ----------------------------------------- */
+
+    .roadmap-card {
+        width: 100%;
+        min-width: 0;
+
+        padding: 11px 10px;
+        margin: 0;
+
+        border-radius: 11px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* -----------------------------------------
+       CARD HEADER
+    ----------------------------------------- */
+
+    .roadmap-card-header {
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+
+        gap: 5px;
+    }
+
+
+    /* -----------------------------------------
+       STAGE
+    ----------------------------------------- */
+
+    .roadmap-stage {
+        flex-shrink: 0;
+
+        margin-bottom: 0;
+
+        padding: 4px 6px;
+
+        font-size: 7px;
+        letter-spacing: 0.3px;
+
+        border-radius: 5px;
+    }
+
+
+    /* -----------------------------------------
+       SKILL TITLE
+    ----------------------------------------- */
+
+    .roadmap-card h3 {
+        flex: 1;
+        min-width: 0;
+
+        margin: 0;
+
+        font-size: 12px;
+        font-weight: 600;
+
+        line-height: 1.2;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        color: var(--primary-dark);
+    }
+
+
+    /* -----------------------------------------
+       STATUS
+    ----------------------------------------- */
+
+    .roadmap-status {
+        flex-shrink: 0;
+
+        padding: 5px 7px;
+
+        font-size: 8px;
+
+        border-radius: 16px;
+    }
+
+
+    /* -----------------------------------------
+       TOGGLE
+    ----------------------------------------- */
+
+    .roadmap-card-actions {
+        flex-shrink: 0;
+
+        gap: 2px;
+    }
+
+    .roadmap-toggle {
+        width: 20px;
+        height: 20px;
+
+        font-size: 12px;
+    }
+
+
+    /* -----------------------------------------
+       LEVEL TITLE
+    ----------------------------------------- */
+
+    .roadmap-level-title {
+        top: -10px;
+        left: 15px;
+
+        padding: 3px 9px;
+
+        font-size: 8px;
+        letter-spacing: 0.5px;
+    }
+
+
+    /* -----------------------------------------
+       SKILL LEVEL TEXT
+    ----------------------------------------- */
+
+    .roadmap-card p {
+        font-size: 9px;
+    }
+
+
+    /* -----------------------------------------
+       START / END
+    ----------------------------------------- */
+
+    .roadmap-start,
+    .roadmap-end {
+        width: 100%;
+        min-width: 0;
+
+        padding: 10px 12px;
+
+        box-sizing: border-box;
+
+        gap: 9px;
+    }
+
+    .roadmap-goal-icon {
+        width: 34px;
+        height: 34px;
+
+        flex-shrink: 0;
+
+        font-size: 16px;
+        border-radius: 9px;
+    }
+
+    .roadmap-start span,
+    .roadmap-end span {
+        font-size: 8px;
+        letter-spacing: 0.8px;
+    }
+
+    .roadmap-start strong,
+    .roadmap-end strong {
+        font-size: 12px;
+    }
+}

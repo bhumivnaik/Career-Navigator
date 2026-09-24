@@ -1114,3 +1114,348 @@
     font-size: 10px;
     color: #87939a;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   MOBILE — FINAL FIX
+========================================================= */
+
+@media screen and (max-width: 650px) {
+
+    /* -----------------------------------------------------
+       DASHBOARD CONTENT
+       Sidebar = 70px
+    ----------------------------------------------------- */
+
+    .dashboard-content {
+        margin-left: 70px !important;
+
+        width: calc(100% - 70px) !important;
+
+        min-width: 0 !important;
+        max-width: none !important;
+
+        padding: 20px 14px 35px !important;
+
+        box-sizing: border-box !important;
+    }
+
+
+    /* -----------------------------------------------------
+       TOP BAR
+    ----------------------------------------------------- */
+
+    .dashboard-topbar {
+        width: 100% !important;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 10px;
+
+        margin-bottom: 22px;
+    }
+
+    .dashboard-topbar>div:first-child {
+        min-width: 0;
+    }
+
+    .dashboard-label {
+        font-size: 9px;
+    }
+
+    .dashboard-topbar h1 {
+        font-size: 21px;
+        line-height: 1.25;
+    }
+
+
+    /* -----------------------------------------------------
+       USER PROFILE
+    ----------------------------------------------------- */
+
+    .user-profile {
+        flex-shrink: 0;
+
+        padding: 0;
+    }
+
+    .user-profile>div:last-child {
+        display: none;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+
+    /* -----------------------------------------------------
+       WELCOME CARD
+    ----------------------------------------------------- */
+
+    .welcome-card {
+        width: 100% !important;
+
+        min-width: 0 !important;
+        max-width: none !important;
+
+        min-height: auto;
+
+        display: flex;
+        flex-direction: column;
+
+        gap: 20px;
+
+        padding: 22px !important;
+
+        margin-bottom: 20px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* IMPORTANT:
+       Remove desktop flex sizing from both children
+    */
+
+    .welcome-card>div:first-child {
+        width: 100% !important;
+
+        max-width: none !important;
+
+        flex: none !important;
+
+        min-width: 0;
+    }
+
+
+    .welcome-card h2 {
+        width: 100%;
+
+        max-width: none !important;
+
+        font-size: 24px;
+
+        line-height: 1.22;
+
+        margin-bottom: 11px;
+    }
+
+    .welcome-card p {
+        width: 100%;
+
+        max-width: none !important;
+
+        font-size: 11px;
+
+        line-height: 1.65;
+
+        margin-bottom: 18px;
+    }
+
+
+    /* -----------------------------------------------------
+       CURRENT GOAL CARD
+    ----------------------------------------------------- */
+
+    .div2 {
+        width: 100% !important;
+
+        min-width: 0 !important;
+        max-width: none !important;
+
+        min-height: 180px;
+
+        flex: none !important;
+
+        padding: 18px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* -----------------------------------------------------
+       SUMMARY
+    ----------------------------------------------------- */
+
+    .summary-grid {
+        width: 100% !important;
+
+        grid-template-columns: 1fr !important;
+
+        gap: 10px;
+
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        width: 100% !important;
+
+        min-width: 0;
+
+        min-height: 88px;
+
+        padding: 16px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* -----------------------------------------------------
+       SECTIONS
+    ----------------------------------------------------- */
+
+    .dashboard-section {
+        width: 100% !important;
+
+        min-width: 0;
+
+        padding: 18px;
+
+        box-sizing: border-box;
+
+        margin-bottom: 20px;
+    }
+
+
+    /* -----------------------------------------------------
+       SECTION HEADER
+    ----------------------------------------------------- */
+
+    .section-heading {
+        width: 100%;
+
+        display: flex;
+
+        align-items: flex-start;
+        justify-content: space-between;
+
+        gap: 10px;
+    }
+
+    .section-heading>div:first-child {
+        min-width: 0;
+    }
+
+    .section-heading h2 {
+        font-size: 16px;
+    }
+
+    .section-heading p {
+        font-size: 9px;
+    }
+
+
+    /* -----------------------------------------------------
+       CAREERS
+    ----------------------------------------------------- */
+
+    .career-grid {
+        width: 100%;
+
+        grid-template-columns: 1fr !important;
+
+        gap: 10px;
+    }
+
+
+    /* -----------------------------------------------------
+       QUICK ACTIONS
+    ----------------------------------------------------- */
+
+    .quick-actions {
+        width: 100%;
+
+        grid-template-columns: 1fr 1fr !important;
+
+        gap: 9px;
+    }
+
+    .quick-actions button {
+        width: 100%;
+
+        min-width: 0;
+
+        padding: 10px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* -----------------------------------------------------
+       CAREER PATH
+    ----------------------------------------------------- */
+
+    .career-path-slider {
+        width: 100%;
+
+        min-width: 0;
+
+        min-height: 125px;
+    }
+
+    .career-path-slide {
+        width: 100%;
+
+        min-width: 0;
+
+        box-sizing: border-box;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media screen and (max-width: 420px) {
+
+    .dashboard-content {
+        margin-left: 70px !important;
+
+        width: calc(100% - 70px) !important;
+
+        padding: 17px 11px 28px !important;
+    }
+
+    .dashboard-topbar h1 {
+        font-size: 19px;
+    }
+
+    .welcome-card {
+        padding: 18px !important;
+    }
+
+    .welcome-card h2 {
+        font-size: 21px;
+    }
+
+    .welcome-card p {
+        font-size: 10px;
+    }
+
+    .div2 {
+        padding: 16px;
+    }
+
+    .dashboard-section {
+        padding: 16px;
+    }
+
+    .quick-actions {
+        grid-template-columns: 1fr !important;
+    }
+}
