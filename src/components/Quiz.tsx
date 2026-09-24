@@ -317,76 +317,7 @@ function Quiz() {
 
 
     // Quiz result
-    if (result) {
 
-        return (
-
-            <div className="dashboard-layout">
-
-                <Navbar />
-
-                <main className="dashboard-content">
-
-                    <section className="quiz-result-card">
-
-                        <p className="dashboard-label">
-                            QUIZ RESULT
-                        </p>
-
-                        <h1>
-                            {result.percentage}%
-                        </h1>
-
-                        <h2>
-                            {result.level}
-                        </h2>
-
-                        <p className="quiz-score">
-                            You scored {result.score} out of{" "}
-                            {result.total_questions}
-                        </p>
-
-                        <div className="quiz-recommendation">
-
-                            <h3>
-                                Recommendation
-                            </h3>
-
-                            <p>
-                                {result.recommendation}
-                            </p>
-
-                        </div>
-
-                        <div className="quiz-result-actions">
-
-                            <button
-                                className="quiz-primary-button"
-                                onClick={retakeQuiz}
-                            >
-                                Retake Quiz
-                            </button>
-
-                            <button
-                                className="quiz-secondary-button"
-                                onClick={() =>
-                                    navigate("/progress")
-                                }
-                            >
-                                View Progress
-                            </button>
-
-                        </div>
-
-                    </section>
-
-                </main>
-
-            </div>
-
-        );
-
-    }
 
 
     // Skill selection screen
@@ -512,7 +443,72 @@ function Quiz() {
                         </section>
 
                     )}
+                    {result && (
+                        <div className="quiz-result-overlay">
 
+                            <section className="quiz-result-popup">
+
+                                <button
+                                    className="quiz-result-close"
+                                    onClick={() => setResult(null)}
+                                    aria-label="Close result"
+                                >
+                                    ×
+                                </button>
+
+                                <p className="dashboard-label">
+                                    QUIZ RESULT
+                                </p>
+
+                                <h1>
+                                    {result.percentage}%
+                                </h1>
+
+                                <h2>
+                                    {result.level}
+                                </h2>
+
+                                <p className="quiz-score">
+                                    You scored {result.score} out of{" "}
+                                    {result.total_questions}
+                                </p>
+
+                                <div className="quiz-recommendation">
+
+                                    <h3>
+                                        Recommendation
+                                    </h3>
+
+                                    <p>
+                                        {result.recommendation}
+                                    </p>
+
+                                </div>
+
+                                <div className="quiz-result-actions">
+
+                                    <button
+                                        className="quiz-primary-button"
+                                        onClick={retakeQuiz}
+                                    >
+                                        Retake Quiz
+                                    </button>
+
+                                    <button
+                                        className="quiz-secondary-button"
+                                        onClick={() =>
+                                            navigate("/progress")
+                                        }
+                                    >
+                                        View Progress
+                                    </button>
+
+                                </div>
+
+                            </section>
+
+                        </div>
+                    )}
                 </main>
 
             </div>
