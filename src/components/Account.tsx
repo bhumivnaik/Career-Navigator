@@ -233,17 +233,17 @@ function Account() {
     };
 
     return (
-    <div className="dashboard-layout">
+        <div className="dashboard-layout">
 
-        <Navbar />
+            <Navbar />
 
-        <main className="dashboard-content account-content">
-            <div className="account-header">
-                <h1>Profile</h1>
-                <p>
-                    Manage your account and career information
-                </p>
-            </div>
+            <main className="dashboard-content account-content">
+                <div className="account-header">
+                    <h1>Profile</h1>
+                    <p>
+                        Manage your account and career information
+                    </p>
+                </div>
 
 
                 {/* PROFILE */}
@@ -259,11 +259,11 @@ function Account() {
                                 <div className="profile-name-row">
                                     <div>
                                         <h1>{user?.full_name || "Your Name"}</h1>
-                                        <p className="profile-subtitle">
+                                        {/* <p className="profile-subtitle">
                                             {user?.career_goal_name
                                                 ? `Aspiring ${user.career_goal_name}`
                                                 : "Build your career profile"}
-                                        </p>
+                                        </p> */}
                                     </div>
                                     <button className="profile-edit-button" onClick={() => { navigate("/profile") }}>
                                         ✎ Edit Profile
@@ -302,7 +302,7 @@ function Account() {
                                                 target="_blank"
                                                 rel="noreferrer"
                                             >
-                                                View Profile ↗
+                                                {user.github_profile_url} ↗
                                             </a>
                                         </>
                                     ) : (
@@ -341,7 +341,7 @@ function Account() {
                 />
 
                 {/* CAREER GOAL */}
-                <section className="career-goal-section">
+                {/* <section className="career-goal-section">
                     <div className="career-goal-heading">
                         <div>
                             <h2>Career Destination</h2>
@@ -379,7 +379,7 @@ function Account() {
                             </button>
                         </div>
                     )}
-                </section>
+                </section> */}
 
 
                 <section className="github-section">
@@ -675,7 +675,7 @@ function Account() {
                                             {item.provider}
                                         </p>
 
-                                    
+
 
                                     </div>
 

@@ -22,14 +22,13 @@
     max-width: none;
 
     min-height: 100vh;
-
     margin: 0;
     padding: 0;
 
     box-sizing: border-box;
 }
 
-.account-page > * {
+.account-page>* {
     width: 100%;
     max-width: none;
     box-sizing: border-box;
@@ -64,12 +63,10 @@
     width: 100%;
 
     background: white;
-    border: 1px solid #e8e5f0;
+    border: 1px solid #e5daff;
     border-radius: 14px;
-
     padding: 14px;
     margin-bottom: 20px;
-
     box-sizing: border-box;
 }
 
@@ -85,7 +82,7 @@
 }
 
 .section-header p {
-    margin: 0;
+    margin-bottom: 8px;
     color: #acabab;
     font-size: 11px;
 }
@@ -145,7 +142,7 @@
 .account-list {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 18px;
 
     width: 100%;
 }
@@ -213,11 +210,11 @@
 
     overflow: hidden;
 
-    font-size: 15px;
+    font-size: 13px;
 }
 
 .item-content span {
-    font-size: 11px;
+    font-size: 10px;
 }
 
 
@@ -297,290 +294,6 @@
 
 
 /* =========================================================
-   PROFILE CARD
-========================================================= */
-
-.profile-card {
-    position: relative;
-
-    width: 100% !important;
-    max-width: none !important;
-
-    background: linear-gradient(
-        135deg,
-        var(--primary-light2) 0%,
-        var(--primary2) 100%
-    );
-
-    border: 1px solid #ded8ec;
-
-    border-radius: 18px;
-
-    padding: 20px 26px;
-
-    margin-bottom: 18px;
-
-    box-shadow:
-        0 7px 22px rgba(56, 42, 112, 0.08);
-
-    display: flex;
-    align-items: center;
-
-    box-sizing: border-box;
-
-    overflow: hidden;
-}
-
-
-/* =========================================================
-   PROFILE TOP
-========================================================= */
-
-.profile-card-top {
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-
-    gap: 20px;
-}
-
-
-/* =========================================================
-   PROFILE AVATAR
-========================================================= */
-
-.profile-avatar {
-    width: 100px;
-    height: 100px;
-
-    flex-shrink: 0;
-
-    border-radius: 50%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: linear-gradient(
-        135deg,
-        var(--primary-dark),
-        var(--primary2)
-    );
-
-    color: white;
-
-    font-size: 34px;
-    font-weight: 700;
-
-    box-shadow:
-        0 6px 16px rgba(100, 58, 170, 0.28);
-}
-
-
-/* =========================================================
-   PROFILE MAIN
-========================================================= */
-
-.profile-main {
-    flex: 1;
-    min-width: 0;
-}
-
-
-/* =========================================================
-   NAME ROW
-========================================================= */
-
-.profile-name-row {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: flex-start;
-
-    gap: 18px;
-}
-
-.profile-name-row h1 {
-    margin: 0;
-
-    color: #25213a;
-
-    font-size: 23px;
-    font-weight: 700;
-}
-
-.profile-subtitle {
-    margin: 4px 0 0;
-
-    color: #2a2a2b;
-
-    font-size: 12px;
-}
-
-
-/* =========================================================
-   EDIT PROFILE
-========================================================= */
-
-.profile-edit-button {
-    border: 1px solid #e3def5;
-
-    background: #ffffff;
-
-    color: var(--primary-dark);
-
-    padding: 8px 13px;
-
-    border-radius: 8px;
-
-    font-size: 11px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    white-space: nowrap;
-
-    transition: 0.2s ease;
-}
-
-.profile-edit-button:hover {
-    background: var(--primary-dark);
-    color: white;
-
-    border-color: var(--primary-dark);
-}
-
-
-/* =========================================================
-   ABOUT
-========================================================= */
-
-.profile-about {
-    margin: 7px 0 0;
-
-    max-width: 700px;
-
-    color: #666174;
-
-    font-size: 12px;
-
-    line-height: 1.4;
-}
-
-
-/* =========================================================
-   PROFILE DIVIDER
-========================================================= */
-
-.profile-divider {
-    height: 1px;
-
-    background: rgba(255, 255, 255, 0.55);
-
-    margin: 11px 0;
-}
-
-
-/* =========================================================
-   PROFILE INFO
-========================================================= */
-
-.profile-info-row {
-    display: grid;
-
-    grid-template-columns: 1.2fr 1fr 1fr;
-
-    gap: 12px;
-
-    width: 100%;
-}
-
-.profile-info {
-    display: flex;
-
-    align-items: center;
-
-    gap: 9px;
-
-    min-width: 0;
-}
-
-
-/* INFO ICON */
-
-.profile-info-icon {
-    width: 30px;
-    height: 30px;
-
-    flex-shrink: 0;
-
-    border-radius: 8px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #f7f3ff;
-
-    color: var(--primary-dark);
-
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.profile-info span {
-    display: block;
-
-    margin-bottom: 2px;
-
-    color: var(--primary-dark);
-
-    font-size: 9px;
-
-    font-weight: 800;
-
-    text-transform: uppercase;
-
-    letter-spacing: 0.5px;
-}
-
-.profile-info strong {
-    display: block;
-
-    color: #403b50;
-
-    font-size: 11px;
-
-    font-weight: 600;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-    white-space: nowrap;
-}
-
-.profile-info a {
-    color: #403b50;
-
-    text-decoration: none;
-
-    font-size: 11px;
-
-    font-weight: 600;
-}
-
-.profile-info a:hover {
-    cursor: pointer;
-}
-
-.not-added {
-    color: #c7c1ce !important;
-}
-
-
-/* =========================================================
    CAREER DESTINATION
 ========================================================= */
 
@@ -613,11 +326,9 @@
 
     padding: 12px 20px;
 
-    background: linear-gradient(
-        135deg,
-        var(--primary-light2) 0%,
-        var(--primary2) 100%
-    );
+    background: linear-gradient(135deg,
+            var(--primary-light2) 0%,
+            var(--primary2) 100%);
 
     border-radius: 0;
 
@@ -681,7 +392,7 @@
     min-width: 0;
 }
 
-.career-destination-info > span {
+.career-destination-info>span {
     display: block;
 
     margin-bottom: 4px;
@@ -852,7 +563,7 @@
     align-items: center;
     justify-content: center;
 
-    font-size: 19px;
+    font-size: 14px;
 
     flex-shrink: 0;
 }
@@ -860,7 +571,7 @@
 .github-empty h3 {
     margin: 0 0 4px;
 
-    font-size: 14px;
+    font-size: 12px;
 
     color: #25213a;
 }
@@ -868,7 +579,7 @@
 .github-empty p {
     margin: 0;
 
-    font-size: 12px;
+    font-size: 10px;
 
     color: #888;
 }
@@ -923,7 +634,7 @@
 
     border-radius: 50%;
 
-    background: #25213a;
+    background: var(--primary-dark2);
 
     color: white;
 
@@ -950,9 +661,9 @@
 }
 
 .github-profile h3 {
-    margin: 0 0 3px;
+    margin: 0 0 0px;
 
-    font-size: 16px;
+    font-size: 14px;
 
     color: #25213a;
 }
@@ -960,7 +671,7 @@
 .github-profile a {
     color: var(--primary-dark);
 
-    font-size: 11px;
+    font-size: 10px;
 
     text-decoration: none;
 }
@@ -987,7 +698,7 @@
 .github-stat strong {
     display: block;
 
-    font-size: 21px;
+    font-size: 14px;
 
     color: #25213a;
 }
@@ -1039,7 +750,7 @@
 ========================================================= */
 
 .github-result-block {
-    padding: 16px 20px;
+    padding: 5px 18px;
 
     border-bottom: 1px solid #eeeaf5;
 }
@@ -1057,7 +768,7 @@
 .github-result-title h3 {
     margin: 0;
 
-    font-size: 13px;
+    font-size: 12px;
 
     color: #302b45;
 }
@@ -1067,10 +778,10 @@
 
     color: #999;
 
-    font-size: 10px;
+    font-size: 9px;
 }
 
-.github-result-title > span {
+.github-result-title>span {
     min-width: 24px;
     height: 24px;
 
@@ -1087,7 +798,7 @@
     align-items: center;
     justify-content: center;
 
-    font-size: 10px;
+    font-size: 9px;
 
     font-weight: 700;
 }
@@ -1110,11 +821,11 @@
 
     align-items: center;
 
-    padding: 6px 10px;
+    padding: 6px 8px;
 
     border-radius: 7px;
 
-    font-size: 11px;
+    font-size: 9px;
 
     font-weight: 600;
 }
@@ -1136,13 +847,733 @@
 
     color: #999;
 
-    font-size: 11px;
+    font-size: 10px;
 }
 
 .github-last-sync {
     padding: 10px 20px;
 
-    font-size: 10px;
+    font-size: 9px;
 
     color: #999;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*updated profile*/
+/* =========================================================
+   PROFILE CARD
+========================================================= */
+
+.profile-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    margin-bottom: 30px;
+    width: 100%;
+    min-height: 250px;
+    padding: 38px 42px;
+
+    border-radius: 25px;
+
+    /* Uses your root colors */
+    background:
+        linear-gradient(135deg,
+            color-mix(in srgb, var(--primary, #491f73) 75%, white),
+            color-mix(in srgb, var(--primary-dark2, #6d36a4) 92%, white));
+
+    border: 1px solid color-mix(in srgb, var(--primary, #8f5cc2) 20%, transparent);
+
+    box-shadow:
+        0 10px 30px rgba(80, 45, 120, 0.10);
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   SUBTLE BACKGROUND EFFECT
+========================================================= */
+
+.profile-card::before {
+    content: "";
+    position: absolute;
+
+    width: 260px;
+    height: 260px;
+
+    right: -90px;
+    top: -120px;
+
+    border-radius: 50%;
+
+    background: color-mix(in srgb,
+            var(--primary, #8f5cc2) 16%,
+            transparent);
+
+    pointer-events: none;
+}
+
+.profile-card::after {
+    content: "";
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    right: 170px;
+    bottom: -130px;
+
+    border-radius: 50%;
+
+    background: color-mix(in srgb,
+            var(--primary, #8f5cc2) 10%,
+            transparent);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   AVATAR
+========================================================= */
+
+.profile-avatar {
+    position: relative;
+    z-index: 2;
+
+    flex-shrink: 0;
+
+    width: 120px;
+    height: 120px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--primary-dark2, #8f5cc2);
+
+    color: #ffffff;
+
+    font-size: 42px;
+    font-weight: 700;
+
+    box-shadow:
+        0 10px 22px color-mix(in srgb, var(--primary, #8f5cc2) 30%, transparent);
+
+    border: 5px solid color-mix(in srgb, white 55%, transparent);
+}
+
+
+/* =========================================================
+   PROFILE CONTENT
+========================================================= */
+
+.profile-card>div:last-child {
+    position: relative;
+    z-index: 2;
+
+    flex: 1;
+    min-width: 0;
+}
+
+.profile-card-top {
+    width: 100%;
+}
+
+.profile-main {
+    width: 100%;
+}
+
+
+/* =========================================================
+   NAME + EDIT BUTTON
+========================================================= */
+
+.profile-name-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 25px;
+}
+
+.profile-name-row h1 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 28px;
+    line-height: 1.2;
+    font-weight: 750;
+}
+
+.profile-subtitle {
+    margin: 7px 0 0;
+
+    color: #cecece;
+
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.profile-about {
+    margin: 8px 0 0;
+
+    color: #ebebeb;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   EDIT PROFILE BUTTON
+========================================================= */
+
+.profile-edit-button {
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 125px;
+    height: 38px;
+
+    padding: 0 16px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: var(--primary, #8f5cc2);
+
+    font-size: 12px;
+    font-weight: 650;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 12px rgba(50, 30, 80, 0.08);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.profile-edit-button:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 7px 16px rgba(50, 30, 80, 0.13);
+
+    background: color-mix(in srgb,
+            white 92%,
+            var(--primary, #8f5cc2));
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.profile-divider {
+    width: 100%;
+    height: 1px;
+
+    margin: 14px 0 12px;
+
+    background: color-mix(in srgb,
+            white 45%,
+            var(--primary, #8f5cc2));
+}
+
+
+/* =========================================================
+   PROFILE INFORMATION ROW
+========================================================= */
+
+.profile-info-row {
+    display: flex;
+    align-items: center;
+
+    gap: 62px;
+
+    width: 100%;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    min-width: 0;
+}
+
+
+/* =========================================================
+   INFO ICON
+========================================================= */
+
+.profile-info-icon {
+    flex-shrink: 0;
+
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.85);
+
+    color: var(--primary, #8f5cc2);
+
+    font-size: 13px;
+    font-weight: 700;
+
+    box-shadow:
+        0 3px 8px rgba(60, 30, 90, 0.06);
+}
+
+
+/* =========================================================
+   INFO TEXT
+========================================================= */
+
+.profile-info>div:last-child {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+.profile-info span {
+    margin-bottom: 3px;
+
+    color: var(--primary-light);
+
+
+    font-size: 9px;
+    font-weight: 750;
+
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+}
+
+.profile-info strong,
+.profile-info a {
+    max-width: 190px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    color: var(--primary-light2);
+
+    font-size: 12px;
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+.profile-info a {
+    color: var(--primary-light2);
+
+    transition: color 0.2s ease;
+}
+
+.profile-info a:hover {
+    color: color-mix(in srgb,
+            var(--primary-light) 75%,
+            #000);
+
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   NOT ADDED
+========================================================= */
+
+.profile-info .not-added {
+    color: var(--primary-light);
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .profile-card {
+        align-items: flex-start;
+
+        padding: 24px;
+        gap: 20px;
+    }
+
+    .profile-avatar {
+        width: 82px;
+        height: 82px;
+
+        font-size: 26px;
+    }
+
+    .profile-info-row {
+        flex-wrap: wrap;
+        gap: 18px 28px;
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .profile-card {
+        flex-direction: column;
+        align-items: flex-start;
+
+        padding: 22px;
+    }
+
+    .profile-name-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .profile-edit-button {
+        width: 100%;
+    }
+
+    .profile-info-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .profile-info {
+        width: 100%;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   EDUCATION / ACCOUNT ITEM
+========================================================= */
+
+.account-item {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-height: 108px;
+
+    padding: 18px 20px;
+
+    border: 1px solid var(--border-color, #e6ddf5);
+    border-radius: 16px;
+
+    background: var(--card-bg, #ffffff);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   LEFT PURPLE ACCENT
+========================================================= */
+
+.account-item::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+
+    width: 3px;
+
+    border-radius: 0 4px 4px 0;
+
+    background: var(--primary, #8f5cc2);
+}
+
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+.account-item:hover {
+    transform: translateY(-2px);
+    background-color: #f5f1fa;
+    border-color: color-mix(in srgb,
+            var(--primary, #8f5cc2) 30%,
+            var(--border-color, #e6ddf5));
+
+    box-shadow:
+        0 8px 24px rgba(80, 45, 120, 0.08);
+}
+
+
+/* =========================================================
+   EDUCATION ICON
+========================================================= */
+
+.account-item .item-icon {
+    flex-shrink: 0;
+
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-right: 16px;
+
+    border-radius: 12px;
+
+    background: color-mix(in srgb,
+            var(--primary, #8f5cc2) 11%,
+            white);
+
+    color: var(--primary, #8f5cc2);
+
+    border: 1px solid color-mix(in srgb,
+            var(--primary, #8f5cc2) 12%,
+            transparent);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.account-item:hover .item-icon {
+    background: color-mix(in srgb,
+            var(--primary, #8f5cc2) 16%,
+            white);
+
+    transform: scale(1.04);
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.account-item .item-content {
+    flex: 1;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+/* Degree */
+
+.account-item .item-content h3 {
+    margin: 0;
+
+    color: var(--text-primary, #24183a);
+
+    font-size: 14px;
+    font-weight: 600;
+
+    line-height: 1.3;
+}
+
+
+/* Field of study */
+
+.account-item .item-content p {
+    margin: 0;
+
+    color: var(--text-secondary, #665d72);
+
+    font-size: 11px;
+    font-weight: 500;
+
+    line-height: 1.4;
+}
+
+
+/* Institution */
+
+.account-item .item-content span {
+    margin-top: 2px;
+
+    color: var(--text-muted, #8b8196);
+
+    font-size: 10px;
+    font-weight: 400;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
+.account-item .item-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    margin-left: 20px;
+}
+
+
+/* Common action button */
+
+.account-item .icon-button {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* Edit */
+
+.account-item .edit-icon {
+    background: color-mix(in srgb,
+            var(--primary, #8f5cc2) 9%,
+            white);
+
+    color: var(--primary, #8f5cc2);
+}
+
+
+/* Delete */
+
+.account-item .delete-icon {
+    background: #fff1f3;
+
+    color: #d05b6d;
+}
+
+
+/* Hover */
+
+.account-item .icon-button:hover {
+    transform: translateY(-1px);
+}
+
+.account-item .edit-icon:hover {
+    background: var(--primary, #8f5cc2);
+
+    color: #ffffff;
+}
+
+.account-item .delete-icon:hover {
+    background: #d05b6d;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .account-item {
+        padding: 15px;
+
+        min-height: 95px;
+    }
+
+    .account-item .item-icon {
+        width: 40px;
+        height: 40px;
+
+        margin-right: 12px;
+    }
+
+    .account-item .item-content h3 {
+        font-size: 14px;
+    }
+
+    .account-item .item-content p {
+        font-size: 12px;
+    }
+
+    .account-item .item-content span {
+        font-size: 10px;
+    }
+
+    .account-item .item-actions {
+        margin-left: 10px;
+
+        gap: 4px;
+    }
+
+    .account-item .icon-button {
+        width: 29px;
+        height: 29px;
+    }
 }

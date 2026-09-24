@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
 import "../../css/navbar.css";
+import { Compass } from "lucide-react";
 
 function Navbar() {
 
@@ -18,7 +19,9 @@ function Navbar() {
         <aside className="sidebar">
 
             <div className="sidebar-logo">
-                <div className="logo-icon">CN</div>
+                <div className="logo-icon">
+                    <Compass size={21} strokeWidth={2} />
+                </div>
                 <div>
                     <h2>Career</h2>
                     <span>Navigator</span>
@@ -31,11 +34,10 @@ function Navbar() {
 
                 {/* Dashboard */}
                 <button
-                    className={`nav-item ${
-                        location.pathname === "/dashboard"
-                            ? "active"
-                            : ""
-                    }`}
+                    className={`nav-item ${location.pathname === "/dashboard"
+                        ? "active"
+                        : ""
+                        }`}
                     onClick={() => navigate("/dashboard")}
                 >
                     <span>⌂</span>
@@ -44,12 +46,11 @@ function Navbar() {
 
                 {/* Careers */}
                 <button
-                    className={`nav-item ${
-                        location.pathname === "/careers" ||
+                    className={`nav-item ${location.pathname === "/careers" ||
                         location.pathname.startsWith("/careers/")
-                            ? "active"
-                            : ""
-                    }`}
+                        ? "active"
+                        : ""
+                        }`}
                     onClick={() => navigate("/careers")}
                 >
                     <span>◆</span>
@@ -58,11 +59,10 @@ function Navbar() {
 
                 {/* My Progress */}
                 <button
-                    className={`nav-item ${
-                        location.pathname === "/progress"
-                            ? "active"
-                            : ""
-                    }`}
+                    className={`nav-item ${location.pathname === "/progress"
+                        ? "active"
+                        : ""
+                        }`}
                     onClick={() => navigate("/progress")}
                 >
                     <span>▣</span>
@@ -71,11 +71,10 @@ function Navbar() {
 
                 {/* Skill Quiz */}
                 <button
-                    className={`nav-item ${
-                        location.pathname === "/quiz"
-                            ? "active"
-                            : ""
-                    }`}
+                    className={`nav-item ${location.pathname === "/quiz"
+                        ? "active"
+                        : ""
+                        }`}
                     onClick={() => navigate("/quiz")}
                 >
                     <span>✓</span>
@@ -88,11 +87,10 @@ function Navbar() {
 
                 {/* Profile */}
                 <button
-                    className={`nav-item ${
-                        location.pathname === "/account"
-                            ? "active"
-                            : ""
-                    }`}
+                    className={`nav-item ${location.pathname === "/account"
+                        ? "active"
+                        : ""
+                        }`}
                     onClick={() => navigate("/account")}
                 >
                     <span>●</span>

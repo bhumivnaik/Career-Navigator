@@ -723,7 +723,17 @@ function ResumeImporter({
                                             >
 
                                                 <strong>
-                                                    {item.project_name}
+                                                    <p
+                                                        style={{
+                                                            fontSize: "12px",
+                                                            color: "black",
+                                                            display: "-webkit-box",
+                                                            WebkitLineClamp: 2,
+                                                            WebkitBoxOrient: "vertical",
+                                                            overflow: "hidden",
+                                                        }}
+                                                    >
+                                                        {item.project_name}</p>
                                                 </strong>
 
                                                 {item.description && (
