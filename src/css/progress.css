@@ -35,12 +35,12 @@
 }
 
 .progress-header h1 {
-    margin: 6px 0 7px;
+    margin: 2px 0 7px;
     color: #25213a;
-    font-family: "Poppins", sans-serif;
+    font-family: "Poppins";
     font-size: 30px;
     font-weight: 700;
-    line-height: 1.25;
+    line-height: 0.8;
 }
 
 .progress-subtitle {
@@ -88,12 +88,11 @@
 ========================================================= */
 
 .overall-progress-card {
-    padding: 25px 26px;
+    padding: 15px 26px;
     margin-bottom: 22px;
-    background: #ffffff;
-    border: 1px solid #e8e5ed;
+    background: linear-gradient(90deg, whitesmoke);
     border-radius: 17px;
-    box-shadow: 0 4px 16px rgba(37, 33, 58, 0.035);
+    box-shadow: 0 4px 16px rgba(81, 17, 159, 0.45);
 }
 
 .overall-progress-info {
@@ -113,7 +112,7 @@
 
 .overall-progress-info h2 {
     margin: 7px 0 2px;
-    color: #6246b8;
+    color: var(--primary-dark);
     font-family: "Poppins", sans-serif;
     font-size: 38px;
     font-weight: 700;
@@ -122,7 +121,7 @@
 
 .overall-progress-info p {
     margin: 7px 0 0;
-    color: #777286;
+    color: #868586;
     font-family: "Poppins", sans-serif;
     font-size: 12px;
 }
@@ -132,15 +131,15 @@
     height: 9px;
     margin-top: 22px;
     overflow: hidden;
-    background: #eeeaf7;
+    background: #c2c1c3;
     border-radius: 20px;
 }
 
 .large-progress-fill {
     height: 100%;
     background: linear-gradient(90deg,
-            #7051d6,
-            #8062e2);
+            #ab97ed,
+            #7e4fca);
     border-radius: 20px;
     transition: width 0.45s ease;
 }
@@ -173,12 +172,21 @@
 ========================================================= */
 
 .current-position-card {
-    padding: 25px 26px;
+    padding: 18px 26px;
     margin-bottom: 28px;
     background: #ffffff;
     border: 1px solid #e8e5ed;
     border-radius: 17px;
     box-shadow: 0 4px 16px rgba(37, 33, 58, 0.035);
+}
+
+.current-position-card h2 {
+    margin: 0;
+    color: #29243b;
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
 }
 
 .position-content {
@@ -234,7 +242,7 @@
     margin: 0 0 4px;
     color: #302b43;
     font-family: "Poppins", sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 650;
 }
 
@@ -242,7 +250,7 @@
     margin: 0;
     color: #827d8d;
     font-family: "Poppins", sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     line-height: 1.55;
 }
 
@@ -591,7 +599,7 @@
 }
 
 .stage-number {
-    color: #6246b8;
+    color: #7648b1;
     font-family: "Poppins", sans-serif;
     font-size: 9px;
     font-weight: 700;
@@ -609,7 +617,7 @@
 
 .stage-percentage {
     flex-shrink: 0;
-    color: #6246b8;
+    color: #7648b1;
     font-family: "Poppins", sans-serif;
     font-size: 13px;
     font-weight: 700;
@@ -629,7 +637,7 @@
 
 .stage-progress-fill {
     height: 100%;
-    background: #6d4bd8;
+    background: #7648b1;
     border-radius: 20px;
     transition: width 0.4s ease;
 }
@@ -1009,7 +1017,7 @@
     flex-shrink: 0;
     border-radius: 50%;
     background: #f0ebff;
-    color: #6246b8;
+    color: #7648b1;
     font-family: "Poppins", sans-serif;
     font-size: 12px;
     font-weight: 700;
@@ -1070,7 +1078,7 @@
     flex-shrink: 0;
     border-radius: 50%;
     background: #f3f0f8;
-    color: #6246b8;
+    color: #7648b1;
     font-family: "Poppins", sans-serif;
     font-size: 17px;
     font-weight: 500;
@@ -1092,24 +1100,28 @@
 
     box-sizing: border-box;
 }
+
 .pathway-skill-content {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    padding: 0 20px 20px 70px;
+    padding: 15px 20px 20px 60px;
     border-top: 1px solid #eeeaf2;
     overflow: hidden;
 }
 
 /* Details */
 .pathway-detail {
-    padding-top: 16px;
+    margin: 3px;
+    padding: 10px;
     min-width: 0;
+    background-color: #f9f4ff;
+    border-radius: 10px;
 }
 
 .pathway-detail h4 {
     margin: 0 0 6px;
-    color: #6246b8;
+    color: #7648b1;
     font-family: "Poppins", sans-serif;
     font-size: 10px;
     font-weight: 700;
@@ -1222,7 +1234,7 @@
     padding: 10px 16px;
     border: none;
     border-radius: 10px;
-    background: #6d4bd8;
+    background: #7648b1;
     color: #ffffff;
     font-family: "Poppins", sans-serif;
     font-size: 11px;
@@ -1235,7 +1247,7 @@
 }
 
 .next-step-card button:hover {
-    background: #5b3fc0;
+    background: #6a3da4;
     box-shadow: 0 6px 15px rgba(109, 75, 216, 0.18);
     transform: translateY(-1px);
 }
@@ -1264,7 +1276,7 @@
     margin-bottom: 15px;
     border-radius: 15px;
     background: #f0ebff;
-    color: #6246b8;
+    color: #7648b1;
     font-size: 21px;
 }
 
@@ -1291,7 +1303,7 @@
     padding: 10px 17px;
     border: none;
     border-radius: 10px;
-    background: #6d4bd8;
+    background: #7648b1;
     color: #ffffff;
     font-family: "Poppins", sans-serif;
     font-size: 12px;
@@ -1304,7 +1316,7 @@
 }
 
 .progress-empty button:hover {
-    background: #5b3fc0;
+    background: #7648b1;
     box-shadow: 0 6px 15px rgba(109, 75, 216, 0.18);
     transform: translateY(-1px);
 }
@@ -1374,7 +1386,7 @@
         grid-template-columns: repeat(2, 1fr);
     }
 
-   .pathway-skill-content {
+    .pathway-skill-content {
         grid-template-columns: 1fr !important;
         padding-left: 20px !important;
     }
@@ -1498,9 +1510,9 @@
     gap: 30px;
 
     margin-bottom: 30px;
-    padding: 20px 24px;
+    padding: 12px 20px;
 
-    background: white;
+    background: rgb(255, 255, 255);
     border: 1px solid #e8e5f0;
     border-radius: 15px;
 }
@@ -1509,9 +1521,9 @@
     display: block;
     margin-bottom: 5px;
 
-    color: #6c5ce7;
+    color: var(--primary-dark);
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 300;
     letter-spacing: 0.8px;
     color: #666;
 }
@@ -1526,7 +1538,7 @@
     border: 1px solid #dcd7e8;
     border-radius: 9px;
 
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
 
     cursor: pointer;
@@ -1537,27 +1549,41 @@
     border-color: var(--primary);
 }
 
+.selected-career {
+    padding: 20px 50px 20px 50px;
+    background-color: #efecf6;
+    border-radius: 20px;
+}
+
 .selected-career-heading {
     margin-bottom: 30px;
 }
 
 .selected-career-heading h2 {
-    margin: 5px 0 8px;
+    margin: 5px 0 13px;
+    color: var(--primary-dark2)
+}
+
+.selected-career-heading p {
+    color: var(--primary2);
+
+    line-height: 2.9;
 }
 
 .selected-career-heading p:not(.dashboard-label) {
-    color: #777;
+    color: #777272;
     max-width: 800px;
     line-height: 1.6;
 }
+
 /* =========================================================
    FIX PERSONALIZED PATHWAY WIDTH
    Keep section width identical when skill expands
 ========================================================= */
 
 .personalized-pathway-section {
-    width: 1200px !important;
-    max-width: 1200px !important;
+    width: 1050px !important;
+    max-width: 1050px !important;
     min-width: 0 !important;
     margin-left: auto !important;
     margin-right: auto !important;
@@ -1604,4 +1630,457 @@
         width: 100% !important;
         max-width: 100% !important;
     }
+}
+
+
+
+/* =========================================================
+   CAREER JOURNEY
+========================================================= */
+
+.career-journey-section {
+    margin-top: 34px;
+    margin-bottom: 45px;
+}
+
+.career-journey-section .section-heading {
+    margin-bottom: 18px;
+}
+
+
+/* =========================================================
+   JOURNEY CARD
+========================================================= */
+
+.career-journey-card {
+    padding: 24px 26px;
+
+    background:
+        linear-gradient(135deg,
+            #ffffff 0%,
+            #faf8ff 100%);
+
+    border: 3px dotted var(--primary);
+    border-radius: 18px;
+
+    box-shadow:
+        0 6px 22px rgba(72, 47, 130, 0.055);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.career-journey-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 25px;
+
+    padding-bottom: 22px;
+
+    border-bottom: 1px solid #eee9f5;
+}
+
+
+/* Target */
+
+.career-journey-target {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.career-journey-target-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 43px;
+    height: 43px;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(135deg,
+            #f0e7ff,
+            #e3d8ff);
+
+    color: #7648b1;
+
+    font-size: 18px;
+
+    box-shadow:
+        0 5px 14px rgba(101, 68, 199, 0.10);
+}
+
+.career-journey-target span {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #8b829d;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+.career-journey-target h3 {
+    margin: 0;
+
+    color: #29233f;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+/* Overall progress */
+
+.career-journey-progress {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+
+    padding: 8px 13px;
+
+    border-radius: 10px;
+
+    background: #f1ebff;
+}
+
+.career-journey-progress strong {
+    color: #7648b1;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.career-journey-progress span {
+    color: #b3a3cd;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   JOURNEY LINE
+========================================================= */
+
+.career-journey-line {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 0;
+
+    padding-top: 28px;
+
+    overflow-x: auto;
+
+    scrollbar-width: thin;
+}
+
+
+/* =========================================================
+   STAGE
+========================================================= */
+
+.journey-stage {
+    position: relative;
+
+    flex: 1;
+
+    min-width: 170px;
+
+    padding-right: 24px;
+}
+
+
+/* connecting line */
+
+.journey-stage:not(:last-child)::after {
+    content: "";
+
+    position: absolute;
+
+    top: 18px;
+    left: 38px;
+
+    width: calc(100% - 38px);
+    height: 2px;
+
+    background: #e3ddef;
+
+    z-index: 0;
+}
+
+
+/* completed connecting line */
+
+.journey-stage-complete:not(:last-child)::after {
+    background:
+        linear-gradient(90deg,
+            #7648b1,
+            #b3a0e9);
+}
+
+
+/* =========================================================
+   NODE
+========================================================= */
+
+.journey-node {
+    position: relative;
+
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    margin-bottom: 12px;
+
+    border-radius: 50%;
+
+    background: #eee8ff;
+
+    border: 3px solid #ffffff;
+
+    color: #7257a8;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+
+    box-shadow:
+        0 0 0 1px #d7caef,
+        0 5px 12px rgba(101, 68, 199, 0.10);
+}
+
+
+/* completed node */
+
+.journey-stage-complete .journey-node {
+    background:
+        linear-gradient(135deg,
+            #7648b1,
+            #8765e5);
+
+    color: #ffffff;
+
+    box-shadow:
+        0 0 0 1px #7155a9,
+        0 5px 14px rgba(101, 64, 209, 0.22);
+}
+
+
+/* =========================================================
+   STAGE INFORMATION
+========================================================= */
+
+.journey-stage-info span {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #91889f;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 0.8px;
+}
+
+.journey-stage-info h3 {
+    margin: 0 0 5px;
+
+    color: #302a43;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.journey-stage-info p {
+    margin: 0;
+
+    color: #888192;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   STAGE MINI PROGRESS
+========================================================= */
+
+.journey-stage-progress {
+    width: 110px;
+
+    margin-top: 10px;
+}
+
+.journey-stage-progress>div {
+    width: 100%;
+    height: 4px;
+
+    overflow: hidden;
+
+    background: #ece8f3;
+
+    border-radius: 10px;
+}
+
+.journey-stage-progress span {
+    display: block;
+
+    height: 100%;
+
+    background:
+        linear-gradient(90deg,
+            #7648b1,
+            #a38ce3);
+
+    border-radius: 10px;
+
+    transition: width 0.4s ease;
+}
+
+
+/* =========================================================
+   FINAL DESTINATION
+========================================================= */
+
+.journey-final-stage {
+    flex: 0 0 190px;
+
+    padding: 14px 17px;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(135deg,
+            #7648b1,
+            #b18cf2);
+
+    box-shadow:
+        0 8px 22px rgba(101, 64, 209, 0.18);
+}
+
+.journey-final-stage .journey-node {
+    background: rgba(255, 255, 255, 0.17);
+
+    border-color: rgba(255, 255, 255, 0.18);
+
+    color: #ffffff;
+
+    box-shadow: none;
+}
+
+.journey-final-stage .journey-stage-info span,
+.journey-final-stage .journey-stage-info h3,
+.journey-final-stage .journey-stage-info p {
+    color: #ffffff;
+}
+
+.journey-final-stage .journey-stage-info span,
+.journey-final-stage .journey-stage-info p {
+    opacity: 0.72;
+}
+
+.journey-final-stage .journey-stage-info h3 {
+    font-size: 13px;
+}
+
+.journey-final-stage::after {
+    display: none;
+}
+
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+.journey-stage:not(.journey-final-stage):hover .journey-node {
+    transform: scale(1.08);
+
+    box-shadow:
+        0 0 0 1px #b8a6e4,
+        0 6px 16px rgba(101, 68, 199, 0.16);
+}
+
+.journey-node {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .career-journey-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .career-journey-progress {
+        align-self: flex-start;
+    }
+
+    .career-journey-line {
+        padding-bottom: 8px;
+    }
+
+    .journey-stage {
+        flex: 0 0 175px;
+    }
+
+    .journey-final-stage {
+        flex: 0 0 180px;
+    }
+}
+
+
+@media (max-width: 500px) {
+
+    .career-journey-card {
+        padding: 20px;
+    }
+
+    .career-journey-target h3 {
+        font-size: 14px;
+    }
+
+    .career-journey-line {
+        padding-top: 22px;
+    }
+
+    .journey-stage {
+        flex: 0 0 160px;
+    }
+}
+
+.head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    margin-bottom: 20px;
 }
