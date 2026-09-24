@@ -506,13 +506,13 @@ body {
 
     background: #f5f1fb;
 
-    color: var(--primary-dark);
+    color: white;
 }
 
 .compare-button.selected {
-    border-color: var(--primary);
+    border-color: var(--primary-light2);
 
-    background: var(--primary);
+    background: var(--primary-dark2);
 
     color: white;
 }
@@ -1414,7 +1414,30 @@ body {
     }
 }
 
+.compare-bar {
+    position: fixed;
+    left: 60%;
+    bottom: 30px;
+    transform: translateX(-50%);
 
+    z-index: 1000;
+
+    width: min(900px, calc(100% - 40px));
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 16px 22px;
+
+    background: var(--primary-dark2);
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(22px);
+}
 
 
 

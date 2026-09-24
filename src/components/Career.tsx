@@ -130,7 +130,7 @@ const Career = () => {
                                 padding: "12px 20px",
                                 borderRadius: "10px",
                                 border: "none",
-                                backgroundColor: "var(--primary)",
+                                backgroundColor: "var(--primary-dark)",
                                 color: "white",
                                 fontFamily: "Poppins, sans-serif",
                                 fontSize: "13px",
@@ -160,30 +160,30 @@ const Career = () => {
 
                 {/* COMPARISON INSTRUCTION */}
                 {compareMode && (
-    <div
-        className="compare-instruction"
-        style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            marginTop: "10px",
-            marginBottom: "5px"
-        }}
-    >
-        <span>
-            Select up to 3 careers to compare
-        </span>
+                    <div
+                        className="compare-instruction"
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            marginTop: "10px",
+                            marginBottom: "5px"
+                        }}
+                    >
+                        <span>
+                            Select up to 3 careers to compare
+                        </span>
 
-        <strong>
-            {selectedCareers.length} selected
-        </strong>
-    </div>
-)}
+                        <strong>
+                            {selectedCareers.length} selected
+                        </strong>
+                    </div>
+                )}
 
                 {/* RECOMMENDED PATHWAYS */}
                 <div
                     style={{
-                        backgroundColor: "var(--primary)",
+                        backgroundColor: "#d8cfee",
                         borderRadius: "20px",
                         padding: "15px"
                     }}
@@ -191,8 +191,9 @@ const Career = () => {
 
                     <div
                         style={{
-                            color: "var(--primary-light)",
+                            color: "var(--primary-dark2)",
                             padding: "15px",
+                            fontWeight: "600",
                             borderRadius: "10px"
                         }}
                     >
@@ -228,14 +229,14 @@ const Career = () => {
                 </div>
 
                 <br />
-                <br />
+
 
                 <hr />
 
                 {/* LEAST RECOMMENDED PATHWAYS */}
                 <div
                     style={{
-                        backgroundColor: "var(--primary)",
+                        backgroundColor: "#d8cfee",
                         borderRadius: "20px",
                         padding: "15px",
                         marginTop: "50px"
@@ -244,7 +245,8 @@ const Career = () => {
 
                     <div
                         style={{
-                            color: "var(--primary-light)",
+                            color: "var(--primary-dark2)",
+                            fontWeight: "600",
                             padding: "15px",
                             borderRadius: "10px"
                         }}
